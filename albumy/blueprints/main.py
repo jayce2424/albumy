@@ -14,7 +14,7 @@ from sqlalchemy.sql.expression import func
 
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
-from albumy.forms.main import DescriptionForm, TagForm, CommentForm
+from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
@@ -147,10 +147,12 @@ def show_photo(photo_id):
     comment_form = CommentForm()
     description_form = DescriptionForm()
     tag_form = TagForm()
+    can_comment_form=Can_commentForm()
 
     description_form.description.data = photo.description
+    can_comment_form.can_comment.data = photo.can_comment
     return render_template('main/photo.html', photo=photo, comment_form=comment_form,
-                           description_form=description_form, tag_form=tag_form,
+                           description_form=description_form, tag_form=tag_form,can_comment_form=can_comment_form,
                            pagination=pagination, comments=comments)
 
 
@@ -250,6 +252,23 @@ def edit_description(photo_id):
         photo.description = form.description.data
         db.session.commit()
         flash('Description updated.', 'success')
+
+    flash_errors(form)
+    return redirect(url_for('.show_photo', photo_id=photo_id))
+
+
+@main_bp.route('/photo/<int:photo_id>/can_comment', methods=['POST'])
+@login_required
+def edit_can_comment(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    if current_user != photo.author and not current_user.can('MODERATE'):
+        abort(403)
+
+    form = Can_commentForm()
+    if form.validate_on_submit():
+        photo.can_comment = form.can_comment.data
+        db.session.commit()
+        flash('Can_comment updated.', 'success')
 
     flash_errors(form)
     return redirect(url_for('.show_photo', photo_id=photo_id))

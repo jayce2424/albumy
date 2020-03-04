@@ -6,16 +6,16 @@
 {% block title %}{{ tag.name }}{% endblock %}
 
 {% block content %}
-    <div class="page-header">
-        <h1>#{{ tag.name }}
-            <small class="text-muted">{{ tag.photos|length }} photos</small>
-            {% if current_user.can('MODERATE') %}
-                <a class="btn btn-danger btn-sm" href="{{ url_for('admin.delete_tag', tag_id=tag.id) }}"
-                   onclick="return confirm('Are you sure?')">
-                    Delete
-                </a>
-            {% endif %}
-            <span class="dropdown">
+<div class="page-header">
+    <h1>#{{ tag.name }}
+        <small class="text-muted">{{ tag.photos|length }} photos</small>
+        {% if current_user.can('MODERATE') %}
+        <a class="btn btn-danger btn-sm" href="{{ url_for('admin.delete_tag', tag_id=tag.id) }}"
+           onclick="return confirm('Are you sure?')">
+            Delete
+        </a>
+        {% endif %}
+        <span class="dropdown">
             <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
                 Order by {{ order_rule }} <span class="oi oi-elevator"></span>
@@ -30,14 +30,14 @@
                 {% endif %}
             </div>
         </span>
-        </h1>
-    </div>
-    <div class="row">
-        {% for photo in photos %}
-            {{ photo_card(photo) }}
-        {% endfor %}
-    </div>
-    <div class="page-footer">
-        {{ render_pagination(pagination, align='center') }}
-    </div>
+    </h1>
+</div>
+<div class="row">
+    {% for photo in photos %}
+    {{ photo_card(photo) }}
+    {% endfor %}
+</div>
+<div class="page-footer">
+    {{ render_pagination(pagination, align='center') }}
+</div>
 {% endblock %}

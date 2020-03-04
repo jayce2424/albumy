@@ -27,7 +27,7 @@ def create_app(config_name=None):
         config_name = os.getenv('FLASK_CONFIG', 'development')
 
     app = Flask('albumy')
-    
+
     app.config.from_object(config[config_name])
 
     register_extensions(app)
@@ -45,7 +45,7 @@ def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
-    dropzone.init_app(app)
+    dropzone.init_app(app)  # 在工厂函数中调用init_app方法初始化扩展
     moment.init_app(app)
     whooshee.init_app(app)
     avatars.init_app(app)

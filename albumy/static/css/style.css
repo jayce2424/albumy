@@ -278,6 +278,10 @@ footer {
     display: none;
     margin: 20px 0;
 }
+#tag-form, #can_comment-form {
+    display: none;
+    margin: 20px 0;
+}
 
 #toast { /* form w3school.com */
     display: none;

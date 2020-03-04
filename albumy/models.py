@@ -34,7 +34,7 @@ class Role(db.Model):
     users = db.relationship('User', back_populates='role')
     permissions = db.relationship('Permission', secondary=roles_permissions, back_populates='roles')
 
-    @staticmethod
+    @staticmethod  # 静态方法
     def init_role():
         roles_permissions_map = {
             'Locked': ['FOLLOW', 'COLLECT'],

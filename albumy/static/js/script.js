@@ -216,6 +216,15 @@ $(function () {
         $('#description-form').hide();
         $('#description').show();
     });
+    // hide or show can_comment edit form
+    $('#can_comment-btn').click(function () {
+        $('#can_comment').hide();
+        $('#can_comment-form').show();
+    });
+    $('#cancel-can_comment').click(function () {
+        $('#can_comment-form').hide();
+        $('#can_comment').show();
+    });
     // delete confirm modal
     $('#confirm-delete').on('show.bs.modal', function (e) {
         $('.delete-form').attr('action', $(e.relatedTarget).data('href'));

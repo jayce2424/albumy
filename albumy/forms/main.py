@@ -6,12 +6,17 @@
     :license: MIT, see LICENSE for more details.
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
+from wtforms import StringField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Optional, Length
 
 
 class DescriptionForm(FlaskForm):
     description = TextAreaField('Description', validators=[Optional(), Length(0, 500)])
+    submit = SubmitField()
+
+
+class Can_commentForm(FlaskForm):
+    can_comment = BooleanField('Can_comment', validators=[Optional()])
     submit = SubmitField()
 
 
