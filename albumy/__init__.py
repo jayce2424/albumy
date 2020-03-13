@@ -17,8 +17,8 @@ from albumy.blueprints.ajax import ajax_bp
 from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
-from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, moment, whooshee, avatars, csrf
-from albumy.models import Role, User, Photo, Tag, Follow, Notification, Comment, Collect, Permission
+from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, moment, whooshee, avatars, csrf, ckeditor
+from albumy.models import Role, User, Photo, Tag, Follow, Notification, Comment, Collect, Permission, Category
 from albumy.settings import config
 
 
@@ -50,6 +50,7 @@ def register_extensions(app):
     whooshee.init_app(app)
     avatars.init_app(app)
     csrf.init_app(app)
+    ckeditor.init_app(app)
 
 
 def register_blueprints(app):
@@ -71,11 +72,12 @@ def register_shell_context(app):
 def register_template_context(app):
     @app.context_processor
     def make_template_context():
+        categories = Category.query.order_by(Category.name).all()
         if current_user.is_authenticated:
             notification_count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
         else:
             notification_count = None
-        return dict(notification_count=notification_count)
+        return dict(notification_count=notification_count, categories=categories,)
 
 
 def register_errorhandlers(app):
@@ -134,10 +136,12 @@ def register_commands(app):
     @click.option('--tag', default=20, help='Quantity of tags, default is 20.')
     @click.option('--collect', default=50, help='Quantity of collects, default is 50.')
     @click.option('--comment', default=100, help='Quantity of comments, default is 100.')
-    def forge(user, follow, photo, tag, collect, comment):
+    @click.option('--category', default=10, help='Quantity of categories, default is 10.')
+    @click.option('--post', default=50, help='Quantity of posts, default is 50.')
+    def forge(user, follow, photo, tag, collect, comment, category, post):
         """Generate fake data."""
 
-        from albumy.fakes import fake_admin, fake_comment, fake_follow, fake_photo, fake_tag, fake_user, fake_collect
+        from albumy.fakes import fake_admin, fake_comment, fake_follow, fake_photo, fake_tag, fake_user, fake_collect, fake_categories, fake_posts
 
         db.drop_all()
         db.create_all()
@@ -158,4 +162,8 @@ def register_commands(app):
         fake_collect(collect)
         click.echo('Generating %d comments...' % comment)
         fake_comment(comment)
+        click.echo('Generating %d categories...' % category)
+        fake_categories(category)
+        click.echo('Generating %d posts...' % post)
+        fake_posts(post)
         click.echo('Done.')

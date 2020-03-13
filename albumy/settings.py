@@ -68,11 +68,21 @@ class BaseConfig:
 
     WHOOSHEE_MIN_STRING_LEN = 1
 
+    BLUELOG_MANAGE_POST_PER_PAGE = 10
+    BLUELOG_POST_PER_PAGE = 10
+
+    CKEDITOR_ENABLE_CSRF = True
+    CKEDITOR_FILE_UPLOADER = 'main.upload_image'
+
+    BLUELOG_UPLOAD_PATH = os.path.join(basedir, 'uploads')
+    BLUELOG_ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
+
 
 class DevelopmentConfig(BaseConfig):
     # SQLALCHEMY_DATABASE_URI = \
     #     prefix + os.path.join(basedir, 'data-dev.db')
-    SQLALCHEMY_DATABASE_URI = 'mysql://app:app123@192.168.10.200/flask_albumy'
+    # SQLALCHEMY_DATABASE_URI = 'mysql://app:app123@192.168.10.200/flask_albumy'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:qwer1234.@10.10.19.6:5000/flask_albumy2'
     REDIS_URL = "redis://localhost"
 
 

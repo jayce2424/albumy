@@ -105,3 +105,8 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ))
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['BLUELOG_ALLOWED_IMAGE_EXTENSIONS']

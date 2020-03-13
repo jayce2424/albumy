@@ -14,10 +14,11 @@ from sqlalchemy.sql.expression import func
 
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
-from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm
-from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
+from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm
+from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category
 from albumy.notifications import push_comment_notification, push_collect_notification
-from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
+from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
+from flask_ckeditor import upload_success, upload_fail
 
 main_bp = Blueprint('main', __name__)
 
@@ -44,6 +45,60 @@ def index():
 def explore():
     photos = Photo.query.order_by(func.random()).limit(12)
     return render_template('main/explore.html', photos=photos)
+
+
+@main_bp.route('/post/manage')
+@login_required
+def manage_post():
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+    posts = pagination.items
+    return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
+
+
+@main_bp.route('/post/<int:post_id>')
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('main/post.html', post=post)
+
+
+@main_bp.route('/post/new', methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
+        category = Category.query.get(form.category.data)
+        post = Post(title=title, body=body, category=category)
+        # same with:
+        # category_id = form.category.data
+        # post = Post(title=title, body=body, category_id=category_id)
+        db.session.add(post)
+        db.session.commit()
+        flash('Post created.', 'success')
+        return redirect(url_for('main.show_post', post_id=post.id))
+    return render_template('main/new_post.html', form=form)
+
+
+@main_bp.route('/upload', methods=['POST'])
+def upload_image():
+    f = request.files.get('upload')
+    if not allowed_file(f.filename):
+        return upload_fail('Image only!')
+    f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], f.filename))
+    url = url_for('.get_image', filename=f.filename)
+    return upload_success(url, f.filename)
+
+
+@main_bp.route('/')
+def index_post():
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLUELOG_POST_PER_PAGE']
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=per_page)
+    posts = pagination.items
+    return render_template('main/index_post.html', pagination=pagination, posts=posts)
 
 
 @main_bp.route('/search')
@@ -147,12 +202,12 @@ def show_photo(photo_id):
     comment_form = CommentForm()
     description_form = DescriptionForm()
     tag_form = TagForm()
-    can_comment_form=Can_commentForm()
+    can_comment_form = Can_commentForm()
 
     description_form.description.data = photo.description
     can_comment_form.can_comment.data = photo.can_comment
     return render_template('main/photo.html', photo=photo, comment_form=comment_form,
-                           description_form=description_form, tag_form=tag_form,can_comment_form=can_comment_form,
+                           description_form=description_form, tag_form=tag_form, can_comment_form=can_comment_form,
                            pagination=pagination, comments=comments)
 
 

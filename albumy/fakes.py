@@ -14,7 +14,7 @@ from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
 from albumy.extensions import db
-from albumy.models import User, Photo, Tag, Comment, Notification
+from albumy.models import User, Photo, Tag, Comment, Notification, Category, Post
 
 fake = Faker()
 
@@ -114,4 +114,30 @@ def fake_comment(count=100):
             photo=Photo.query.get(random.randint(1, Photo.query.count()))
         )
         db.session.add(comment)
+    db.session.commit()
+
+
+def fake_categories(count=10):
+    category = Category(name='Default')
+    db.session.add(category)
+
+    for i in range(count):
+        category = Category(name=fake.word())
+        db.session.add(category)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+
+
+def fake_posts(count=50):
+    for i in range(count):
+        post = Post(
+            title=fake.sentence(),
+            body=fake.text(2000),
+            category=Category.query.get(random.randint(1, Category.query.count())),
+            timestamp=fake.date_time_this_year()
+        )
+
+        db.session.add(post)
     db.session.commit()

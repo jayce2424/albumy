@@ -1,5 +1,5 @@
 [[source]]
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
@@ -21,3 +21,5 @@ flask = "*"
 flask-whooshee = "*"
 flask-avatars = "*"
 mysqlclient = {index = "http://mirrors.aliyun.com/pypi/simple/",version = "*"}
+flask-ckeditor = "==0.4.3"
+flask-editor = "*"
