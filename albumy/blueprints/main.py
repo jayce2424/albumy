@@ -83,7 +83,7 @@ def new_post():
     return render_template('main/new_post.html', form=form)
 
 
-@main_bp.route('/upload', methods=['POST'])
+@main_bp.route('/postupload', methods=['POST'])
 def upload_image():
     f = request.files.get('upload')
     if not allowed_file(f.filename):
