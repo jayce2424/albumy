@@ -48,6 +48,7 @@ def explore():
 
 
 @main_bp.route('/post/manage')
+@permission_required('POST')
 @login_required
 def manage_post():
     page = request.args.get('page', 1, type=int)
