@@ -94,16 +94,6 @@ def follow(username):
     return jsonify(message='User followed.')
 
 
-@ajax_bp.route('/follow2/', methods=['POST'])
-def follow2():
-    return jsonify(message='NB.')
-
-
-@ajax_bp.route('/follow3/', methods=['POST'])
-def follow3():
-    return jsonify(message='不NB.')
-
-
 @ajax_bp.route('/unfollow/<username>', methods=['POST'])
 def unfollow(username):
     if not current_user.is_authenticated:

@@ -38,17 +38,6 @@
                     class="{% if current_user.is_following(user) %}hide{% endif %} btn btn-primary btn-sm follow-btn">
                 Follow
             </button>
-            <button
-                    data-href="{{ url_for('ajax.follow3') }}"
-                    class="btn btn-primary btn-sm follow3-btn">
-                不NB
-            </button>
-            <button
-                    data-href="{{ url_for('ajax.follow2') }}"
-                    class="hide btn btn-primary btn-sm follow2-btn">
-                NB
-            </button>
-
         {% endif %}
     {% else %}
         <form class="inline" method="post"

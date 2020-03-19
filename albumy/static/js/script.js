@@ -145,34 +145,6 @@ $(function () {
         });
     }
 
-    function follow2(e) {
-        var $el = $(e.target);
-
-        $.ajax({
-            type: 'POST',
-            url: $el.data('href'),
-            success: function (data) {
-                $el.prev().show();
-                $el.hide();
-                toast(data.message);
-            }
-        });
-    }
-
-    function follow3(e) {
-        var $el = $(e.target);
-
-        $.ajax({
-            type: 'POST',
-            url: $el.data('href'),
-            success: function (data) {
-                $el.next().show();
-                $el.hide();
-                toast(data.message);
-            }
-        });
-    }
-
     function unfollow(e) {
         var $el = $(e.target);
         var id = $el.data('id');
@@ -222,8 +194,6 @@ $(function () {
 
     $('.profile-popover').hover(show_profile_popover.bind(this), hide_profile_popover.bind(this));
     $(document).on('click', '.follow-btn', follow.bind(this));
-    $(document).on('click', '.follow2-btn', follow2.bind(this));
-    $(document).on('click', '.follow3-btn', follow3.bind(this));
     $(document).on('click', '.unfollow-btn', unfollow.bind(this));
     $(document).on('click', '.collect-btn', collect.bind(this));
     $(document).on('click', '.uncollect-btn', uncollect.bind(this));
