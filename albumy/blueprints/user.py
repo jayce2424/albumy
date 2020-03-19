@@ -12,8 +12,8 @@ from albumy.decorators import confirm_required, permission_required
 from albumy.emails import send_change_email_email
 from albumy.extensions import db, avatars
 from albumy.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarForm, ChangeEmailForm, \
-    ChangePasswordForm, NotificationSettingForm, PrivacySettingForm, DeleteAccountForm
-from albumy.models import User, Photo, Collect
+    ChangePasswordForm, NotificationSettingForm, PrivacySettingForm, DeleteAccountForm, JayceSearchForm
+from albumy.models import User, Photo, Collect, Post
 from albumy.notifications import push_follow_notification
 from albumy.settings import Operations
 from albumy.utils import generate_token, validate_token, redirect_back, flash_errors
@@ -240,3 +240,18 @@ def delete_account():
         flash('Your are free, goodbye!', 'success')
         return redirect(url_for('main.index'))
     return render_template('user/settings/delete_account.html', form=form)
+
+
+@user_bp.route('/settings/jayce_search', methods=['GET', 'POST'])
+def jayce_search():
+    form = JayceSearchForm()
+    if form.validate_on_submit():
+        page = request.args.get('page', 1, type=int)
+        pagination = Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()).paginate(
+            page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+        posts = pagination.items
+        print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
+        # return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
+        form.username.data=form.username.data
+        return render_template('user/settings/jayce_search.html', form=form, page=page, pagination=pagination, posts=posts)
+    return render_template('user/settings/jayce_search.html', form=form)

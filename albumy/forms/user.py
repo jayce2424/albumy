@@ -81,3 +81,8 @@ class DeleteAccountForm(FlaskForm):
     def validate_username(self, field):
         if field.data != current_user.username:
             raise ValidationError('Wrong username.')
+
+
+class JayceSearchForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(1, 2000)])
+    submit = SubmitField()
