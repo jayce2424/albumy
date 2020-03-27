@@ -23,3 +23,4 @@ flask-avatars = "*"
 mysqlclient = {index = "http://mirrors.aliyun.com/pypi/simple/",version = "*"}
 flask-ckeditor = "==0.4.3"
 flask-editor = "*"
+apscheduler = "*"
