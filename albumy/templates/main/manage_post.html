@@ -33,7 +33,15 @@
         <td>{{ moment(post.timestamp).format('lll') }}</td>
         <td><a href="">{{ post.comments|length }}</a></td>
         <td>{{ post.body|striptags|length }}</td>
-
+        <td>
+            <a class="btn btn-info btn-sm" href="{{ url_for('main.edit_post', post_id=post.id) }}">Edit</a>
+            <form class="inline" method="post"
+                  action="{{ url_for('main.delete_post', post_id=post.id, next=request.full_path) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+                </button>
+            </form>
+        </td>
     </tr>
     {% endfor %}
 </table>

@@ -24,7 +24,7 @@
     </small>
 </div>
 <div class="row">
-    <div class="col-sm-8">
+    <div>
         {{ post.body|safe }}
         <hr>
         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".postLinkModal">Share
@@ -50,8 +50,8 @@
         </div>
 
     </div>
-    <div class="col-sm-4 sidebar">
-        {% include "main/_sidebar.html" %}
-    </div>
+<!--    <div class="col-sm-4 sidebar">-->
+<!--        {% include "main/_sidebar.html" %}-->
+<!--    </div>-->
 </div>
 {% endblock %}
