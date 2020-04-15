@@ -19,6 +19,8 @@ from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notificati
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
+import requests
+import json
 
 main_bp = Blueprint('main', __name__)
 
@@ -44,7 +46,39 @@ def index():
 @main_bp.route('/explore')
 def explore():
     photos = Photo.query.order_by(func.random()).limit(12)
-    return render_template('main/explore.html', photos=photos)
+    return render_template('main/explore.html', photos=photos) @ main_bp.route('/explore')
+
+
+@main_bp.route('/explore2')
+def explore2():
+    URL_IP = 'http://httpbin.org/ip'
+    response = requests.get(URL_IP)
+    print('response headers:')
+    print(response.headers)
+    print('response body:')
+    print(response.text)
+    return response.text
+
+
+@main_bp.route('/explore3')
+def explore3():
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    url = "https://open.youzanyun.com/api/youzan.items.onsale.get/3.0.0?access_token=5003fcd902b045bad897325d3e3b8e2"
+    response = requests.post(url, headers)
+    return response.text
+
+
+@main_bp.route('/explore4')
+def explore4():
+    payload = {"tid": "E20200413162037038100001"}
+    url = "https://open.youzanyun.com/api/youzan.trade.get/4.0.0?access_token=5003fcd902b045bad897325d3e3b8e2"
+    response = requests.post(url, data=payload)
+    gg = json.loads(response.text)
+    print(gg)
+    # return gg['data']['order_promotion']['adjust_fee']
+    return response.text
 
 
 @main_bp.route('/post/manage')
