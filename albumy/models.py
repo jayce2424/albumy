@@ -254,6 +254,17 @@ class Post(db.Model):
     # comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
 
 
+class Order_info(db.Model):
+    order_id = db.Column(db.Integer, primary_key=True)
+    tid = db.Column(db.String(60), index=True, nullable=False)
+    delivery_province = db.Column(db.String(60))
+    delivery_city = db.Column(db.String(60))
+    delivery_district = db.Column(db.String(60))
+    receiver_tel = db.Column(db.String(20))
+    body = db.Column(db.Text)
+    delivery_address = db.Column(db.String(60))
+
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)

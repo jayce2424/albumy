@@ -15,7 +15,7 @@ from sqlalchemy.sql.expression import func
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm
-from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category
+from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
@@ -46,7 +46,7 @@ def index():
 @main_bp.route('/explore')
 def explore():
     photos = Photo.query.order_by(func.random()).limit(12)
-    return render_template('main/explore.html', photos=photos) @ main_bp.route('/explore')
+    return render_template('main/explore.html', photos=photos)
 
 
 @main_bp.route('/explore2')
@@ -70,15 +70,36 @@ def explore3():
     return response.text
 
 
-@main_bp.route('/explore4')
-def explore4():
-    payload = {"tid": "E20200413162037038100001"}
+@main_bp.route('/explore4/<tid>')
+def explore4(tid):
+    # payload = {"tid": "E20200413162037038100001"}
+    payload = {"tid": tid}
     url = "https://open.youzanyun.com/api/youzan.trade.get/4.0.0?access_token=5003fcd902b045bad897325d3e3b8e2"
     response = requests.post(url, data=payload)
     gg = json.loads(response.text)
     print(gg)
+    tid = gg['data']['full_order_info']['order_info']['tid']
+    delivery_province = gg['data']['full_order_info']['address_info']['delivery_province']
+    delivery_city = gg['data']['full_order_info']['address_info']['delivery_city']
+    delivery_district = gg['data']['full_order_info']['address_info']['delivery_district']
+    receiver_tel = gg['data']['full_order_info']['address_info']['receiver_tel']
+    delivery_address = gg['data']['full_order_info']['address_info']['delivery_address']
+    body = 'aini'
+    order_info = Order_info(tid=tid, delivery_province=delivery_province, delivery_city=delivery_city,
+                            delivery_district=delivery_district, receiver_tel=receiver_tel,
+                            delivery_address=delivery_address)
+    db.session.add(order_info)
+    db.session.commit()
     # return gg['data']['order_promotion']['adjust_fee']
-    return response.text
+    # return 'ff'
+
+
+@main_bp.route('/explore5/')
+def explore5():
+    college1 = {"E20200413162037038100001", "E20200416090257000600001"}
+    for c in college1:
+        explore4(c)
+    return 'ff'
 
 
 @main_bp.route('/post/manage')
