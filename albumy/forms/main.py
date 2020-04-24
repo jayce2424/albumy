@@ -10,6 +10,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Optional, Length
 from flask_ckeditor import upload_success, upload_fail
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 from albumy.models import Category
 
@@ -45,3 +46,12 @@ class PostForm(FlaskForm):
         super(PostForm, self).__init__(*args, **kwargs)
         self.category.choices = [(category.id, category.name)
                                  for category in Category.query.order_by(Category.name).all()]
+
+
+class UploadForm(FlaskForm):
+    excel = FileField('Upload Excel', validators=[FileRequired(),
+                                                  FileAllowed(['xlsx'])])
+    # submit = SubmitField()
+    # 单个表单多个提交按钮
+    save = SubmitField('Save')
+    publish = SubmitField('Publish')

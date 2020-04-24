@@ -6,15 +6,19 @@
     :license: MIT, see LICENSE for more details.
 """
 import os
+import uuid
+import xlrd
+import pymysql
 
 from flask import render_template, flash, redirect, url_for, current_app, \
-    send_from_directory, request, abort, Blueprint
+    send_from_directory, request, abort, Blueprint, session
 from flask_login import login_required, current_user
+from markupsafe import Markup
 from sqlalchemy.sql.expression import func
 
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
-from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm
+from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
@@ -74,10 +78,10 @@ def explore3():
 def explore4(tid):
     # payload = {"tid": "E20200413162037038100001"}
     payload = {"tid": tid}
-    url = "https://open.youzanyun.com/api/youzan.trade.get/4.0.0?access_token=5003fcd902b045bad897325d3e3b8e2"
+    url = "https://open.youzanyun.com/api/youzan.trade.get/4.0.0?access_token=d883bfe47896a454c992b59cb871fe8"
     response = requests.post(url, data=payload)
     gg = json.loads(response.text)
-    print(gg)
+    # print(gg)
     tid = gg['data']['full_order_info']['order_info']['tid']
     delivery_province = gg['data']['full_order_info']['address_info']['delivery_province']
     delivery_city = gg['data']['full_order_info']['address_info']['delivery_city']
@@ -117,6 +121,84 @@ def manage_post():
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('main/post.html', post=post)
+
+
+def random_filename(filename):
+    ext = os.path.splitext(filename)[1]
+    new_filename = uuid.uuid4().hex + ext
+    return new_filename
+
+
+def open_excel(ss):
+    try:
+        book = xlrd.open_workbook(ss)  # 文件名，把文件与py文件放在同一目录下
+    except:
+        print("open excel file failed!")
+    try:
+        sheet = book.sheet_by_name("Sheet1")  # execl里面的worksheet1
+        return sheet
+    except:
+        print("locate worksheet in excel failed!")
+
+
+@main_bp.route('/upload_excel', methods=['GET', 'POST'])
+def upload_excel():
+    form = UploadForm()
+    if form.validate_on_submit():
+        if form.save.data:  # 保存文件
+            f = form.excel.data
+            filename = random_filename(f.filename)  # 先定义 再使用 放前面
+            f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
+            message = Markup(
+                'Upload success:'
+                '%s' % filename)
+            flash(message, 'info')
+            # session['filenames'] = [filename]
+        elif form.publish.data:  # 执行插入
+            f = form.excel.data
+            filename = random_filename(f.filename)  # 先定义 再使用 放前面
+            f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
+
+            def open_excel():
+
+                try:
+                    name = r"D:\NIO\albumy\uploads\%s" % filename
+                    book = xlrd.open_workbook(name)  # 文件名，把文件与py文件放在同一目录下
+                except:
+                    print("open excel file failed!")
+                try:
+                    sheet = book.sheet_by_name("Sheet1")  # execl里面的worksheet1
+                    return sheet
+                except:
+                    print("locate worksheet in excel failed!")
+
+            sheet = open_excel()
+            try:
+                db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                                     passwd="qwer1234.",
+                                     db="flask_albumy2")
+            except:
+                print("could not connect to mysql server")
+            cursor = db.cursor()
+            for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
+
+                name = sheet.cell(i, 0).value  # 取第i行第0列
+                data = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+                print(name)
+                print(data)
+                value = (name, data)
+                print(value)
+                sql = "INSERT INTO gg(id,name)VALUES(%s,%s)"
+                cursor.execute(sql, value)  # 执行sql语句
+                db.commit()
+            cursor.close()  # 关闭连接
+            db.close()  # 关闭数据
+            message = Markup(
+                'Upload publish success:'
+                '%s' % filename)
+            flash(message, 'info')
+
+    return render_template('main/upload_excel.html', form=form)
 
 
 @main_bp.route('/post/new', methods=['GET', 'POST'])
