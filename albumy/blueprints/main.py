@@ -13,18 +13,20 @@ import pymysql
 from flask import render_template, flash, redirect, url_for, current_app, \
     send_from_directory, request, abort, Blueprint, session
 from flask_login import login_required, current_user
+from flask_mail import Message
 from markupsafe import Markup
 from sqlalchemy.sql.expression import func
 
 from albumy.decorators import confirm_required, permission_required
-from albumy.extensions import db
-from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm
+from albumy.extensions import db, mail
+from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm, EmailForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
 import requests
 import json
+from threading import Thread
 
 main_bp = Blueprint('main', __name__)
 
@@ -199,6 +201,47 @@ def upload_excel():
             flash(message, 'info')
 
     return render_template('main/upload_excel.html', form=form)
+
+
+# send over SMTP
+def send_smtp_mail(subject, to, body):
+    message = Message(subject, recipients=[to], body=body)
+    mail.send(message)
+
+
+# send email asynchronously
+def _send_async_mail(app, message):
+    with app.app_context():
+        mail.send(message)
+
+
+def send_async_mail(subject, to, body):
+    app = current_app._get_current_object()  # if use factory (i.e. create_app()), get app like this
+    message = Message(subject, recipients=[to], body=body)
+    thr = Thread(target=_send_async_mail, args=[app, message])
+    thr.start()
+    return thr
+
+
+@main_bp.route('/send_mail', methods=['GET', 'POST'])
+def send_mail():
+    form = EmailForm()
+    if form.validate_on_submit():
+        to = form.to.data
+        subject = form.subject.data
+        body = form.body.data
+        if form.submit_smtp.data:
+            send_smtp_mail(subject, to, body)
+            method = request.form.get('submit_smtp')
+        else:
+            send_async_mail(subject, to, body)
+            method = request.form.get('submit_async')
+
+        flash('Email sent %s! Check your inbox.' % ' '.join(method.split()[1:]), 'info')
+        return redirect(url_for('main.send_mail'))
+    form.subject.data = 'Hello, World!'
+    form.body.data = 'Across the Great Wall we can reach every corner in the world.'
+    return render_template('main/send_mail.html', form=form)
 
 
 @main_bp.route('/post/new', methods=['GET', 'POST'])

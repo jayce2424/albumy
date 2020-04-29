@@ -8,7 +8,7 @@
 from flask_ckeditor import CKEditorField
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
-from wtforms.validators import DataRequired, Optional, Length
+from wtforms.validators import DataRequired, Optional, Length, Email
 from flask_ckeditor import upload_success, upload_fail
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 
@@ -55,3 +55,11 @@ class UploadForm(FlaskForm):
     # 单个表单多个提交按钮
     save = SubmitField('Save')
     publish = SubmitField('Publish')
+
+
+class EmailForm(FlaskForm):
+    to = StringField('To', validators=[DataRequired(), Email()])
+    subject = StringField('Subject', validators=[DataRequired()])
+    body = TextAreaField('Body', validators=[DataRequired()])
+    submit_smtp = SubmitField('Send with SMTP')
+    submit_async = SubmitField('Send with SMTP asynchronously异步发送')
