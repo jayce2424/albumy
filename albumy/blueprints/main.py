@@ -143,11 +143,64 @@ def open_excel(ss):
         print("locate worksheet in excel failed!")
 
 
+def open_excel(filename):
+    try:
+        name = r"D:\NIO\albumy\uploads\%s" % filename
+        book = xlrd.open_workbook(name)  # 文件名，把文件与py文件放在同一目录下
+    except:
+        print("open excel file failed!")
+    try:
+        sheet = book.sheet_by_name("Sheet1")  # execl里面的worksheet1
+        return sheet
+    except:
+        print("locate worksheet in excel failed!")
+
+
+def inserrt_process(sheet, filename):
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+    for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
+
+        name = sheet.cell(i, 0).value  # 取第i行第0列
+        data = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        print(name)
+        print(data)
+        value = (name, data)
+        print(value)
+        sql = "INSERT INTO gg(id,name)VALUES(%s,%s)"
+        cursor.execute(sql, value)  # 执行sql语句
+        db.commit()
+    cursor.close()  # 关闭连接
+    db.close()  # 关闭数据
+    message = Markup(
+        'Upload publish success:'
+        '%s' % filename)
+    flash(message, 'info')
+
+
+# send email asynchronously
+def _send_async_excel(app, sheet, filename):
+    with app.app_context():
+        inserrt_process(sheet, filename)
+
+
+def send_async_excel(sheet, filename):
+    app = current_app._get_current_object()  # if use factory (i.e. create_app()), get app like this
+    thr = Thread(target=_send_async_excel, args=[app, sheet, filename])
+    thr.start()
+    return thr
+
+
 @main_bp.route('/upload_excel', methods=['GET', 'POST'])
 def upload_excel():
     form = UploadForm()
     if form.validate_on_submit():
-        if form.save.data:  # 保存文件
+        if form.save.data:  # 仅仅保存文件
             f = form.excel.data
             filename = random_filename(f.filename)  # 先定义 再使用 放前面
             f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
@@ -161,40 +214,18 @@ def upload_excel():
             filename = random_filename(f.filename)  # 先定义 再使用 放前面
             f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
 
-            def open_excel():
+            sheet = open_excel(filename)
 
-                try:
-                    name = r"D:\NIO\albumy\uploads\%s" % filename
-                    book = xlrd.open_workbook(name)  # 文件名，把文件与py文件放在同一目录下
-                except:
-                    print("open excel file failed!")
-                try:
-                    sheet = book.sheet_by_name("Sheet1")  # execl里面的worksheet1
-                    return sheet
-                except:
-                    print("locate worksheet in excel failed!")
+            inserrt_process(sheet, filename)
+        else:
+            f = form.excel.data
+            filename = random_filename(f.filename)  # 先定义 再使用 放前面
+            f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
 
-            sheet = open_excel()
-            try:
-                db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
-                                     passwd="qwer1234.",
-                                     db="flask_albumy2")
-            except:
-                print("could not connect to mysql server")
-            cursor = db.cursor()
-            for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
+            sheet = open_excel(filename)
 
-                name = sheet.cell(i, 0).value  # 取第i行第0列
-                data = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
-                print(name)
-                print(data)
-                value = (name, data)
-                print(value)
-                sql = "INSERT INTO gg(id,name)VALUES(%s,%s)"
-                cursor.execute(sql, value)  # 执行sql语句
-                db.commit()
-            cursor.close()  # 关闭连接
-            db.close()  # 关闭数据
+            send_async_excel(sheet, filename)
+            # flash从异步里挑出来
             message = Markup(
                 'Upload publish success:'
                 '%s' % filename)

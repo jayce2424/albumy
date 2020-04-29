@@ -55,6 +55,7 @@ class UploadForm(FlaskForm):
     # 单个表单多个提交按钮
     save = SubmitField('Save')
     publish = SubmitField('Publish')
+    publish_asyn = SubmitField('Publish_asyn')
 
 
 class EmailForm(FlaskForm):
