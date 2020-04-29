@@ -64,6 +64,22 @@ def explore2():
     print('response body:')
     print(response.text)
     return response.text
+@main_bp.route('/explore_token')
+def explore_token():
+    # headers没用到
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    payload = {
+        "client_id": "dfc5b278d1ff0d77c7",
+        "client_secret": "a50f8ffd2276fae731c4f35dd8714bbd",
+        "authorize_type": "silent",
+        "grant_id": "108929"
+    }
+    url = "https://open.youzanyun.com/auth/token"
+    response = requests.post(url, json=payload)
+    gg = json.loads(response.text)
+    return gg['data']['access_token']
 
 
 @main_bp.route('/explore3')
@@ -71,16 +87,25 @@ def explore3():
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    url = "https://open.youzanyun.com/api/youzan.items.onsale.get/3.0.0?access_token=5003fcd902b045bad897325d3e3b8e2"
+    access_token = explore_token()
+    url = "https://open.youzanyun.com/api/youzan.items.onsale.get/3.0.0?access_token=%s" % access_token
     response = requests.post(url, headers)
     return response.text
+
+
+@main_bp.route('/lfa')
+def lfa():
+    return render_template('main/lfa.html')
+
+
 
 
 @main_bp.route('/explore4/<tid>')
 def explore4(tid):
     # payload = {"tid": "E20200413162037038100001"}
     payload = {"tid": tid}
-    url = "https://open.youzanyun.com/api/youzan.trade.get/4.0.0?access_token=d883bfe47896a454c992b59cb871fe8"
+    access_token = explore_token()
+    url = "https://open.youzanyun.com/api/youzan.trade.get/4.0.0?access_token=%s" % access_token
     response = requests.post(url, data=payload)
     gg = json.loads(response.text)
     # print(gg)
@@ -97,7 +122,7 @@ def explore4(tid):
     db.session.add(order_info)
     db.session.commit()
     # return gg['data']['order_promotion']['adjust_fee']
-    # return 'ff'
+    return 'ff'
 
 
 @main_bp.route('/explore5/')
