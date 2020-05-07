@@ -107,7 +107,7 @@ def aikucun_get_token1():
     for (key, value) in dict2.items():
         print(key + ':' + value)
     dict3 = sorted(dict2.items(), key=lambda dict2: dict2[0], reverse=False)  # False为升序
-    url=""
+    url = ""
     # for (key, value) in dict3:
     #     print(key + ':' + value)
     url += '&'.join([str(key) + '=' + str(value) for key, value in dict3])
@@ -116,7 +116,7 @@ def aikucun_get_token1():
     encrypts = sha.hexdigest()
     print(encrypts)
     bb = 'https://openapi.aikucun.com/api/v2/activity/list?'
-    url = bb+url+ '&sign=' + encrypts
+    url = bb + url + '&sign=' + encrypts
     print(url)
     response = requests.get(url)
     return response.text
