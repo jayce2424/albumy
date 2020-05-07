@@ -5,8 +5,13 @@
     :copyright: © 2018 Grey Li <withlihui@gmail.com>
     :license: MIT, see LICENSE for more details.
 """
+import datetime
 import os
+import random
+import time
 import uuid
+import hashlib
+
 import xlrd
 import pymysql
 
@@ -64,6 +69,59 @@ def explore2():
     print('response body:')
     print(response.text)
     return response.text
+
+
+@main_bp.route('/aikucun_get_token')
+def aikucun_get_token():
+    noncestr = ''.join(random.sample(
+        ['z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e',
+         'd', 'c', 'b', 'a'], 5))
+    dtime = datetime.datetime.now()
+    ans_time = time.mktime(dtime.timetuple())
+    print(ans_time)
+    return noncestr
+    # URL_IP = 'http://www.baidu.com'
+    # response = requests.get(URL_IP)
+    # print('response headers:')
+    # print(response.headers)
+    # print('response body:')
+    # print(response.text)
+    # return response.text
+
+
+@main_bp.route('/aikucun_get_token1')
+def aikucun_get_token1():
+    dtime = datetime.datetime.now()
+    ans_time = time.mktime(dtime.timetuple())
+    dict2 = {'appid': '2c9089946996c698016999cac22b4265',
+             'appsecret': '2c9089946996c698016999cac22b4266',
+             'noncestr': ''.join(random.sample(
+                 ['z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'g',
+                  'f', 'e', 'd', 'c', 'b', 'a'], 5)),
+             'timestamp': str(ans_time),  # python并不能像java一样，在做拼接的时候自动把类型转换为string类型
+             'erp': 'E3',
+             'erpversion': '20180226',
+             'status': '9'
+             }
+    # 遍历字典的几种方法  https://www.cnblogs.com/stuqx/p/7291948.html
+    for (key, value) in dict2.items():
+        print(key + ':' + value)
+    dict3 = sorted(dict2.items(), key=lambda dict2: dict2[0], reverse=False)  # False为升序
+    url=""
+    # for (key, value) in dict3:
+    #     print(key + ':' + value)
+    url += '&'.join([str(key) + '=' + str(value) for key, value in dict3])
+    print(url)
+    sha = hashlib.sha1(url.encode('utf-8'))
+    encrypts = sha.hexdigest()
+    print(encrypts)
+    bb = 'https://openapi.aikucun.com/api/v2/activity/list?'
+    url = bb+url+ '&sign=' + encrypts
+    print(url)
+    response = requests.get(url)
+    return response.text
+
+
 @main_bp.route('/explore_token')
 def explore_token():
     # headers没用到
@@ -79,6 +137,8 @@ def explore_token():
     url = "https://open.youzanyun.com/auth/token"
     response = requests.post(url, json=payload)
     gg = json.loads(response.text)
+    sha = hashlib.sha1(res.encode('utf-8'))
+    encrypts = sha.hexdigest()
     return gg['data']['access_token']
 
 
@@ -96,8 +156,6 @@ def explore3():
 @main_bp.route('/lfa')
 def lfa():
     return render_template('main/lfa.html')
-
-
 
 
 @main_bp.route('/explore4/<tid>')
