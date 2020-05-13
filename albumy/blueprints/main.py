@@ -137,8 +137,8 @@ def explore_token():
     url = "https://open.youzanyun.com/auth/token"
     response = requests.post(url, json=payload)
     gg = json.loads(response.text)
-    sha = hashlib.sha1(res.encode('utf-8'))
-    encrypts = sha.hexdigest()
+    # sha = hashlib.sha1(res.encode('utf-8'))
+    # encrypts = sha.hexdigest()
     return gg['data']['access_token']
 
 
