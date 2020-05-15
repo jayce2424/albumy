@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
+{% block title %}Upload_owe{% endblock %}
+
+
+{% block content %}
+
+
+<div class="page-header">
+    <h1>Upload_owe</h1>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <form method="post" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            {{ form_field(form.excel) }}
+            {{ form.save }}
+        </form>
+    </div>
+</div>
+
+
+<a href="/uploads/gg_owe.xlsx" download="gg_owe">
+<img border="0" src="/uploads/avatars/alyssa82_s.png" alt="模板下载"><p>导入模板下载</p>
+</a>
+
+
+
+{% endblock %}
+
+
+

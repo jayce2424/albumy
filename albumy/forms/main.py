@@ -58,9 +58,30 @@ class UploadForm(FlaskForm):
     publish_asyn = SubmitField('Publish_asyn')
 
 
+class UploadOweForm(FlaskForm):
+    excel = FileField('Upload owe', validators=[FileRequired(),
+                                                  FileAllowed(['xlsx'])])
+    # submit = SubmitField()
+    # 单个表单多个提交按钮
+    save = SubmitField('Save')
+
+
+class UploadReceiveForm(FlaskForm):
+    excel = FileField('Upload receive', validators=[FileRequired(),
+                                                  FileAllowed(['xlsx'])])
+    # submit = SubmitField()
+    # 单个表单多个提交按钮
+    save = SubmitField('Save')
+
+
 class EmailForm(FlaskForm):
     to = StringField('To', validators=[DataRequired(), Email()])
     subject = StringField('Subject', validators=[DataRequired()])
     body = TextAreaField('Body', validators=[DataRequired()])
     submit_smtp = SubmitField('Send with SMTP')
     submit_async = SubmitField('Send with SMTP asynchronously异步发送')
+
+
+class OweSearchForm(FlaskForm):
+    sku = StringField('Sku', validators=[DataRequired(), Length(1, 2000)])
+    submit = SubmitField()

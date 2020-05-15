@@ -265,6 +265,15 @@ class Order_info(db.Model):
     delivery_address = db.Column(db.String(60))
 
 
+class Owenum(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sku = db.Column(db.String(60))
+    yao = db.Column(db.Integer)
+    shiji = db.Column(db.Integer)
+    owe = db.Column(db.Integer)
+    receive_date = db.Column(db.String(60))
+
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)

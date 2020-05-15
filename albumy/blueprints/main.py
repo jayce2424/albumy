@@ -24,8 +24,9 @@ from sqlalchemy.sql.expression import func
 
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db, mail
-from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm, EmailForm
-from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info
+from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm, EmailForm, \
+    UploadOweForm, UploadReceiveForm, OweSearchForm
+from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
@@ -202,6 +203,27 @@ def manage_post():
     return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
 
 
+@main_bp.route('/owenum', methods=['GET', 'POST'])
+# @permission_required('POST')
+@login_required
+def owenum():
+    form = OweSearchForm()
+    if form.validate_on_submit():
+        page = request.args.get('page', 1, type=int)
+        pagination = Owenum.query.filter_by(sku=form.sku.data).order_by(Owenum.id).paginate(
+            page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+        owenums = pagination.items
+        # print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
+        # return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
+        # form.sku.data=form.sku.data
+        return render_template('main/owenum.html', form=form, page=page, pagination=pagination, owenums=owenums)
+    page = request.args.get('page', 1, type=int)
+    pagination = Owenum.query.order_by(Owenum.sku, Owenum.id).paginate(
+        page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+    owenums = pagination.items
+    return render_template('main/owenum.html', page=page, pagination=pagination, owenums=owenums, form=form)
+
+
 @main_bp.route('/post/<int:post_id>')
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -266,6 +288,166 @@ def inserrt_process(sheet, filename):
     flash(message, 'info')
 
 
+def insert_owe_process(sheet, filename):
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+    for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
+
+        sku = sheet.cell(i, 0).value  # 取第i行第0列
+        yao = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        print(sku)
+        print(yao)
+        value = (sku, yao, yao)
+        print(value)
+        sql = "INSERT INTO owenum(sku,yao,owe)VALUES(%s,%s,%s)"
+        print(sql)
+        cursor.execute(sql, value)  # 执行sql语句
+        db.commit()
+    cursor.close()  # 关闭连接
+    db.close()  # 关闭数据
+    message = Markup(
+        'Insert yao success:'
+        '%s' % filename)
+    flash(message, 'info')
+
+
+def insert_receive_process(sheet, filename):
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+    # 先预检查
+    for i in range(1, sheet.nrows):
+        sku = sheet.cell(i, 0).value  # 取第i行第0列
+        shiji = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        receive_date = sheet.cell(i, 2).value  # 取第i行第1列，下面依次类推
+        # receive_date = int(receive_date)
+        print(sku)
+        print(shiji)
+        print(receive_date)
+        # exit()
+        value = sku
+        # print(value)
+        sql = "select sum(owe) as sum from owenum where sku=%s ;"
+        cursor.execute(sql, value)  # 执行sql语句
+        ret = cursor.fetchone()
+        # print(ret)  # 输出的ret是个tuple元组
+        sum = ret[0]
+        # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多
+        if sum < shiji:
+            message = Markup(
+                'Insert yao %s error:'
+                '欠量合计%s<本次入库%s' % (sku, sum, shiji))
+            flash(message, 'danger')
+            cursor.close()  # 关闭连接
+            db.close()  # 关闭数据
+            return 'error'
+    for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
+
+        sku = sheet.cell(i, 0).value  # 取第i行第0列
+        shiji = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        receive_date = sheet.cell(i, 2).value  # 取第i行第1列，下面依次类推
+        # receive_date = int(receive_date)
+        print(sku)
+        print(shiji)
+        print(receive_date)
+        # exit()
+        value = sku
+        # print(value)
+        sql = "select sum(owe) as sum from owenum where sku=%s ;"
+        cursor.execute(sql, value)  # 执行sql语句
+        ret = cursor.fetchone()
+        # print(ret)  # 输出的ret是个tuple元组
+        sum = ret[0]
+        # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多
+        if sum < shiji:
+            message = Markup(
+                'Insert yao %s error:'
+                '欠量合计%s<本次入库%s' % (sku, sum, shiji))
+            flash(message, 'danger')
+            cursor.close()  # 关闭连接
+            db.close()  # 关闭数据
+            return 'error'
+        if sum >= shiji:
+            sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+            cursor.execute(sql, value)  # 执行sql语句
+            ret = cursor.fetchone()
+            # print(ret)
+            owe = ret[0]  # 这个查到的是最近第一笔欠量
+            id = ret[1]
+            # print(owe)
+            # print(id)
+            # exit()
+            # 一次update就能搞定  555 > 444  欠量还存在 结束
+            if owe >= shiji:
+                value = (owe, shiji, receive_date, shiji, sku, id)
+                sql = "update owenum set owe=%s-%s,receive_date=%s, shiji=%s where sku=%s  and id=%s "
+                # print(sql)
+                cursor.execute(sql, value)  # 执行sql语句
+                db.commit()
+                message = Markup(
+                    'Update yao %s success:'
+                    '欠量合计%s>本次入库%s并且一次就能满足' % (sku, owe, shiji))
+                flash(message, 'success')
+            # 一次update不能搞定  555 > 558  最近一笔欠量满足掉 第二笔没满足
+            if owe < shiji:
+                # 先满足掉第一笔  receive_date记录首次到货的时间
+                value = (receive_date, shiji, sku, id)
+                sql = "update owenum set owe=0,receive_date=%s,shiji=%s where sku=%s  and id=%s "
+                # print(sql)
+                cursor.execute(sql, value)  # 执行sql语句
+                db.commit()
+                # 开始处理第二笔
+                left = shiji - owe  # 剩余待处理的 3 多了3
+                value=(sku)
+                sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+                cursor.execute(sql, value)  # 执行sql语句
+                ret2 = cursor.fetchone()
+                owe2 = ret2[0]  # 443
+                id2 = ret2[1]  # 63
+                while left > owe2:
+                    value = (sku)
+                    sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+                    cursor.execute(sql, value)  # 执行sql语句
+                    ret = cursor.fetchone()
+                    owe2 = ret2[0]  # 443
+                    id2 = ret2[1]  # 63
+                    value = (left, sku, id2)
+                    sql = "update owenum set owe=0,receive_date=%s where sku=%s  and id=%s "
+                    # print(sql)
+                    cursor.execute(sql, value)  # 执行sql语句
+                    db.commit()
+                    left = left - owe2
+                    value = (sku)
+                    sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+                    cursor.execute(sql, value)  # 执行sql语句
+                    ret2 = cursor.fetchone()
+                    owe2 = ret2[0]  # 443
+                    id2 = ret2[1]  # 63
+                    # left= left - owe2
+                # 结束 本次到货全部覆盖到欠量  3<443
+                value = (owe2, left, left,sku, id2)
+                sql = "update owenum set owe=%s-%s,receive_date=%s  where sku=%s  and id=%s "
+                # print(sql)
+                cursor.execute(sql, value)  # 执行sql语句
+                db.commit()
+
+    cursor.close()  # 关闭连接
+    db.close()  # 关闭数据
+    message = Markup(
+        'Insert yao success:'
+        '%s' % filename)
+    flash(message, 'info')
+
+
 # send email asynchronously
 def _send_async_excel(app, sheet, filename):
     with app.app_context():
@@ -315,6 +497,38 @@ def upload_excel():
             flash(message, 'info')
 
     return render_template('main/upload_excel.html', form=form)
+
+
+@main_bp.route('/upload_owe', methods=['GET', 'POST'])
+def upload_owe():
+    form = UploadOweForm()
+    if form.validate_on_submit():
+        if form.save.data:  # 仅仅保存文件
+            f = form.excel.data
+            filename = random_filename(f.filename)  # 先定义 再使用 放前面
+            f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
+
+            sheet = open_excel(filename)
+
+            insert_owe_process(sheet, filename)
+
+    return render_template('main/upload_owe.html', form=form)
+
+
+@main_bp.route('/upload_receive', methods=['GET', 'POST'])
+def upload_receive():
+    form = UploadReceiveForm()
+    if form.validate_on_submit():
+        if form.save.data:  # 仅仅保存文件
+            f = form.excel.data
+            filename = random_filename(f.filename)  # 先定义 再使用 放前面
+            f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
+
+            sheet = open_excel(filename)
+
+            insert_receive_process(sheet, filename)
+
+    return render_template('main/upload_receive.html', form=form)
 
 
 # send over SMTP
