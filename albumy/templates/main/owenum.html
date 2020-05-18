@@ -22,6 +22,8 @@
                                      href="{{ url_for('main.upload_owe') }}">New owe</a></span>
         <span class="float-right"><a class="btn btn-primary btn-sm"
                                      href="{{ url_for('main.upload_receive') }}">New receive</a></span>
+        <span class="float-right"><a class="btn btn-primary btn-sm"
+                                     href="{{ url_for('main.export_owe') }}">Expore owe</a></span>
     </h1>
      {{ render_form(form) }}
 </div>
@@ -46,7 +48,15 @@
         <td>{{ owenum.shiji }}</td>
         <td>{{ owenum.owe }}</td>
         <td>{{ owenum.receive_date }}</td>
-        <td>edit</td>
+        <td>
+<!--            <a class="btn btn-info btn-sm" href="">Edit</a>-->
+            <form class="inline" method="post"
+                  action="{{ url_for('main.delete_owe', owe_id=owenum.id, next=request.full_path) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+                </button>
+            </form>
+        </td>
     </tr>
     {% endfor %}
 </table>

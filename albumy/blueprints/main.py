@@ -13,6 +13,7 @@ import uuid
 import hashlib
 
 import xlrd
+import xlwt
 import pymysql
 
 from flask import render_template, flash, redirect, url_for, current_app, \
@@ -209,7 +210,7 @@ def manage_post():
 def owenum():
     form = OweSearchForm()
     if form.validate_on_submit():
-        page = request.args.get('page', 1, type=int)
+        page = 1  # 按不然找不到该页面
         pagination = Owenum.query.filter_by(sku=form.sku.data).order_by(Owenum.id).paginate(
             page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
         owenums = pagination.items
@@ -218,7 +219,7 @@ def owenum():
         # form.sku.data=form.sku.data
         return render_template('main/owenum.html', form=form, page=page, pagination=pagination, owenums=owenums)
     page = request.args.get('page', 1, type=int)
-    pagination = Owenum.query.order_by(Owenum.sku, Owenum.id).paginate(
+    pagination = Owenum.query.order_by(Owenum.id).paginate(
         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
     owenums = pagination.items
     return render_template('main/owenum.html', page=page, pagination=pagination, owenums=owenums, form=form)
@@ -236,16 +237,16 @@ def random_filename(filename):
     return new_filename
 
 
-def open_excel(ss):
-    try:
-        book = xlrd.open_workbook(ss)  # 文件名，把文件与py文件放在同一目录下
-    except:
-        print("open excel file failed!")
-    try:
-        sheet = book.sheet_by_name("Sheet1")  # execl里面的worksheet1
-        return sheet
-    except:
-        print("locate worksheet in excel failed!")
+# def open_excel(ss):
+#     try:
+#         book = xlrd.open_workbook(ss)  # 文件名，把文件与py文件放在同一目录下
+#     except:
+#         print("open excel file failed!")
+#     try:
+#         sheet = book.sheet_by_name("Sheet1")  # execl里面的worksheet1
+#         return sheet
+#     except:
+#         print("locate worksheet in excel failed!")
 
 
 def open_excel(filename):
@@ -407,7 +408,7 @@ def insert_receive_process(sheet, filename):
                 db.commit()
                 # 开始处理第二笔
                 left = shiji - owe  # 剩余待处理的 3 多了3
-                value=(sku)
+                value = (sku)
                 sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
                 cursor.execute(sql, value)  # 执行sql语句
                 ret2 = cursor.fetchone()
@@ -434,7 +435,7 @@ def insert_receive_process(sheet, filename):
                     id2 = ret2[1]  # 63
                     # left= left - owe2
                 # 结束 本次到货全部覆盖到欠量  3<443
-                value = (owe2, left, left,sku, id2)
+                value = (owe2, left, left, sku, id2)
                 sql = "update owenum set owe=%s-%s,receive_date=%s  where sku=%s  and id=%s "
                 # print(sql)
                 cursor.execute(sql, value)  # 执行sql语句
@@ -513,6 +514,37 @@ def upload_owe():
             insert_owe_process(sheet, filename)
 
     return render_template('main/upload_owe.html', form=form)
+
+
+@main_bp.route('/export_owe', methods=['GET', 'POST'])
+def export_owe():
+    wb = xlwt.Workbook()
+    # 添加一个表
+    ws = wb.add_sheet('Sheet1')
+
+    # 3个参数分别为行号，列号，和内容
+    # 需要注意的是行号和列号都是从0开始的
+    ws.write(0, 0, 'id')
+    ws.write(0, 1, 'sku')
+    ws.write(0, 2, 'yao')
+    ws.write(0, 3, 'shiji')
+    ws.write(0, 4, 'owe')
+    ws.write(0, 5, 'receive_date')
+    owenums = Owenum.query.all()
+    print(owenums[0])
+    i = 1
+    for owenum in owenums:
+        ws.write(i, 0, owenum.id)
+        ws.write(i, 1, owenum.sku)
+        ws.write(i, 2, owenum.yao)
+        ws.write(i, 3, owenum.shiji)
+        ws.write(i, 4, owenum.owe)
+        ws.write(i, 5, owenum.receive_date)
+        i = i + 1
+
+    # 保存excel文件
+    wb.save('./uploads/export.xls')
+    return render_template('main/export_excel.html')
 
 
 @main_bp.route('/upload_receive', methods=['GET', 'POST'])
@@ -616,6 +648,16 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     flash('Post deleted.', 'success')
+    return redirect_back()
+
+
+@main_bp.route('/owenum/<int:owe_id>/delete', methods=['POST'])
+@login_required
+def delete_owe(owe_id):
+    owenum = Owenum.query.get_or_404(owe_id)
+    db.session.delete(owenum)
+    db.session.commit()
+    flash('Owe deleted.', 'success')
     return redirect_back()
 
 
