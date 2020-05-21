@@ -35,7 +35,33 @@ import requests
 import json
 from threading import Thread
 
+from jinja2 import Markup, Environment, FileSystemLoader
+from pyecharts.globals import CurrentConfig
+
+# 关于 CurrentConfig，可参考 [基本使用-全局变量]
+# CurrentConfig.GLOBAL_ENV = Environment(loader=FileSystemLoader("./templates"))
+
+from pyecharts import options as opts
+from pyecharts.charts import Bar
+
 main_bp = Blueprint('main', __name__)
+
+
+def bar_base() -> Bar:
+    c = (
+        Bar()
+        .add_xaxis(["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"])
+        .add_yaxis("商家A", [5, 20, 36, 10, 75, 90])
+        .add_yaxis("商家B", [15, 25, 16, 55, 48, 8])
+        .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"))
+    )
+    return c
+
+
+@main_bp.route("/ssdd")
+def indexssdd():
+    c = bar_base()
+    return Markup(c.render_embed())
 
 
 @main_bp.route('/')
@@ -328,7 +354,7 @@ def insert_receive_process(sheet, filename):
     # 先预检查
     for i in range(1, sheet.nrows):
         sku = sheet.cell(i, 0).value  # 取第i行第0列
-        shiji = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        shiji = int(sheet.cell(i, 1).value)  # 取第i行第1列，下面依次类推
         receive_date = sheet.cell(i, 2).value  # 取第i行第1列，下面依次类推
         # receive_date = int(receive_date)
         print(sku)
@@ -341,7 +367,8 @@ def insert_receive_process(sheet, filename):
         cursor.execute(sql, value)  # 执行sql语句
         ret = cursor.fetchone()
         # print(ret)  # 输出的ret是个tuple元组
-        sum = ret[0]
+        # sum = ret[0]
+        sum = int(ret[0] or 0)
         # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多
         if sum < shiji:
             message = Markup(
