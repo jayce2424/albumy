@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block title %}dxl{% endblock %}
+
+{% block content %}
+
+
+
+
+<div class="page-header">
+    <h1>库龄
+        <small class="text-muted">{{ pagination.total }}</small>
+        <span class="float-right"><a class="btn btn-primary btn-sm"
+                                     href="{{ url_for('main.export_dxl') }}">导出excel</a></span>
+    </h1>
+    {{ render_form(form) }}
+</div>
+{% if dxls %}
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>sku</th>
+        <th>期初数量</th>
+        <th>年</th>
+        <th>月</th>
+        <th>仓库</th>
+        <th>期末数量</th>
+        <th>销售数量</th>
+        <th>滞销数量</th>
+        <th>成本价</th>
+        <th>动销率</th>
+        <th>计算维度</th>
+    </tr>
+    </thead>
+    {% for dxl in dxls %}
+    <tr>
+        <td>{{ dxl.id }}</td>
+        <td>{{ dxl.sku }}</td>
+        <td>{{ dxl.qc }}</td>
+        <td>{{ dxl.hjyear }}</td>
+        <td>{{ dxl.hjmn }}</td>
+        <td>{{ dxl.ck_id }}</td>
+        <td>{{ dxl.qm }}</td>
+        <td>{{ dxl.xs_s }}</td>
+        <td>{{ dxl.last }}</td>
+        <td>{{ dxl.cbj }}</td>
+        <td>{{ dxl.dxl }}</td>
+        <td>{{ dxl.weidu }}</td>
+        <td>
+<!--            <a class="btn btn-info btn-sm" href="">Edit</a>-->
+<!--            <form class="inline" method="post"-->
+<!--                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>-->
+<!--                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete-->
+<!--                </button>-->
+<!--            </form>-->
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="page-footer">{{ render_pagination(pagination) }}</div>
+{% else %}
+<div class="tip"><h5>No dxl.</h5></div>
+{% endif %}
+{% endblock %}

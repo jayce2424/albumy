@@ -21,13 +21,14 @@ from flask import render_template, flash, redirect, url_for, current_app, \
 from flask_login import login_required, current_user
 from flask_mail import Message
 from markupsafe import Markup
-from sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func, text
 
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db, mail
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm, EmailForm, \
-    UploadOweForm, UploadReceiveForm, OweSearchForm
-from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum
+    UploadOweForm, UploadReceiveForm, OweSearchForm, DxlSearchForm
+from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum, \
+    Ab_jqx_dxl
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
@@ -50,10 +51,10 @@ main_bp = Blueprint('main', __name__)
 def bar_base() -> Bar:
     c = (
         Bar()
-        .add_xaxis(["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"])
-        .add_yaxis("商家A", [5, 20, 36, 10, 75, 90])
-        .add_yaxis("商家B", [15, 25, 16, 55, 48, 8])
-        .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"))
+            .add_xaxis(["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"])
+            .add_yaxis("商家A", [5, 20, 36, 10, 75, 90])
+            .add_yaxis("商家B", [15, 25, 16, 55, 48, 8])
+            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"))
     )
     return c
 
@@ -249,6 +250,52 @@ def owenum():
         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
     owenums = pagination.items
     return render_template('main/owenum.html', page=page, pagination=pagination, owenums=owenums, form=form)
+
+
+@main_bp.route('/dxl', methods=['GET', 'POST'])
+# @permission_required('POST')
+@login_required
+def dxl():
+    form = DxlSearchForm()
+    if form.validate_on_submit():
+        page = 1  # 按不然找不到该页面
+        # 最初
+        # pagination = Ab_jqx_dxl.query.filter_by(hjyear=form.hjyear.data).filter_by(hjmn=form.hjmn.data).filter_by(weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
+        #     page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+        # 感觉还不够满足
+        # if form.sku.data:
+        #     pagination = Ab_jqx_dxl.query.filter_by(sku=form.sku.data).filter_by(hjyear=form.hjyear.data).filter_by(hjmn=form.hjmn.data).filter_by(
+        #         weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
+        #         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+        # else:
+        #     pagination = Ab_jqx_dxl.query.filter_by(hjyear=form.hjyear.data).filter_by(
+        #         hjmn=form.hjmn.data).filter_by(
+        #         weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
+        #         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+        # 终于找到了最终解决方案 sqlalchemy多条件查询 https://blog.csdn.net/mxj588love/article/details/80729790 filter牛逼于filter_by
+        textsql = " 1=1 "
+        if form.sku.data:
+            textsql += " and sku='" + form.sku.data + "' "
+        if form.weidu.data:
+            textsql += " and weidu='" + form.weidu.data + "' "
+        if form.hjyear.data:
+            textsql += " and hjyear='" + form.hjyear.data + "' "
+        if form.hjmn.data:
+            textsql += " and hjmn='" + form.hjmn.data + "' "
+        if form.ck_id.data:
+            textsql += " and ck_id='" + form.ck_id.data + "' "
+        pagination = Ab_jqx_dxl.query.filter(text(textsql)).order_by(Ab_jqx_dxl.id).paginate(
+            page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+        dxls = pagination.items
+        # print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
+        # return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
+        # form.sku.data=form.sku.data
+        return render_template('main/dxl.html', form=form, page=page, pagination=pagination, dxls=dxls)
+    page = request.args.get('page', 1, type=int)
+    pagination = Ab_jqx_dxl.query.order_by(Ab_jqx_dxl.id).paginate(
+        page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+    dxls = pagination.items
+    return render_template('main/dxl.html', page=page, pagination=pagination, dxls=dxls, form=form)
 
 
 @main_bp.route('/post/<int:post_id>')
@@ -567,6 +614,49 @@ def export_owe():
         ws.write(i, 3, owenum.shiji)
         ws.write(i, 4, owenum.owe)
         ws.write(i, 5, owenum.receive_date)
+        i = i + 1
+
+    # 保存excel文件
+    wb.save('./uploads/export.xls')
+    return render_template('main/export_excel.html')
+
+
+@main_bp.route('/export_dxl', methods=['GET', 'POST'])
+def export_dxl():
+    wb = xlwt.Workbook()
+    # 添加一个表
+    ws = wb.add_sheet('Sheet1')
+
+    # 3个参数分别为行号，列号，和内容
+    # 需要注意的是行号和列号都是从0开始的
+    ws.write(0, 0, 'No.')
+    ws.write(0, 1, 'sku')
+    ws.write(0, 2, '期初数量')
+    ws.write(0, 3, '年')
+    ws.write(0, 4, '月')
+    ws.write(0, 5, '仓库')
+    ws.write(0, 6, '期末数量')
+    ws.write(0, 7, '销售数量')
+    ws.write(0, 8, '滞销数量')
+    ws.write(0, 9, '成本价')
+    ws.write(0, 10, '动销率')
+    ws.write(0, 11, '计算维度')
+    dxls = Ab_jqx_dxl.query.all()
+    print(dxls[0])
+    i = 1
+    for dxl in dxls:
+        ws.write(i, 0, dxl.id)
+        ws.write(i, 1, dxl.sku)
+        ws.write(i, 2, dxl.qc)
+        ws.write(i, 3, dxl.hjyear)
+        ws.write(i, 4, dxl.hjmn)
+        ws.write(i, 5, dxl.ck_id)
+        ws.write(i, 6, dxl.qm)
+        ws.write(i, 7, dxl.xs_s)
+        ws.write(i, 8, dxl.last)
+        ws.write(i, 9, dxl.cbj)
+        ws.write(i, 10, dxl.dxl)
+        ws.write(i, 11, dxl.weidu)
         i = i + 1
 
     # 保存excel文件

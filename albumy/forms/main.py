@@ -85,3 +85,12 @@ class EmailForm(FlaskForm):
 class OweSearchForm(FlaskForm):
     sku = StringField('Sku', validators=[DataRequired(), Length(1, 2000)])
     submit = SubmitField()
+
+
+class DxlSearchForm(FlaskForm):
+    sku = StringField('Sku')
+    hjyear = StringField('年')
+    hjmn = StringField('月')
+    ck_id = StringField('仓库(填JD,TM,XQD,ALL)')
+    weidu = StringField('维度(填4或6)')
+    submit = SubmitField()
