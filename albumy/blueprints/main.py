@@ -59,6 +59,7 @@ def bar_base() -> Bar:
     return c
 
 
+# echart 但是某个js挂了 用不了
 @main_bp.route("/ssdd")
 def indexssdd():
     c = bar_base()
@@ -149,6 +150,28 @@ def aikucun_get_token1():
     print(url)
     response = requests.get(url)
     return response.text
+
+
+@main_bp.route('/delete_all', methods=['POST'])  # 这个必须要有,即使没有具体的页面,只是执行一段sql
+def delete_all():
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+    sql = "delete from owenum"
+    cursor.execute(sql)  # 执行sql语句
+    db.commit()
+    cursor.close()  # 关闭连接
+    db.close()  # 关闭数据
+    message = Markup(
+        '已删除')
+    flash(message, 'info')
+    # 下面的两种跳转回去都可以yeah
+    return redirect(url_for('main.owenum'))
+    # return redirect_back()
 
 
 @main_bp.route('/explore_token')

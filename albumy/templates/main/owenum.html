@@ -22,8 +22,16 @@
                                      href="{{ url_for('main.upload_owe') }}">New owe</a></span>
         <span class="float-right"><a class="btn btn-primary btn-sm"
                                      href="{{ url_for('main.upload_receive') }}">New receive</a></span>
-        <span class="float-right"><a class="btn btn-primary btn-sm"
+        <span class="float-right"><a class="btn btn-info btn-sm"
                                      href="{{ url_for('main.export_owe') }}">Expore owe</a></span>
+<!--        <span class="float-right"><a class="btn btn-danger btn-sm"-->
+<!--                                     href="{{ url_for('main.delete_all') }}">Delete all</a></span>-->
+        <form class="inline" method="post"
+                  action="{{ url_for('main.delete_all')}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete all
+                </button>
+        </form>
     </h1>
      {{ render_form(form) }}
 </div>
