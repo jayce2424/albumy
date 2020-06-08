@@ -21,20 +21,21 @@ from flask import render_template, flash, redirect, url_for, current_app, \
 from flask_login import login_required, current_user
 from flask_mail import Message
 from markupsafe import Markup
-from sqlalchemy.sql.expression import func, text
+from sqlalchemy.sql.expression import func, text, distinct
 
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db, mail
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm, EmailForm, \
     UploadOweForm, UploadReceiveForm, OweSearchForm, DxlSearchForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum, \
-    Ab_jqx_dxl
+    Ab_jqx_dxl, Jxc_rj_202005, Jxc_rj_202004, Jxc_rj_202003, Jxc_rj_202002, Spjgb
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
 import requests
 import json
 from threading import Thread
+from decimal import getcontext, Decimal
 
 from jinja2 import Markup, Environment, FileSystemLoader
 from pyecharts.globals import CurrentConfig
@@ -66,6 +67,96 @@ def indexssdd():
     return Markup(c.render_embed())
 
 
+@main_bp.route('/calc_dxl')
+def calc_dxl():
+    # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
+    lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().all()
+    for ll in lls:
+        print(ll.sku)
+        bbs = Jxc_rj_202002.query.filter_by(ck_id=4).filter_by(date='2020-02-01').filter_by(
+            sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
+        # print(bbs)
+        if bbs:
+            # print('33')
+            # print(bbs.sl_qc)  # 错误  print(bbs['sl_qm'])
+            qc1 = bbs.sl_qc
+        else:
+            qc1 = 0
+        bbss = Jxc_rj_202005.query.filter_by(ck_id=4).filter_by(date='2020-05-31').filter_by(sku=ll.sku).first()
+        if bbss:
+            # print('44')
+            # print(bbss.sl_qm)  # 错误  print(bbs['sl_qm'])
+            qm1 = bbss.sl_qm
+        else:
+            qm1 = 0
+        # 求和  User.query.with_entities(func.sum(User.id)).all()
+        jh1 = Jxc_rj_202002.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202002.sl0_pf)).all()
+        jh2 = Jxc_rj_202003.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202003.sl0_pf)).all()
+        jh3 = Jxc_rj_202004.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202004.sl0_pf)).all()
+        jh4 = Jxc_rj_202005.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202005.sl0_pf)).all()
+        # print(jh1[0][0])
+        # print(jh2)
+        # print(jh3)
+        # print(jh4)
+        if jh1[0][0]:
+            jh1 = jh1[0][0]
+        else:
+            jh1 = 0
+        if jh2[0][0]:
+            jh2 = jh2[0][0]
+        else:
+            jh2 = 0
+        if jh3[0][0]:
+            jh3 = jh3[0][0]
+        else:
+            jh3 = 0
+        if jh4[0][0]:
+            jh4 = jh4[0][0]
+        else:
+            jh4 = 0
+        xs_s = jh1 + jh2 + jh3 + jh4
+        # print(xs_s)
+        # 计算滞销量
+        last = min(max(qc1 - xs_s, 0), qm1)
+        # 同步最新成本价
+        # jg1 = Spjgb.query.filter_by(goods_id=ll.goods_id).all()
+        ggd = Jxc_rj_202005.query.filter_by(sku=ll.sku).first()
+        # print(ggd.sku_id)
+        ggd = Spjgb.query.filter_by(sku_id=ggd.sku_id).first()
+        # print(ggd.jg1)
+        # 计算动销率
+        if qc1 * ggd.jg1 == 0:  # 被除数为0
+            res = 0
+        else:
+            ssd = qc1 * ggd.jg1
+            ssdds = float(xs_s) * float(ggd.jg1)
+            # 迫使您将浮点数转换为小数， 更精确  float是会四舍五入
+            # dxl = Decimal(str(ssdds))/Decimal(str(ssd))  注意decimal类型的数据不可以和普通浮点数进行运算。 TypeError: unsupported operand type(s) for +: 'float'and 'Decimal'
+            res = format(ssdds / float(ssd), '.2f')
+        print(res)
+        # break
+        # order_info = Order_info(tid=tid, delivery_province=delivery_province, delivery_city=delivery_city,
+        #                         delivery_district=delivery_district, receiver_tel=receiver_tel,
+        #                         delivery_address=delivery_address)
+        # db.session.add(order_info)
+        # db.session.commit()
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='05', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
+                                last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
+        db.session.add(ab_jqx_dxl)
+    db.session.commit()
+
+    # print(ll[0])
+    # owenums = Owenum.query.all()
+    # print(owenums[0]['sku']) # TypeError: 'Owenum' object is not subscriptable
+    # for owenum in owenums:
+    #     print(owenum.sku)
+    return 'dxl'
+
+
 @main_bp.route('/')
 def index():
     if current_user.is_authenticated:
@@ -86,7 +177,8 @@ def index():
 
 @main_bp.route('/explore')
 def explore():
-    photos = Photo.query.order_by(func.random()).limit(12)
+    photos = Photo.query.one()
+    print(photos)
     return render_template('main/explore.html', photos=photos)
 
 
@@ -607,7 +699,7 @@ def upload_owe():
             f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
 
             sheet = open_excel(filename)
-
+            print(sheet)
             insert_owe_process(sheet, filename)
 
     return render_template('main/upload_owe.html', form=form)

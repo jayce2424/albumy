@@ -274,19 +274,6 @@ class Owenum(db.Model):
     receive_date = db.Column(db.String(60))
 
 
-class Ab_jqx_dxl(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sku = db.Column(db.String(50))
-    qc = db.Column(db.Integer)
-    hjyear = db.Column(db.String(50))
-    hjmn = db.Column(db.String(50))
-    ck_id = db.Column(db.String(50))
-    qm = db.Column(db.Integer)
-    xs_s = db.Column(db.Integer)
-    last = db.Column(db.Integer)
-    cbj = db.Column(db.Float)  # 首次使用浮点数
-    dxl = db.Column(db.Float)
-    weidu = db.Column(db.Integer)
 
 
 class Category(db.Model):
@@ -358,3 +345,70 @@ def delete_photos(**kwargs):
         path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
         if os.path.exists(path):  # not every filename map a unique file
             os.remove(path)
+
+
+class Jxc_rj_202005(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Jxc_rj_202004(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+class Jxc_rj_202003(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Jxc_rj_202002(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Spjgb(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sku_id = db.Column(db.Integer)
+    jg1 = db.Column(db.Float)
+
+
+
+class Ab_jqx_dxl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sku = db.Column(db.String(50))
+    sku_id = db.Column(db.Integer)
+    qc = db.Column(db.Integer)
+    hjyear = db.Column(db.String(50))
+    hjmn = db.Column(db.String(50))
+    ck_id = db.Column(db.String(50))
+    qm = db.Column(db.Integer)
+    xs_s = db.Column(db.Integer)
+    last = db.Column(db.Integer)
+    cbj = db.Column(db.Float)  # 首次使用浮点数
+    dxl = db.Column(db.Float)
+    weidu = db.Column(db.Integer)
+
