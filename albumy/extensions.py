@@ -15,6 +15,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_whooshee import Whooshee
 from flask_wtf import CSRFProtect
 from flask_ckeditor import CKEditor
+from flask_debugtoolbar import DebugToolbarExtension
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
@@ -26,6 +27,7 @@ whooshee = Whooshee()
 avatars = Avatars()
 csrf = CSRFProtect()
 ckeditor = CKEditor()
+toolbar = DebugToolbarExtension()
 
 
 @login_manager.user_loader

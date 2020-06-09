@@ -19,7 +19,7 @@ from albumy.blueprints.ajax import ajax_bp
 from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
-from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, moment, whooshee, avatars, csrf, ckeditor
+from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, moment, whooshee, avatars, csrf, ckeditor, toolbar
 from albumy.models import Role, User, Photo, Tag, Follow, Notification, Comment, Collect, Permission, Category
 from albumy.settings import config
 
@@ -57,6 +57,7 @@ def register_extensions(app):
     avatars.init_app(app)
     csrf.init_app(app)
     ckeditor.init_app(app)
+    toolbar.init_app(app)   # 注释就可以关闭toolbar性能分析器
 
 
 def register_blueprints(app):

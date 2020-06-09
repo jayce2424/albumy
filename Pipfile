@@ -31,3 +31,4 @@ celery = {extras = ["redis"],version = "*"}
 eventlet = "*"
 xlwt = "*"
 pyecharts = "==1.7.1"
+flask-debugtoolbar = "*"
