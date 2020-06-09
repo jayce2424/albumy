@@ -160,9 +160,9 @@ def register_commands(app):
 
         from albumy.fakes import fake_admin, fake_comment, fake_follow, fake_photo, fake_tag, fake_user, fake_collect, \
             fake_categories, fake_posts
-
-        db.drop_all()
-        db.create_all()
+        # 把这两句注释掉,曾在这里犯下惨痛的教训  执行flask forge
+        # db.drop_all()
+        # db.create_all()
 
         click.echo('Initializing the roles and permissions...')
         Role.init_role()
