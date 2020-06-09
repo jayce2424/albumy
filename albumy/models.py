@@ -355,6 +355,7 @@ class Jxc_rj_202005(db.Model):
     date = db.Column(db.String(30))
     sl_qm = db.Column(db.Integer)
     sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
     sl_qc = db.Column(db.Integer)
 
 
@@ -366,6 +367,7 @@ class Jxc_rj_202004(db.Model):
     date = db.Column(db.String(30))
     sl_qm = db.Column(db.Integer)
     sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
     sl_qc = db.Column(db.Integer)
 
 class Jxc_rj_202003(db.Model):
@@ -376,6 +378,7 @@ class Jxc_rj_202003(db.Model):
     date = db.Column(db.String(30))
     sl_qm = db.Column(db.Integer)
     sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
     sl_qc = db.Column(db.Integer)
 
 
@@ -387,6 +390,7 @@ class Jxc_rj_202002(db.Model):
     date = db.Column(db.String(30))
     sl_qm = db.Column(db.Integer)
     sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
     sl_qc = db.Column(db.Integer)
 
 
