@@ -67,12 +67,18 @@ def indexssdd():
     return Markup(c.render_embed())
 
 
-@main_bp.route('/calc_dxl')
-def calc_dxl():
+@main_bp.route('/calc_dxl_JD_4')
+def calc_dxl_JD_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().all()
+    lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku, Jxc_rj_202005.sku_id).distinct().filter_by(
+        ck_id=4).filter_by(date='2020-05-31').filter(Jxc_rj_202005.sl_qm != 0).all()
+    # print(lls)
+    i = 0
     for ll in lls:
         print(ll.sku)
+        print(ll.sku_id)
+        i = i + 1
+        # return str(i)
         bbs = Jxc_rj_202002.query.filter_by(ck_id=4).filter_by(date='2020-02-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
         # print(bbs)
@@ -124,9 +130,9 @@ def calc_dxl():
         last = min(max(qc1 - xs_s, 0), qm1)
         # 同步最新成本价
         # jg1 = Spjgb.query.filter_by(goods_id=ll.goods_id).all()
-        ggd = Jxc_rj_202005.query.filter_by(sku=ll.sku).first()
+        # ggd = Jxc_rj_202005.query.filter_by(sku=ll.sku).first()
         # print(ggd.sku_id)
-        ggd = Spjgb.query.filter_by(sku_id=ggd.sku_id).first()
+        ggd = Spjgb.query.filter_by(sku_id=ll.sku_id).first()
         # print(ggd.jg1)
         # 计算动销率
         if qc1 * ggd.jg1 == 0:  # 被除数为0
@@ -147,6 +153,8 @@ def calc_dxl():
         ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='05', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
+        print(i)
+        print('---------------')
     db.session.commit()
 
     # print(ll[0])
@@ -154,7 +162,7 @@ def calc_dxl():
     # print(owenums[0]['sku']) # TypeError: 'Owenum' object is not subscriptable
     # for owenum in owenums:
     #     print(owenum.sku)
-    return 'dxl'
+    return str(i)
 
 
 @main_bp.route('/')
