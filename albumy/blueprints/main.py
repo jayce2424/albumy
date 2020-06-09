@@ -20,6 +20,7 @@ from flask import render_template, flash, redirect, url_for, current_app, \
     send_from_directory, request, abort, Blueprint, session
 from flask_login import login_required, current_user
 from flask_mail import Message
+from idna import unicode
 from markupsafe import Markup
 from sqlalchemy.sql.expression import func, text, distinct
 
@@ -447,7 +448,10 @@ def random_filename(filename):
 
 def open_excel(filename):
     try:
-        name = r"D:\NIO\albumy\uploads\%s" % filename
+        LUJIN = os.getenv('LUJIN')
+        name = r"albumy\uploads\%s" % filename
+        name = LUJIN+name
+        print(name)
         book = xlrd.open_workbook(name)  # 文件名，把文件与py文件放在同一目录下
     except:
         print("open excel file failed!")
