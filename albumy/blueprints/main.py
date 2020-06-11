@@ -177,6 +177,10 @@ def calc_dxl_TM_4():
         print(ll.sku_id)
         i = i + 1
         # return str(i)
+
+
+
+        """
         bbs = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3'])).filter_by(date='2020-02-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
         # print(bbs)
@@ -194,6 +198,36 @@ def calc_dxl_TM_4():
             qm1 = bbss.sl_qm
         else:
             qm1 = 0
+        """
+
+        bbs = Jxc_rj_202002.query. \
+            filter_by(sku=ll.sku). \
+            filter_by(date='2020-02-01'). \
+            filter(Jxc_rj_202002.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202002.sl_qc)).all()
+        # print(bbs)
+        # print(bbs[0])
+        # print(bbs[0][0])
+        if bbs[0][0]:
+            qc1 = bbs[0][0]
+        else:
+            qc1 = 0
+        print(qc1)
+
+        bbss = Jxc_rj_202005.query. \
+            filter_by(sku=ll.sku). \
+            filter_by(date='2020-05-31'). \
+            filter(Jxc_rj_202005.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202005.sl_qm)).all()
+        print(bbss)
+        if bbss[0][0]:
+            qm1 = bbss[0][0]
+        else:
+            qm1 = 0
+        print(qm1)
+
+
+
         # 求和  User.query.with_entities(func.sum(User.id)).all()
         jh1 = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202002.sl0_ls)).all()
@@ -235,6 +269,7 @@ def calc_dxl_TM_4():
         ggd = Spjgb.query.filter_by(sku_id=ll.sku_id).first()
         # print(ggd.jg1)
         # 计算动销率
+        qc1 = float(qc1)
         if qc1 * ggd.jg1 == 0:  # 被除数为0
             res = 0
         else:
@@ -269,7 +304,7 @@ def calc_dxl_TM_4():
 def calc_dxl_XQD_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
     lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku, Jxc_rj_202005.sku_id).distinct().filter(
-        Jxc_rj_202005.ck_id.in_(['11', '15'])).filter_by(date='2020-05-31').filter(Jxc_rj_202005.sl_qm != 0).all()
+        Jxc_rj_202005.ck_id.in_(['11', '15'])).filter_by(date='2020-05-31').filter(Jxc_rj_202005.sl_qm != 0).limit(1)
     # print(lls)
     i = 0
     for ll in lls:
@@ -277,7 +312,15 @@ def calc_dxl_XQD_4():
         print(ll.sku_id)
         i = i + 1
         # return str(i)
-        bbs = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['11', '15'])).filter_by(date='2020-02-01').filter_by(
+        bbs = Jxc_rj_202002.query.with_entities(Jxc_rj_202002.sl_qc).filter(
+            Jxc_rj_202002.ck_id.in_(['11', '15'])).filter_by(date='2020-02-01').filter_by(
+            sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
+        print(bbs)
+        exit()
+
+        """   多行注释
+        有点特殊哦 有两个仓库 所以下面的first就不能用了
+        bbs = Jxc_rj_202002.query.with_entities(Jxc_rj_202002.sl_qc).filter(Jxc_rj_202002.ck_id.in_(['11', '15'])).filter_by(date='2020-02-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
         # print(bbs)
         if bbs:
@@ -286,7 +329,7 @@ def calc_dxl_XQD_4():
             qc1 = bbs.sl_qc
         else:
             qc1 = 0
-        bbss = Jxc_rj_202005.query.filter(Jxc_rj_202005.ck_id.in_(['11', '15'])).filter_by(date='2020-05-31').filter_by(
+        bbss = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sl_qm).filter(Jxc_rj_202005.ck_id.in_(['11', '15'])).filter_by(date='2020-05-31').filter_by(
             sku=ll.sku).first()
         if bbss:
             # print('44')
@@ -294,6 +337,39 @@ def calc_dxl_XQD_4():
             qm1 = bbss.sl_qm
         else:
             qm1 = 0
+        """
+
+
+
+        bbs = Jxc_rj_202002.query. \
+            filter_by(sku=ll.sku). \
+            filter_by(date='2020-02-01'). \
+            filter(Jxc_rj_202002.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202002.sl_qc)).all()
+        # print(bbs)
+        # print(bbs[0])
+        # print(bbs[0][0])
+        if bbs[0][0]:
+            qc1 = bbs[0][0]
+        else:
+            qc1 = 0
+        print(qc1)
+
+
+        bbss = Jxc_rj_202005.query. \
+            filter_by(sku=ll.sku). \
+            filter_by(date='2020-05-31'). \
+            filter(Jxc_rj_202005.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202005.sl_qm)).all()
+        print(bbss)
+        if bbss[0][0]:
+            qm1 = bbss[0][0]
+        else:
+            qm1 = 0
+        print(qm1)
+
+        # exit()
+
         # 求和  User.query.with_entities(func.sum(User.id)).all()
         jh1 = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202002.sl0_ls)).all()
@@ -335,6 +411,7 @@ def calc_dxl_XQD_4():
         ggd = Spjgb.query.filter_by(sku_id=ll.sku_id).first()
         # print(ggd.jg1)
         # 计算动销率
+        qc1 = float(qc1)
         if qc1 * ggd.jg1 == 0:  # 被除数为0
             res = 0
         else:
@@ -350,7 +427,8 @@ def calc_dxl_XQD_4():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='05', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='05', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
+                                weidu='4',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -378,6 +456,9 @@ def calc_dxl_ALL_4():
         print(ll.sku_id)
         i = i + 1
         # return str(i)
+
+
+        """
         bbs = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             date='2020-02-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
@@ -397,6 +478,35 @@ def calc_dxl_ALL_4():
             qm1 = bbss.sl_qm
         else:
             qm1 = 0
+        """
+
+        bbs = Jxc_rj_202002.query. \
+            filter_by(sku=ll.sku). \
+            filter_by(date='2020-02-01'). \
+            filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202002.sl_qc)).all()
+        # print(bbs)
+        # print(bbs[0])
+        # print(bbs[0][0])
+        if bbs[0][0]:
+            qc1 = bbs[0][0]
+        else:
+            qc1 = 0
+        print(qc1)
+
+        bbss = Jxc_rj_202005.query. \
+            filter_by(sku=ll.sku). \
+            filter_by(date='2020-05-31'). \
+            filter(Jxc_rj_202005.ck_id.in_(['2', '3', '4', '11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202005.sl_qm)).all()
+        print(bbss)
+        if bbss[0][0]:
+            qm1 = bbss[0][0]
+        else:
+            qm1 = 0
+        print(qm1)
+
+
         # 求和  User.query.with_entities(func.sum(User.id)).all()
         jh1 = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             sku=ll.sku).with_entities(
@@ -442,6 +552,7 @@ def calc_dxl_ALL_4():
         ggd = Spjgb.query.filter_by(sku_id=ll.sku_id).first()
         # print(ggd.jg1)
         # 计算动销率
+        qc1 = float(qc1)
         if qc1 * ggd.jg1 == 0:  # 被除数为0
             res = 0
         else:
@@ -714,7 +825,7 @@ def dxl():
             textsql += " and hjmn='" + form.hjmn.data + "' "
         if form.ck_id.data:
             textsql += " and ck_id='" + form.ck_id.data + "' "
-        pagination = Ab_jqx_dxl.query.filter(text(textsql)).order_by(Ab_jqx_dxl.id).paginate(
+        pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(Ab_jqx_dxl.id).paginate(
             page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
         dxls = pagination.items
         # print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
@@ -722,7 +833,7 @@ def dxl():
         # form.sku.data=form.sku.data
         return render_template('main/dxl.html', form=form, page=page, pagination=pagination, dxls=dxls)
     page = request.args.get('page', 1, type=int)
-    pagination = Ab_jqx_dxl.query.order_by(Ab_jqx_dxl.id).paginate(
+    pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).order_by(Ab_jqx_dxl.id).paginate(
         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
     dxls = pagination.items
     return render_template('main/dxl.html', page=page, pagination=pagination, dxls=dxls, form=form)
@@ -1074,7 +1185,7 @@ def export_dxl():
     ws.write(0, 9, '成本价')
     ws.write(0, 10, '动销率')
     ws.write(0, 11, '计算维度')
-    dxls = Ab_jqx_dxl.query.all()
+    dxls = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).all()
     print(dxls[0])
     i = 1
     for dxl in dxls:
