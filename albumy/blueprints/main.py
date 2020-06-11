@@ -799,39 +799,62 @@ def owenum():
 def dxl():
     form = DxlSearchForm()
     if form.validate_on_submit():
-        page = 1  # 按不然找不到该页面
-        # 最初
-        # pagination = Ab_jqx_dxl.query.filter_by(hjyear=form.hjyear.data).filter_by(hjmn=form.hjmn.data).filter_by(weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
-        #     page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
-        # 感觉还不够满足
-        # if form.sku.data:
-        #     pagination = Ab_jqx_dxl.query.filter_by(sku=form.sku.data).filter_by(hjyear=form.hjyear.data).filter_by(hjmn=form.hjmn.data).filter_by(
-        #         weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
-        #         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
-        # else:
-        #     pagination = Ab_jqx_dxl.query.filter_by(hjyear=form.hjyear.data).filter_by(
-        #         hjmn=form.hjmn.data).filter_by(
-        #         weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
-        #         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
-        # 终于找到了最终解决方案 sqlalchemy多条件查询 https://blog.csdn.net/mxj588love/article/details/80729790 filter牛逼于filter_by
-        textsql = " 1=1 "
-        if form.sku.data:
-            textsql += " and sku='" + form.sku.data + "' "
-        if form.weidu.data:
-            textsql += " and weidu='" + form.weidu.data + "' "
-        if form.hjyear.data:
-            textsql += " and hjyear='" + form.hjyear.data + "' "
-        if form.hjmn.data:
-            textsql += " and hjmn='" + form.hjmn.data + "' "
-        if form.ck_id.data:
-            textsql += " and ck_id='" + form.ck_id.data + "' "
-        pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(Ab_jqx_dxl.id).paginate(
-            page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
-        dxls = pagination.items
-        # print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
-        # return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
-        # form.sku.data=form.sku.data
-        return render_template('main/dxl.html', form=form, page=page, pagination=pagination, dxls=dxls)
+        if form.submit.data:
+            # page = 1  # 按不然找不到该页面
+            page = request.args.get('page', 1, type=int)
+            # 最初
+            # pagination = Ab_jqx_dxl.query.filter_by(hjyear=form.hjyear.data).filter_by(hjmn=form.hjmn.data).filter_by(weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
+            #     page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+            # 感觉还不够满足
+            # if form.sku.data:
+            #     pagination = Ab_jqx_dxl.query.filter_by(sku=form.sku.data).filter_by(hjyear=form.hjyear.data).filter_by(hjmn=form.hjmn.data).filter_by(
+            #         weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
+            #         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+            # else:
+            #     pagination = Ab_jqx_dxl.query.filter_by(hjyear=form.hjyear.data).filter_by(
+            #         hjmn=form.hjmn.data).filter_by(
+            #         weidu=form.weidu.data).order_by(Ab_jqx_dxl.id).paginate(
+            #         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+            # 终于找到了最终解决方案 sqlalchemy多条件查询 https://blog.csdn.net/mxj588love/article/details/80729790 filter牛逼于filter_by
+            textsql = " 1=1 "
+            if form.sku.data:
+                textsql += " and sku='" + form.sku.data + "' "
+            if form.weidu.data:
+                textsql += " and weidu='" + form.weidu.data + "' "
+            if form.hjyear.data:
+                textsql += " and hjyear='" + form.hjyear.data + "' "
+            if form.hjmn.data:
+                textsql += " and hjmn='" + form.hjmn.data + "' "
+            if form.ck_id.data:
+                textsql += " and ck_id='" + form.ck_id.data + "' "
+            pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(Ab_jqx_dxl.id).paginate(
+                page, per_page=10000)
+            dxls = pagination.items
+            # print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
+            # return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
+            # form.sku.data=form.sku.data
+            return render_template('main/dxl.html', form=form, page=page, pagination=pagination, dxls=dxls)
+        if form.submit_excel.data:
+            # 按条件开始取数据,开始下载到upload里
+            export_dxl()
+            # page = 1  # 按不然找不到该页面
+            page = request.args.get('page', 1, type=int)
+            textsql = " 1=1 "
+            if form.sku.data:
+                textsql += " and sku='" + form.sku.data + "' "
+            if form.weidu.data:
+                textsql += " and weidu='" + form.weidu.data + "' "
+            if form.hjyear.data:
+                textsql += " and hjyear='" + form.hjyear.data + "' "
+            if form.hjmn.data:
+                textsql += " and hjmn='" + form.hjmn.data + "' "
+            if form.ck_id.data:
+                textsql += " and ck_id='" + form.ck_id.data + "' "
+            pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(
+                Ab_jqx_dxl.id).paginate(
+                page, per_page=10000)
+            dxls = pagination.items
+            return render_template('main/dxl.html', form=form, page=page, pagination=pagination, dxls=dxls)
     page = request.args.get('page', 1, type=int)
     pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).order_by(Ab_jqx_dxl.id).paginate(
         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
@@ -1185,7 +1208,24 @@ def export_dxl():
     ws.write(0, 9, '成本价')
     ws.write(0, 10, '动销率')
     ws.write(0, 11, '计算维度')
-    dxls = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).all()
+    form = DxlSearchForm()
+    if form.validate_on_submit():
+        if form.submit_excel.data:
+            textsql = " 1=1 "
+            if form.sku.data:
+                textsql += " and sku='" + form.sku.data + "' "
+            if form.weidu.data:
+                textsql += " and weidu='" + form.weidu.data + "' "
+            if form.hjyear.data:
+                textsql += " and hjyear='" + form.hjyear.data + "' "
+            if form.hjmn.data:
+                textsql += " and hjmn='" + form.hjmn.data + "' "
+            if form.ck_id.data:
+                textsql += " and ck_id='" + form.ck_id.data + "' "
+            dxls = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(
+                Ab_jqx_dxl.id).all()
+    else:
+        dxls = Ab_jqx_dxl.query.all()
     print(dxls[0])
     i = 1
     for dxl in dxls:

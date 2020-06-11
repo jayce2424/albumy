@@ -93,4 +93,5 @@ class DxlSearchForm(FlaskForm):
     hjmn = StringField('月')
     ck_id = StringField('仓库(填JD,TM,XQD,ALL)')
     weidu = StringField('维度(填4或6)')
-    submit = SubmitField()
+    submit = SubmitField('搜索')
+    submit_excel = SubmitField('开始按搜索内容导出Excel')
