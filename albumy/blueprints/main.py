@@ -603,7 +603,7 @@ def index():
 
 @main_bp.route('/explore')
 def explore():
-    photos = Photo.query.one()
+    photos = Photo.query.order_by(func.random()).limit(12)
     print(photos)
     return render_template('main/explore.html', photos=photos)
 
