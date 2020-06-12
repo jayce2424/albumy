@@ -609,15 +609,25 @@ def explore():
     return render_template('main/explore.html', photos=photos)
 
 
+# get请求
 @main_bp.route('/explore2')
 def explore2():
-    URL_IP = 'http://httpbin.org/ip'
+    # URL_IP = 'http://httpbin.org/ip'
+    URL_IP = 'https://www.baidu.com'
     response = requests.get(URL_IP)
     print('response headers:')
     print(response.headers)
     print('response body:')
     print(response.text)
     return response.text
+
+
+@main_bp.route('/tran_json')
+def tran_json():
+    str = '{"key": "wwww", "word": "qqqq"}'
+    j = json.loads(str)
+    print(j)
+    return 'gg'
 
 
 @main_bp.route('/aikucun_get_token')
@@ -665,6 +675,47 @@ def aikucun_get_token1():
     encrypts = sha.hexdigest()
     print(encrypts)
     bb = 'https://openapi.aikucun.com/api/v2/activity/list?'
+    url = bb + url + '&sign=' + encrypts
+    print(url)
+    response = requests.get(url)
+    return response.text
+
+#MD5加密方法
+def getmd5FromString(string):
+    md5 = hashlib.md5()
+    md5.update(string.encode(encoding='utf-8'))
+    return md5.hexdigest()
+
+
+@main_bp.route('/e3_get_user')
+def e3_get_user():
+    dtime = datetime.datetime.now()
+    ans_time = time.mktime(dtime.timetuple())
+    str_jay = '{"pageNo": 1, "sd_id": 117,"startModifiedTime":"2020-06-11 00:00:00"}'
+    # jay2 = json.loads(str_jay)
+    dict2 = {'key': '9iGuxYN',
+             'requestTime': str(int(ans_time)),  # python并不能像java一样，在做拼接的时候自动把类型转换为string类型
+             'secret': '5347e465cfb487c3515199a2df710e95',
+             'version': '1.0',
+             'serviceType': 'user.list.get',
+             'data': str(str_jay)
+             }
+    # 遍历字典的几种方法  https://www.cnblogs.com/stuqx/p/7291948.html
+    for (key, value) in dict2.items():
+        print(key + ':' + value)
+    # dict3 = sorted(dict2.items(), key=lambda dict2: dict2[0], reverse=False)  # False为升序   这里无需排序
+    url = ""
+    # for (key, value) in dict3:
+    #     print(key + ':' + value)
+    url += '&'.join([str(key) + '=' + str(value) for key, value in dict2.items()])
+    print(url)
+    # sha = hashlib.sha1(url.encode('utf-8'))
+    # encrypts = sha.hexdigest()
+    # url = url[1:]
+    # print(url)
+    encrypts = getmd5FromString(url)  # 由SHA1改为MD5排序
+    print(encrypts)
+    bb = 'http://e3.mgmos.com.cn/e3/webopm/web/?app_act=api/ec&app_mode=func&'
     url = bb + url + '&sign=' + encrypts
     print(url)
     response = requests.get(url)
