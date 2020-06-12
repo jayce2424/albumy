@@ -67,6 +67,16 @@ def indexssdd():
     return Markup(c.render_embed())
 
 
+# 通过e3的计划任务变相实现albumy的计划任务
+# 输出目前的时间
+@main_bp.route('/e3')
+def e3():
+    order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    db.session.add(order_info)
+    db.session.commit()
+    return 'e3'
+
+
 @main_bp.route('/calc_dxl_JD_4')
 def calc_dxl_JD_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
@@ -178,8 +188,6 @@ def calc_dxl_TM_4():
         i = i + 1
         # return str(i)
 
-
-
         """
         bbs = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3'])).filter_by(date='2020-02-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
@@ -225,8 +233,6 @@ def calc_dxl_TM_4():
         else:
             qm1 = 0
         print(qm1)
-
-
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
         jh1 = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
@@ -339,8 +345,6 @@ def calc_dxl_XQD_4():
             qm1 = 0
         """
 
-
-
         bbs = Jxc_rj_202002.query. \
             filter_by(sku=ll.sku). \
             filter_by(date='2020-02-01'). \
@@ -354,7 +358,6 @@ def calc_dxl_XQD_4():
         else:
             qc1 = 0
         print(qc1)
-
 
         bbss = Jxc_rj_202005.query. \
             filter_by(sku=ll.sku). \
@@ -457,7 +460,6 @@ def calc_dxl_ALL_4():
         i = i + 1
         # return str(i)
 
-
         """
         bbs = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             date='2020-02-01').filter_by(
@@ -505,7 +507,6 @@ def calc_dxl_ALL_4():
         else:
             qm1 = 0
         print(qm1)
-
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
         jh1 = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
@@ -827,7 +828,8 @@ def dxl():
                 textsql += " and hjmn='" + form.hjmn.data + "' "
             if form.ck_id.data:
                 textsql += " and ck_id='" + form.ck_id.data + "' "
-            pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(Ab_jqx_dxl.id).paginate(
+            pagination = Ab_jqx_dxl.query.filter(Ab_jqx_dxl.last != 0).filter(text(textsql)).order_by(
+                Ab_jqx_dxl.id).paginate(
                 page, per_page=10000)
             dxls = pagination.items
             # print(Post.query.filter_by(title=form.username.data).order_by(Post.timestamp.desc()))
