@@ -129,8 +129,8 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="http://127.0.0.1:5010/static/js/echarts.min.js"></script>
-    <script type="text/javascript" src="http://127.0.0.1:5010/static/js/echarts-liquidfill.min.js"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/echarts-liquidfill.min.js') }}"></script>
     <script type="text/javascript">
         var csrf_token = "{{ csrf_token() }}";
         {% if current_user.is_authenticated %}
