@@ -680,7 +680,8 @@ def aikucun_get_token1():
     response = requests.get(url)
     return response.text
 
-#MD5加密方法
+
+# MD5加密方法
 def getmd5FromString(string):
     md5 = hashlib.md5()
     md5.update(string.encode(encoding='utf-8'))
@@ -694,7 +695,7 @@ def e3_get_user():
     str_jay = '{"pageNo": 1, "sd_id": 117,"startModifiedTime":"2020-06-11 00:00:00"}'
     # jay2 = json.loads(str_jay)
     dict2 = {'key': '9iGuxYN',
-             'requestTime': str(int(ans_time)),  # python并不能像java一样，在做拼接的时候自动把类型转换为string类型
+             'requestTime': str(int(ans_time)),  # python并不能像java一样，在做拼接的时候自动把类型转换为string类型  把后面的.0去掉
              'secret': '5347e465cfb487c3515199a2df710e95',
              'version': '1.0',
              'serviceType': 'user.list.get',
@@ -711,7 +712,7 @@ def e3_get_user():
     print(url)
     # sha = hashlib.sha1(url.encode('utf-8'))
     # encrypts = sha.hexdigest()
-    # url = url[1:]
+    # url = url[1:]   截取字符串 从第二位开始截到最后
     # print(url)
     encrypts = getmd5FromString(url)  # 由SHA1改为MD5排序
     print(encrypts)
