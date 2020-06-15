@@ -5,6 +5,8 @@
     :copyright: © 2018 Grey Li <withlihui@gmail.com>
     :license: MIT, see LICENSE for more details.
 """
+from random import randrange
+
 from flask import render_template, flash, redirect, url_for, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user, login_fresh, confirm_login
 
@@ -63,6 +65,7 @@ def bar_base5() -> Bar:
             .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-Shape-Diamond"))
     )
     return c
+
 
 def bar_base7() -> Bar:
     data = [
@@ -202,8 +205,8 @@ def bar_base7() -> Bar:
     ]
 
     c = (WordCloud()
-    .add(series_name="热点分析", data_pair=data, word_size_range=[6, 66])
-    .set_global_opts(
+        .add(series_name="热点分析", data_pair=data, word_size_range=[6, 66])
+        .set_global_opts(
         title_opts=opts.TitleOpts(
             title="热点分析", title_textstyle_opts=opts.TextStyleOpts(font_size=23)
         ),
@@ -212,7 +215,6 @@ def bar_base7() -> Bar:
 
     )
     return c
-
 
 
 def bar_base6() -> Bar:
@@ -336,12 +338,35 @@ def bar_base2() -> Bar:
 def indexssdd():
     c = bar_base()
     return Markup(c.render_embed())
+    return render_template('auth/login.html', form=form)
 
 
 @auth_bp.route("/ssdd2")
 def indexssdd2():
     c = bar_base2()
     return Markup(c.render_embed())
+
+
+@auth_bp.route("/ssddjj")
+def indexssddjj():
+    return render_template("auth/ssddjj.html")
+
+
+def bar_basejj() -> Bar:
+    c = (
+        Bar()
+            .add_xaxis(["衬衫64", "羊毛衫3", "雪纺衫5", "裤子", "高跟鞋", "袜子"])
+            .add_yaxis("商家A", [randrange(0, 100) for _ in range(6)])
+            .add_yaxis("商家B", [randrange(0, 100) for _ in range(6)])
+            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"))
+    )
+    return c
+
+
+@auth_bp.route("/barChart")
+def get_bar_chart():
+    c = bar_basejj()
+    return c.dump_options_with_quotes()
 
 
 # 两个合并在一块 http://127.0.0.1:5010/auth/ssdd3
@@ -355,7 +380,7 @@ def indexssdd3():
     c6 = bar_base6()
     c7 = bar_base7()
     return Markup(
-        c.render_embed() + c2.render_embed() + c3.render_embed() + c4.render_embed() + c5.render_embed() + c6.render_embed()+ c7.render_embed())
+        c.render_embed() + c2.render_embed() + c3.render_embed() + c4.render_embed() + c5.render_embed() + c6.render_embed() + c7.render_embed())
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
