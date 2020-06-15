@@ -61,8 +61,8 @@ def bar_base3() -> Bar:
 def bar_base5() -> Bar:
     c = (
         Liquid()
-            .add("lq", [0.3, 0.7], is_outline_show=False, shape=SymbolType.DIAMOND)
-            .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-Shape-Diamond"))
+            .add("lq", [0.6, 0.7])
+            .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-基本示例"))
     )
     return c
 
@@ -343,7 +343,7 @@ def indexssdd():
 
 @auth_bp.route("/ssdd2")
 def indexssdd2():
-    c = bar_base2()
+    c = bar_base5()
     return Markup(c.render_embed())
 
 
