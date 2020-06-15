@@ -338,7 +338,7 @@ def bar_base2() -> Bar:
 def indexssdd():
     c = bar_base()
     return Markup(c.render_embed())
-    return render_template('auth/login.html', form=form)
+    # return render_template('auth/login.html', form=form)
 
 
 @auth_bp.route("/ssdd2")
@@ -347,6 +347,7 @@ def indexssdd2():
     return Markup(c.render_embed())
 
 
+# 下面的两个是前后端分离的做法 写了两个链接 其中一个是空的
 @auth_bp.route("/ssddjj")
 def indexssddjj():
     return render_template("auth/ssddjj.html")
@@ -362,10 +363,24 @@ def bar_basejj() -> Bar:
     )
     return c
 
+def bar_basejjj() -> Bar:
+    c = (
+        Liquid()
+            .add("lq", [0.3, 0.7], is_outline_show=False, shape=SymbolType.DIAMOND)
+            .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-Shape-Diamond"))
+    )
+    return c
+
 
 @auth_bp.route("/barChart")
 def get_bar_chart():
     c = bar_basejj()
+    return c.dump_options_with_quotes()
+
+
+@auth_bp.route("/barChartjjj")
+def get_bar_chartjjj():
+    c = bar_base5()
     return c.dump_options_with_quotes()
 
 
