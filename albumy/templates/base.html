@@ -130,6 +130,7 @@
     {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="http://127.0.0.1:5010/static/js/echarts.min.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:5010/static/js/echarts-liquidfill.min.js"></script>
     <script type="text/javascript">
         var csrf_token = "{{ csrf_token() }}";
         {% if current_user.is_authenticated %}
@@ -145,6 +146,21 @@
                 $.ajax({
                     type: "GET",
                     url: "http://127.0.0.1:5010/auth/barChart",
+                    dataType: 'json',
+                    success: function (result) {
+                        chart.setOption(result);
+                    }
+                });
+            }
+        )
+    </script>
+    <script>
+        $(
+            function () {
+                var chart = echarts.init(document.getElementById('liquidfill'), 'white', {renderer: 'canvas'});
+                $.ajax({
+                    type: "GET",
+                    url: "http://127.0.0.1:5010/auth/barChartjjj",
                     dataType: 'json',
                     success: function (result) {
                         chart.setOption(result);
