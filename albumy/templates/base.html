@@ -129,8 +129,7 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/echarts-liquidfill.min.js') }}"></script>
+
     <script type="text/javascript">
         var csrf_token = "{{ csrf_token() }}";
         {% if current_user.is_authenticated %}
@@ -139,38 +138,7 @@
             var is_authenticated = false;
         {% endif %}
     </script>
-    <script>
-        $(
-            function () {
-                var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
-                $.ajax({
-                    type: "GET",
-<!--                    url: "http://10.10.19.6:5008/auth/barChart",-->
-                    url: "{{ url_for('auth.get_bar_chart') }}",
-                    dataType: 'json',
-                    success: function (result) {
-                        chart.setOption(result);
-                    }
-                });
-            }
-        )
-    </script>
-    <script>
-        $(
-            function () {
-                var chart = echarts.init(document.getElementById('liquidfill'), 'white', {renderer: 'canvas'});
-                $.ajax({
-                    type: "GET",
-<!--                    url: "http://10.10.19.6:5008/auth/barChartjjj",-->
-                    url: "{{ url_for('auth.get_bar_chartjjj') }}",
-                    dataType: 'json',
-                    success: function (result) {
-                        chart.setOption(result);
-                    }
-                });
-            }
-        )
-    </script>
+
 
 
 {% endblock %}
