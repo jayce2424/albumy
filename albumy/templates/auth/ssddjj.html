@@ -8,23 +8,29 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/echarts-liquidfill.min.js') }}"></script>
 </head>
 <body>
-    <h5>dadad</h5>
+    <h5>5S更新一次</h5>
     <div id="bar" style="width:1000px; height:600px;"></div>
     <script>
+        var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
+
         $(
             function () {
-                var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
-                $.ajax({
-                    type: "GET",
-                    url: "http://127.0.0.1:5010/auth/barChartjjj",
-                    dataType: 'json',
-                    success: function (result) {
-                        chart.setOption(result);
-                    }
-                });
+                fetchData(chart);
+                setInterval(fetchData, 2000);
             }
-        )
+        );
+
+        function fetchData() {
+            $.ajax({
+                type: "GET",
+                url: "{{ url_for('auth.get_bar_chart') }}",
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+            });
+        }
     </script>
-    <h5>dadad</h5>
+    <h5>5S更新一次</h5>
 </body>
 </html>
