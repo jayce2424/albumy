@@ -30,8 +30,13 @@ from pyecharts.globals import SymbolType
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 import json
+import redis
 
 auth_bp = Blueprint('auth', __name__)
+
+# redis 取出的结果默认是字节，我们可以设定 decode_responses=True 改成字符串。
+pool = redis.ConnectionPool(host='10.10.19.6', port=6379, decode_responses=True)
+r = redis.Redis(connection_pool=pool)
 
 
 def bar_base() -> Bar:
@@ -363,6 +368,7 @@ def bar_basejj() -> Bar:
     )
     return c
 
+
 def bar_basejjj() -> Bar:
     c = (
         Liquid()
@@ -522,3 +528,46 @@ def reset_password(token):
             flash('Invalid or expired link.', 'danger')
             return redirect(url_for('.forget_password'))
     return render_template('auth/reset_password.html', form=form)
+
+
+@auth_bp.route("/redis_find")
+def redis_find():
+    r.set('foo', 'bar')
+    print(r.get('foo'))
+    print(r.get('food'))
+    print(r.get('fruit'))
+    print(r['foo'])
+    print(type(r['foo']))
+    return 'testing'
+
+
+@auth_bp.route("/redis_set")
+def redis_set():
+    """
+    # r.set('foo', 'bar')
+    r.set('food', 'mutton', ex=3)  # ex过期时间（秒） 键food的值就变成None
+    r.setex("fruit2", 5, "orange")  # 同上
+
+    r.set('food', 'mutton', px=3)  # px - 过期时间（毫秒） 键food的值就变成None
+    r.psetex("fruit3", 5000, "apple")  # 同上
+
+    print(r.set('fruit', 'watermelon', nx=True))  #只有name不存在时，当前set操作才执行（新建）
+    print(r.setnx('fruit1', 'banana'))  # 同上
+    print(r.set('fruit', 'watermelon2', xx=True))  #只有name存在时，当前set操作才执行 （修改）
+
+    # 批量设置值
+    # r.mget({'k1': 'v1', 'k2': 'v2'})
+    r.mset(k1="v1", k2="v2")
+    print(r.mget("foo", "fruit"))
+    print(r.mget('k1', 'k2'))
+    print(r.mget(['foo', 'fruit']))
+    # print(r.mget({'k1': 'v1', 'k2': 'v2'}))
+"""
+    r.set("cn_name", "君惜大大")  # 汉字
+    print(r.getrange("cn_name", 0, 2))  # 取索引号是0-2 前3位的字节 君 切片操作 （一个汉字3个字节 1个字母一个字节 每个字节8bit）
+    print(r.getrange("cn_name", 0, -1))  # 取所有的字节 君惜大大 切片操作
+    r.set("en_name", "junxi")  # 字母
+    print(r.getrange("en_name", 0, 2))  # 取索引号是0-2 前3位的字节 jun 切片操作 （一个汉字3个字节 1个字母一个字节 每个字节8bit）
+    print(r.getrange("en_name", 0, -1))  # 取所有的字节 junxi 切片操作
+
+    return 'seting'
