@@ -24,7 +24,7 @@ from markupsafe import Markup
 from sqlalchemy.sql.expression import func, text, distinct
 
 from albumy.decorators import confirm_required, permission_required
-from albumy.extensions import db, mail
+from albumy.extensions import db, mail, cache
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_commentForm, PostForm, UploadForm, EmailForm, \
     UploadOweForm, UploadReceiveForm, OweSearchForm, DxlSearchForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum, \
@@ -755,6 +755,8 @@ def lfa():
     return render_template('main/lfa.html')
 
 
+# http://127.0.0.1:5010/explore4/E20200413162037038100001   没有问号的带参数
+# url_for('main.explore4', _external=True, tid='E20200413162037038100001')
 @main_bp.route('/explore4/<tid>')
 def explore4(tid):
     # payload = {"tid": "E20200413162037038100001"}
@@ -791,12 +793,22 @@ def explore5():
 @main_bp.route('/post/manage')
 @permission_required('POST')
 @login_required
+# @cache.cached(timeout=10 * 60)
+@cache.cached(timeout=10 * 60, query_string=True)  # 包含查询参数的路由  10min后过期
 def manage_post():
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
     posts = pagination.items
     return render_template('main/manage_post.html', page=page, pagination=pagination, posts=posts)
+
+
+@main_bp.route('/delete_cache')
+def delete_cache():
+    # cache.delete('view/%s' % url_for('main.manage_post'))  传了page = request.args.get('page', 1, type=int)就不行
+    # print(url_for('main.manage_post', page=3))   传了page = request.args.get('page', 1, type=int)就不行
+    cache.clear()  #清除所有缓存 行
+    return 'ss'
 
 
 @main_bp.route('/owenum', methods=['GET', 'POST'])
@@ -1363,6 +1375,7 @@ def edit_post(post_id):
         post.category = Category.query.get(form.category.data)
         db.session.commit()
         flash('Post updated.', 'success')
+        cache.clear()
         return redirect(url_for('main.show_post', post_id=post.id))
     form.title.data = post.title
     form.body.data = post.body
@@ -1376,6 +1389,7 @@ def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     db.session.delete(post)
     db.session.commit()
+    cache.clear()
     flash('Post deleted.', 'success')
     return redirect_back()
 

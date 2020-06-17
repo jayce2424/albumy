@@ -84,6 +84,7 @@ class DevelopmentConfig(BaseConfig):
     # SQLALCHEMY_DATABASE_URI = 'mysql://app:app123@192.168.10.200/flask_albumy'
     SQLALCHEMY_DATABASE_URI = 'mysql://root:qwer1234.@10.10.19.6:5000/flask_albumy2'
     REDIS_URL = "redis://localhost"
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 
 class TestingConfig(BaseConfig):

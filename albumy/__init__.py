@@ -19,7 +19,8 @@ from albumy.blueprints.ajax import ajax_bp
 from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
-from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, moment, whooshee, avatars, csrf, ckeditor, toolbar
+from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, moment, whooshee, avatars, csrf, ckeditor, \
+    toolbar, cache
 from albumy.models import Role, User, Photo, Tag, Follow, Notification, Comment, Collect, Permission, Category
 from albumy.settings import config
 
@@ -32,8 +33,12 @@ def create_app(config_name=None):
         config_name = os.getenv('FLASK_CONFIG', 'development')
 
     app = Flask('albumy')
+    cache.init_app(app=app, config={'CACHE_TYPE': 'redis', 'DEBUG_TB_INTERCEPT_REDIRECTS': False,
+                                    'CACHE_REDIS_HOST': '10.10.19.6', 'CACHE_REDIS_PORT': 6379})
 
     app.config.from_object(config[config_name])
+
+    # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False   #不要在这直接配置,在settings里的development中配
 
     register_extensions(app)
     register_blueprints(app)
@@ -57,7 +62,7 @@ def register_extensions(app):
     avatars.init_app(app)
     csrf.init_app(app)
     ckeditor.init_app(app)
-    # toolbar.init_app(app)   # 注释就可以关闭toolbar性能分析器
+    toolbar.init_app(app)  # 注释就可以关闭toolbar性能分析器
 
 
 def register_blueprints(app):
@@ -95,7 +100,7 @@ def register_template_context(app):
             notification_count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
         else:
             notification_count = None
-        return dict(notification_count=notification_count, categories=categories,)
+        return dict(notification_count=notification_count, categories=categories, )
 
 
 def register_errorhandlers(app):
