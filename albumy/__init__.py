@@ -62,7 +62,7 @@ def register_extensions(app):
     avatars.init_app(app)
     csrf.init_app(app)
     ckeditor.init_app(app)
-    toolbar.init_app(app)  # 注释就可以关闭toolbar性能分析器
+    # toolbar.init_app(app)  # 注释就可以关闭toolbar性能分析器
 
 
 def register_blueprints(app):
