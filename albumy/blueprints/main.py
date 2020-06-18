@@ -1344,7 +1344,11 @@ def explore5():
     college1 = {"E20200413162037038100001", "E20200416090257000600001"}
     for c in college1:
         explore4(c)
-    return 'ff'
+    flash('两单插入order_info成功', 'info')
+    # 下面的两种跳转回去都可以yeah
+    return redirect(url_for('main.lfa'))
+    # return redirect_back()
+    # return 'ff'
 
 
 @main_bp.route('/post/manage')

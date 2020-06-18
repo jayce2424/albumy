@@ -4,6 +4,14 @@
 
 {% block title %}owenum{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='open-iconic/font/css/open-iconic-bootstrap.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!--<link href="{{ url_for('static', filename='css/materialize.min.css') }}" rel="stylesheet">-->
+{% endblock %}
+
 {% block content %}
 
 
@@ -18,23 +26,26 @@
     <h1>Owes
         <small class="text-muted">{{ pagination.total }}</small>
 <!--         {{ render_form(form) }}-->
+
         <span class="float-right"><a class="btn btn-primary btn-sm"
-                                     href="{{ url_for('main.upload_owe') }}">New owe</a></span>
+                                     href="{{ url_for('main.upload_owe') }}"><div><i class="material-icons">face</i></div>New owe</a></span>
+
         <span class="float-right"><a class="btn btn-primary btn-sm"
-                                     href="{{ url_for('main.upload_receive') }}">New receive</a></span>
+                                     href="{{ url_for('main.upload_receive') }}"><div><i class="material-icons">tv</i></div>New receive</a></span>
         <span class="float-right"><a class="btn btn-info btn-sm"
-                                     href="{{ url_for('main.export_owe') }}">Expore owe</a></span>
+                                     href="{{ url_for('main.export_owe') }}"><div><i class="material-icons">format_shapes</i></div>Expore owe</a></span>
 <!--        <span class="float-right"><a class="btn btn-danger btn-sm"-->
 <!--                                     href="{{ url_for('main.delete_all') }}">Delete all</a></span>-->
         <form class="inline" method="post"
                   action="{{ url_for('main.delete_all')}}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete all
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete all<i class="material-icons">gesture</i>
                 </button>
         </form>
     </h1>
      {{ render_form(form) }}
 </div>
+
 {% if owenums %}
 <table class="table table-striped">
     <thead>
