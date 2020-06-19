@@ -1130,7 +1130,27 @@ def index():
         pagination = None
         photos = None
     tags = Tag.query.join(Tag.photos).group_by(Tag.id).order_by(func.count(Photo.id).desc()).limit(10)
-    return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect)
+    # URL_IP = 'https://www.v2ex.com/api/topics/hot.json'
+    # response = requests.get(URL_IP)
+    # gg = json.loads(response.text)
+    # jayuu = gg[1]['title']
+    # print(type(photos))
+    URL_IP = 'https://www.v2ex.com/api/topics/hot.json'
+    response = requests.get(URL_IP)
+    gg = json.loads(response.text)
+    # 把请求到的东西放在一个list里传给前端
+    list1 = []
+    for i in range(len(gg)):
+        list1.append(dict(title=gg[i]['title'], url=gg[i]['url']))
+
+    URL_IP = 'https://www.v2ex.com/api/topics/latest.json'
+    response = requests.get(URL_IP)
+    gg = json.loads(response.text)
+    # 把请求到的东西放在一个list里传给前端
+    list2 = []
+    for i in range(len(gg)):
+        list2.append(dict(title=gg[i]['title'], url=gg[i]['url']))
+    return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect, list1=list1, list2=list2)
 
 
 @main_bp.route('/explore')
@@ -1144,13 +1164,39 @@ def explore():
 @main_bp.route('/explore2')
 def explore2():
     # URL_IP = 'http://httpbin.org/ip'
-    URL_IP = 'https://www.baidu.com'
+    URL_IP = 'https://www.v2ex.com/api/topics/hot.json'
     response = requests.get(URL_IP)
     print('response headers:')
     print(response.headers)
     print('response body:')
     print(response.text)
-    return response.text
+    # print(response[0]['node']['title'])  # 去不到 各种报错
+    gg = json.loads(response.text)
+    print(gg[0]['node']['title'])
+    return gg[0]['node']['title']
+
+
+@main_bp.route('/zidian')
+def zidian():
+    URL_IP = 'https://www.v2ex.com/api/topics/hot.json'
+    response = requests.get(URL_IP)
+    gg = json.loads(response.text)
+    list1=[]
+    # 下面的方式无法判断总共有几个
+    # for num in range(0, 8):
+    #     # list1.append(gg[num]['node']['title'])
+    #     # list1.append(gg[num]['title'])
+    #     list1.append(dict(title=gg[num]['title'], url=gg[num]['url']))
+    # list5 = ['张三', '李四', '王五']
+    # dict1 = {i + 1: list5[i] for i in range(0, len(list5))}
+    # # print(dict1)
+    # for p in gg:
+    #     list1.append(gg[p]['title'])
+    for i in range(len(gg)):
+        # print(i)
+        # print(gg[i])
+        list1.append(gg[i]['title'])
+    return str(list1)
 
 
 @main_bp.route('/tran_json')
@@ -1975,13 +2021,6 @@ def upload_image():
     return upload_success(url, f.filename)
 
 
-@main_bp.route('/')
-def index_post():
-    page = request.args.get('page', 1, type=int)
-    per_page = current_app.config['BLUELOG_POST_PER_PAGE']
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=per_page)
-    posts = pagination.items
-    return render_template('main/index_post.html', pagination=pagination, posts=posts)
 
 
 @main_bp.route('/search')
