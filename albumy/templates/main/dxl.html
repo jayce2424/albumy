@@ -15,7 +15,7 @@
         <span class="float-right"><a class="btn btn-primary btn-sm"
                                      href="{{ url_for('main.export_dxl') }}">导出excel全部数据</a></span>
     </h1>
-    {{ render_form(form) }}
+{{ render_form(form, form_type='inline') }}
     <a href="/uploads/export.xls" download="expore"><p>点完上面的"开始按搜索内容导出Excel",再点这下载起来</p></a>
 </div>
 {% if dxls %}

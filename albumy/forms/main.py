@@ -60,7 +60,7 @@ class UploadForm(FlaskForm):
 
 class UploadOweForm(FlaskForm):
     excel = FileField('Upload owe', validators=[FileRequired(),
-                                                  FileAllowed(['xlsx'])])
+                                                FileAllowed(['xlsx'])])
     # submit = SubmitField()
     # 单个表单多个提交按钮
     save = SubmitField('Save')
@@ -68,7 +68,7 @@ class UploadOweForm(FlaskForm):
 
 class UploadReceiveForm(FlaskForm):
     excel = FileField('Upload receive', validators=[FileRequired(),
-                                                  FileAllowed(['xlsx'])])
+                                                    FileAllowed(['xlsx'])])
     # submit = SubmitField()
     # 单个表单多个提交按钮
     save = SubmitField('Save')
@@ -88,10 +88,10 @@ class OweSearchForm(FlaskForm):
 
 
 class DxlSearchForm(FlaskForm):
-    sku = StringField('Sku')
-    hjyear = StringField('年')
-    hjmn = StringField('月')
-    ck_id = StringField('仓库(填JD,TM,XQD,ALL)')
-    weidu = StringField('维度(填4或6)')
+    sku = StringField('Sku', render_kw={'placeholder': 'Sku'})
+    hjyear = StringField('年', render_kw={'placeholder': '年'})
+    hjmn = StringField('月', render_kw={'placeholder': '月'})
+    ck_id = StringField('仓库(填JD,TM,XQD,ALL)', render_kw={'placeholder': '仓库(填JD,TM,XQD,ALL)'})
+    weidu = StringField('维度(填4或6)', render_kw={'placeholder': '维度(填4或6)'})
     submit = SubmitField('搜索')
     submit_excel = SubmitField('开始按搜索内容导出Excel')
