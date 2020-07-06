@@ -5,6 +5,7 @@
     :copyright: © 2018 Grey Li <withlihui@gmail.com>
     :license: MIT, see LICENSE for more details.
 """
+import pymysql
 from random import randrange
 
 from flask import render_template, flash, redirect, url_for, Blueprint
@@ -358,6 +359,37 @@ def indexssddjj():
     return render_template("auth/ssddjj.html")
 
 
+def bar_basejjs() -> Bar:
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+
+    sql = "select * from xs order by 1 limit 1000;"
+    cursor.execute(sql)  # 执行sql语句
+    ret = cursor.fetchall()
+    listd=[]
+    listxl=[]
+    for row in ret:
+        listd.append(row[0])
+        listxl.append(row[1])
+    print(listd)
+    c = (
+        Bar()
+            # .add_xaxis(["衬衫64", "羊毛衫3", "雪纺衫5", "裤子", "高跟鞋", "袜子"])
+            .add_xaxis(listd)
+            # .add_yaxis("商家A", [1,2,3,4,5,6,7,8,9,10])
+            .add_yaxis("商家A", listxl)
+            # .add_yaxis("商家B", [randrange(0, 100) for _ in range(6)])
+            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"))
+    )
+    return c
+
+
+
 def bar_basejj() -> Bar:
     c = (
         Bar()
@@ -380,7 +412,7 @@ def bar_basejjj() -> Bar:
 
 @auth_bp.route("/barChart")
 def get_bar_chart():
-    c = bar_basejj()
+    c = bar_basejjs()
     return c.dump_options_with_quotes()
 
 

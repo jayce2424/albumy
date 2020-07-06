@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link href="{{ url_for('static', filename='css/materialize.min.css') }}" rel="stylesheet">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body>
+
+<div class="row">
+    <div class="col s1 deep-orange lighten-2">1</div>
+    <div class="col s1 deep-orange lighten-2">2</div>
+    <div class="col s1 deep-orange lighten-2">3</div>
+    <div class="col s1 deep-orange lighten-2">4</div>
+    <div class="col s1">5</div>
+    <div class="col s1">6</div>
+    <div class="col s1">7</div>
+    <div class="col s1">8</div>
+    <div class="col s1">9</div>
+    <div class="col s1">10</div>
+    <div class="col s1">11</div>
+    <div class="col s1">12</div>
+</div>
+<div class="row">
+    <div class="col s12 deep-orange lighten-2">12列的宽度的div</div>
+    <div class="col s6 deep-orange lighten-2">6列的宽度 (一半)</div>
+    <div class="col s6 green accent-3">6列的宽度 (一半)</div>
+</div>
+<div class="row">
+    <div class="col s12"><span class="flow-text">12列全屏大小</span></div>
+    <div class="col s3 offset-s3 green accent-3"><span class="flow-text">3列 (偏移3列)</span></div>
+</div>
+<div class="row">
+    <div class="col s7 push-s5 deep-orange lighten-2"><span class="flow-text">这个div占了7列的宽度，推向到五列的右边。</span></div>
+    <div class="col s5 pull-s7 green accent-3"><span class="flow-text">占据5列的宽度，拉到7列的左边。</span></div>
+</div>
+
+<!-- Dropdown Trigger -->
+  <a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Drop Me!</a>
+
+  <!-- Dropdown Structure -->
+  <ul id='dropdown1' class='dropdown-content'>
+    <li><a href="#!">one</a></li>
+    <li><a href="#!">two</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li><a href="#!">three</a></li>
+    <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+    <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+  </ul>
+
+
+  <!-- Modal Trigger -->
+  <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+ <!-- Modal Trigger -->
+  <button data-target="modal1" class="btn modal-trigger">Modal</button>
+ <!-- Modal Trigger -->
+  <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
+
+<div class="row">
+
+    <div class="col s4">
+        <div>
+            <div class="card">
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" src="{{ url_for('static', filename='images/error.jpg') }}">
+                </div>
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4">卡片标题<i class="material-icons right">more_vert</i></span>
+                    <p><a href="#">这是一个链接</a></p>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title grey-text text-darken-4">卡片标题<i
+                            class="material-icons right">close</i></span>
+                    <p>单击后显示的产品的详细信息。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s4">
+
+    </div>
+    <div class="col s4">
+
+    </div>
+
+</div>
+
+<div class="card-panel hoverable"> 可悬浮卡片面板</div>
+
+
+<div class="collection">
+    <a href="#!" class="collection-item"><span class="badge">1</span>阿兰</a>
+    <a href="#!" class="collection-item"><span class="new badge">4</span>阿兰</a>
+    <a href="#!" class="collection-item">阿兰</a>
+    <a href="#!" class="collection-item"><span class="badge">14</span>阿兰</a>
+</div>
+
+
+<div class="chip">
+    <img src="{{ url_for('static', filename='images/antonio41_s.png') }}" alt="Contact Person">
+    李四
+</div>
+
+<div class="chip">
+    标签
+    <i class="close material-icons">close</i>
+</div>
+
+
+
+  <ul class="collapsible">
+    <li>
+      <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    <li class="active">
+      <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    <li>
+      <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+  </ul>
+
+<div class="progress">
+    <div class="indeterminate"></div>
+</div>
+
+
+  <ul class="collapsible popout">
+    <li>
+      <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    <li class="active">
+      <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    <li>
+      <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+  </ul>
+
+<div class="progress">
+    <div class="indeterminate"></div>
+</div>
+
+
+  <ul class="collapsible expandable">
+    <li>
+      <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    <li>
+      <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    <li>
+      <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
+      <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+  </ul>
+
+
+
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+<!--    var elems = document.querySelectorAll('.collapsible');-->
+<!--    var instances = M.Collapsible.init(elems, options);-->
+    var elem = document.querySelector('.collapsible.expandable');
+    var instance = M.Collapsible.init(elem, {
+    accordion: false
+});
+    var elems = document.querySelectorAll('.dropdown-trigger');
+    var instances = M.Dropdown.init(elems, options);
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems, options);
+});
+
+  // Or with jQuery
+
+  $(document).ready(function(){
+    $('.collapsible').collapsible();
+    $('.dropdown-trigger').dropdown();
+    $('.modal').modal();
+  });
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

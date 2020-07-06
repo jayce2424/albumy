@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/materialize.min.css') }}" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 {% endblock %}
 
 {% block content %}
@@ -17,13 +18,15 @@
 </div>
 
 <a onclick="M.toast({html: 'I am a toast'})" class="btn">Toast!</a>
-<div>get请求: <a href="{{ url_for('main.explore2') }}">explore2</a></div>
+<div class="card-panel blue-grey">get请求: <a class="blue-text text-darken-2" href="{{ url_for('main.explore2') }}">explore2</a></div>
 <div>post请求所有商品: <a href="{{ url_for('main.explore3') }}">explore3</a></div>
 <div>post请求单个订单(url_for带上参数的例子): <a
         href="{{ url_for('main.explore4', _external=True, tid='E20200413162037038100001') }}">explore4</a></div>
 <div>逐个插入订单主表: <a href="{{ url_for('main.explore5') }}">explore5</a></div>
 <div>get请求到爱库存的活动列表: <a href="{{ url_for('main.aikucun_get_token1') }}">aikucun_activity</a></div>
 <div>pyechart_show:<a href="{{ url_for('auth.indexssdd3') }}">ssdd3</a></div>
+<div>Materialize主页:<a href="{{ url_for('main.lfa2') }}">lfa2</a></div>
+<div>Materialize探索:<a href="{{ url_for('main.lfa3') }}">lfa3</a></div>
 
 
 <div id="bar" style="width:1000px; height:600px;"></div>

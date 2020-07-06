@@ -1358,6 +1358,16 @@ def lfa():
     return render_template('main/lfa.html')
 
 
+@main_bp.route('/lfa2')
+def lfa2():
+    return render_template('main/lfa2.html')
+
+
+@main_bp.route('/lfa3')
+def lfa3():
+    return render_template('main/lfa3.html')
+
+
 # http://127.0.0.1:5010/explore4/E20200413162037038100001   没有问号的带参数
 # url_for('main.explore4', _external=True, tid='E20200413162037038100001')
 @main_bp.route('/explore4/<tid>')
