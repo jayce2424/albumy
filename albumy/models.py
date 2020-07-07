@@ -347,6 +347,17 @@ def delete_photos(**kwargs):
             os.remove(path)
 
 
+class Jxc_rj_202006(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
 class Jxc_rj_202005(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ck_id = db.Column(db.Integer)
