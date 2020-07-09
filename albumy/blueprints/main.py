@@ -1624,7 +1624,7 @@ def calc_dxl_ALL_6():
     return str(i)
 
 
-@main_bp.route('/')
+@main_bp.route('/lfa')
 def index():
     if current_user.is_authenticated:
         page = request.args.get('page', 1, type=int)
@@ -1862,7 +1862,7 @@ def explore3():
     return response.text
 
 
-@main_bp.route('/lfa')
+@main_bp.route('/')
 def lfa():
     return render_template('main/lfa.html')
 
@@ -2352,6 +2352,208 @@ def export_owe():
     # 保存excel文件
     wb.save('./uploads/export.xls')
     return render_template('main/export_excel.html')
+
+
+@main_bp.route('/export_117', methods=['GET', 'POST'])
+def export_117():
+    wb = xlwt.Workbook()
+    # 添加一个表
+    ws = wb.add_sheet('Sheet1',  cell_overwrite_ok=True)
+
+    # 3个参数分别为行号，列号，和内容
+    # 需要注意的是行号和列号都是从0开始的
+    ws.write(0, 0, 'goods_sn')
+    ws.write(0, 1, 'sku')
+    ws.write(0, 2, 'outer_goods_name')
+    ws.write(0, 3, 'goods_barcode')
+    ws.write(0, 4, 'STATUS')
+    ws.write(0, 5, 'approve_status')
+    ws.write(0, 6, 'outer_goods_id')
+    ws.write(0, 7, 'outer_goods_url')
+    # owenums = Owenum.query.all()
+    # print(owenums[0])
+    # i = 1
+    # for owenum in owenums:
+    #     ws.write(i, 0, owenum.id)
+    #     ws.write(i, 1, owenum.sku)
+    #     ws.write(i, 2, owenum.yao)
+    #     ws.write(i, 3, owenum.shiji)
+    #     ws.write(i, 4, owenum.owe)
+    #     ws.write(i, 5, owenum.receive_date)
+    #     i = i + 1
+    try:
+        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
+                             passwd="MgBaIsOn20191022AbYz",
+                             db="mg_e3")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+
+    sql = '''SELECT
+ goods_sn,
+  sku,
+ outer_goods_name,
+ goods_barcode,
+ CASE STATUS
+WHEN 0 THEN
+ '禁止同步'
+WHEN 1 THEN
+ '自动同步'
+END AS STATUS,
+ CASE approve_status
+WHEN 'onsale' THEN
+ '在售'
+WHEN 'instock' THEN
+ '下架'
+END AS approve_status,
+ outer_goods_id,
+ outer_goods_url
+FROM
+ (SELECT a.sku,a.goods_sn,g.goods_sn as goods_barcode,kehu_id,g.outer_goods_name,g.outer_goods_id,g.outer_goods_url,g.approve_status,g.status
+FROM goods_sku a  LEFT JOIN goods_outer_sku g ON a.sku_id=g.goods_sku_id ,
+kehu
+WHERE is_tc=0
+AND is_gd=0
+AND g.kehu_id=kehu.Id
+-- 非套餐非商品级
+union all
+SELECT a.sku,a.goods_sn,g.goods_sn as goods_barcode,kehu_id,g.outer_goods_name,g.outer_goods_id,g.outer_goods_url,g.approve_status,g.status
+FROM goods_sku a  LEFT JOIN goods_outer_sku g ON a.goods_sn=g.goods_sku,
+kehu
+WHERE is_gd=1
+AND g.kehu_id=kehu.Id
+GROUP BY a.sku,status,khmc
+-- 商品级
+union all
+SELECT t.sku,t.goods_sn,t.tc_sku as goods_barcode,kehu_id,g.outer_goods_name,g.outer_goods_id,g.outer_goods_url,g.approve_status,g.status
+FROM goods_outer_sku g LEFT JOIN taocan_goods_mx t ON t.tc_sku=g.goods_sku,
+kehu
+WHERE is_tc=1
+AND g.kehu_id=kehu.Id) a
+WHERE
+ kehu_id = 117
+ORDER BY
+ goods_sn,
+ sku;'''
+    cursor.execute(sql)  # 执行sql语句
+    ret = cursor.fetchall()
+    # print(ret)
+    i = 1
+    for row in ret:
+        # print(row[0])
+        ws.write(i, 0, row[0])
+        ws.write(i, 1, row[1])
+        ws.write(i, 2, row[2])
+        ws.write(i, 3, row[3])
+        ws.write(i, 4, row[4])
+        ws.write(i, 5, row[5])
+        ws.write(i, 6, row[6])
+        ws.write(i, 7, row[7])
+        i = i + 1
+    # 保存excel文件
+    wb.save('./uploads/export_shg.xls')
+    return render_template('main/export_117.html')
+
+
+@main_bp.route('/export_3', methods=['GET', 'POST'])
+def export_3():
+    wb = xlwt.Workbook()
+    # 添加一个表
+    ws = wb.add_sheet('Sheet1',  cell_overwrite_ok=True)
+
+    # 3个参数分别为行号，列号，和内容
+    # 需要注意的是行号和列号都是从0开始的
+    ws.write(0, 0, 'goods_sn')
+    ws.write(0, 1, 'sku')
+    ws.write(0, 2, 'outer_goods_name')
+    ws.write(0, 3, 'goods_barcode')
+    ws.write(0, 4, 'STATUS')
+    ws.write(0, 5, 'approve_status')
+    ws.write(0, 6, 'outer_goods_id')
+    ws.write(0, 7, 'outer_goods_url')
+    # owenums = Owenum.query.all()
+    # print(owenums[0])
+    # i = 1
+    # for owenum in owenums:
+    #     ws.write(i, 0, owenum.id)
+    #     ws.write(i, 1, owenum.sku)
+    #     ws.write(i, 2, owenum.yao)
+    #     ws.write(i, 3, owenum.shiji)
+    #     ws.write(i, 4, owenum.owe)
+    #     ws.write(i, 5, owenum.receive_date)
+    #     i = i + 1
+    try:
+        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
+                             passwd="MgBaIsOn20191022AbYz",
+                             db="mg_e3")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+
+    sql = '''SELECT
+ goods_sn,
+  sku,
+ outer_goods_name,
+ goods_barcode,
+ CASE STATUS
+WHEN 0 THEN
+ '禁止同步'
+WHEN 1 THEN
+ '自动同步'
+END AS STATUS,
+ CASE approve_status
+WHEN 'onsale' THEN
+ '在售'
+WHEN 'instock' THEN
+ '下架'
+END AS approve_status,
+ outer_goods_id,
+ outer_goods_url
+FROM
+ (SELECT a.sku,a.goods_sn,g.goods_sn as goods_barcode,kehu_id,g.outer_goods_name,g.outer_goods_id,g.outer_goods_url,g.approve_status,g.status
+FROM goods_sku a  LEFT JOIN goods_outer_sku g ON a.sku_id=g.goods_sku_id ,
+kehu
+WHERE is_tc=0
+AND is_gd=0
+AND g.kehu_id=kehu.Id
+-- 非套餐非商品级
+union all
+SELECT a.sku,a.goods_sn,g.goods_sn as goods_barcode,kehu_id,g.outer_goods_name,g.outer_goods_id,g.outer_goods_url,g.approve_status,g.status
+FROM goods_sku a  LEFT JOIN goods_outer_sku g ON a.goods_sn=g.goods_sku,
+kehu
+WHERE is_gd=1
+AND g.kehu_id=kehu.Id
+GROUP BY a.sku,status,khmc
+-- 商品级
+union all
+SELECT t.sku,t.goods_sn,t.tc_sku as goods_barcode,kehu_id,g.outer_goods_name,g.outer_goods_id,g.outer_goods_url,g.approve_status,g.status
+FROM goods_outer_sku g LEFT JOIN taocan_goods_mx t ON t.tc_sku=g.goods_sku,
+kehu
+WHERE is_tc=1
+AND g.kehu_id=kehu.Id) a
+WHERE
+ kehu_id = 117
+ORDER BY
+ goods_sn,
+ sku;'''
+    cursor.execute(sql)  # 执行sql语句
+    ret = cursor.fetchall()
+    # print(ret)
+    i = 1
+    for row in ret:
+        # print(row[0])
+        ws.write(i, 0, row[0])
+        ws.write(i, 1, row[1])
+        ws.write(i, 2, row[2])
+        ws.write(i, 3, row[3])
+        ws.write(i, 4, row[4])
+        ws.write(i, 5, row[5])
+        ws.write(i, 6, row[6])
+        ws.write(i, 7, row[7])
+        i = i + 1
+    # 保存excel文件
+    wb.save('./uploads/export_qjd.xls')
+    return render_template('main/export_3.html')
 
 
 @main_bp.route('/export_dxl', methods=['GET', 'POST'])
