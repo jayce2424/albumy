@@ -2532,7 +2532,7 @@ kehu
 WHERE is_tc=1
 AND g.kehu_id=kehu.Id) a
 WHERE
- kehu_id = 117
+ kehu_id = 3
 ORDER BY
  goods_sn,
  sku;'''
