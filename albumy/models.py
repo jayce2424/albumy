@@ -435,6 +435,11 @@ class Spjgb(db.Model):
     jg1 = db.Column(db.Float)
 
 
+class Xs(db.Model):
+    date = db.Column(db.String(20), primary_key=True)
+    sl = db.Column(db.Integer)
+
+
 
 class Ab_jqx_dxl(db.Model):
     id = db.Column(db.Integer, primary_key=True)

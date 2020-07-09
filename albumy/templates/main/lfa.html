@@ -30,6 +30,7 @@
 
 
 <div id="bar" style="width:1000px; height:600px;"></div>
+<div id="bar2" style="width:1000px; height:600px;"></div>
 
 <div id="liquidfill" style="width:1000px; height:600px;"></div>
 
@@ -55,6 +56,23 @@
                     type: "GET",
 <!--                    url: "http://10.10.19.6:5008/auth/barChart",-->
                     url: "{{ url_for('auth.get_bar_chart') }}",
+                    dataType: 'json',
+                    success: function (result) {
+                        chart.setOption(result);
+                    }
+                });
+            }
+        )
+
+</script>
+<script>
+        $(
+            function () {
+                var chart = echarts.init(document.getElementById('bar2'), 'white', {renderer: 'canvas'});
+                $.ajax({
+                    type: "GET",
+<!--                    url: "http://10.10.19.6:5008/auth/barChart",-->
+                    url: "{{ url_for('auth.get_bar_chart2') }}",
                     dataType: 'json',
                     success: function (result) {
                         chart.setOption(result);

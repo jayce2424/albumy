@@ -14,7 +14,7 @@ from flask_login import login_user, logout_user, login_required, current_user, l
 from albumy.emails import send_confirm_email, send_reset_password_email
 from albumy.extensions import db
 from albumy.forms.auth import LoginForm, RegisterForm, ForgetPasswordForm, ResetPasswordForm
-from albumy.models import User
+from albumy.models import User, Xs
 from albumy.settings import Operations
 from albumy.utils import generate_token, validate_token, redirect_back
 from pyecharts.globals import CurrentConfig
@@ -67,7 +67,7 @@ def bar_base3() -> Bar:
 def bar_base5() -> Bar:
     c = (
         Liquid()
-            .add("lq", [0.6, 0.7])
+            .add("lq", [0.8, 0.2])
             .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-基本示例"))
     )
     return c
@@ -359,7 +359,7 @@ def indexssddjj():
     return render_template("auth/ssddjj.html")
 
 
-def bar_basejjs() -> Bar:
+def bar_basejjs_old() -> Bar:
     try:
         db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
                              passwd="qwer1234.",
@@ -389,6 +389,27 @@ def bar_basejjs() -> Bar:
     return c
 
 
+def bar_basejjs() -> Bar:
+    xss=Xs.query.order_by(Xs.date).all()
+    # print(xs)
+    # exit()
+    listd=[]
+    listxl=[]
+    for xs in xss:
+        listd.append(xs.date)
+        listxl.append(xs.sl)
+    print(listd)
+    c = (
+        Bar()
+            # .add_xaxis(["衬衫64", "羊毛衫3", "雪纺衫5", "裤子", "高跟鞋", "袜子"])
+            .add_xaxis(listd)
+            # .add_yaxis("商家A", [1,2,3,4,5,6,7,8,9,10])
+            .add_yaxis("E3单日发货量", listxl, label_opts=opts.LabelOpts(is_show=False))
+            # .add_yaxis("商家B", [randrange(0, 100) for _ in range(6)])
+            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"),datazoom_opts=[opts.DataZoomOpts(), opts.DataZoomOpts(type_="inside")],)
+    )
+    return c
+
 
 def bar_basejj() -> Bar:
     c = (
@@ -404,7 +425,7 @@ def bar_basejj() -> Bar:
 def bar_basejjj() -> Bar:
     c = (
         Liquid()
-            .add("lq", [0.3, 0.7], is_outline_show=False, shape=SymbolType.DIAMOND)
+            .add("lq", [0.2], is_outline_show=False, shape=SymbolType.DIAMOND)
             .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-Shape-Diamond"))
     )
     return c
@@ -413,6 +434,12 @@ def bar_basejjj() -> Bar:
 @auth_bp.route("/barChart")
 def get_bar_chart():
     c = bar_basejjs()
+    return c.dump_options_with_quotes()
+
+
+@auth_bp.route("/barChart2")
+def get_bar_chart2():
+    c = bar_basejj()
     return c.dump_options_with_quotes()
 
 
