@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% block title %}dxl{% endblock %}
+
+{% block content %}
+
+
+
+<!--{{ret2}}-->
+<table class="table table-striped">
+  {% for dxl in ret2 %}
+    <tr>
+        <td>{{ dxl[0] }}</td>
+        <td>{{ dxl[1] }}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -30,6 +30,7 @@ from pyecharts.charts import Liquid
 from pyecharts.globals import SymbolType
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
+from pyecharts.charts import Line
 import json
 import redis
 
@@ -430,6 +431,77 @@ def bar_basejjj() -> Bar:
     )
     return c
 
+def bar_basejjjh() -> Bar:
+    # ff=Faker.choose()
+    # print(ff)
+    try:
+        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
+                             passwd="MgBaIsOn20191022AbYz",
+                             db="mg_e3")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+
+    sql = """select substring(FROM_UNIXTIME(trans_time),12,2) as DT, COUNT(*) as count 
+from order_info where left(FROM_UNIXTIME(trans_time),10)>='2019-11-11'
+and left(FROM_UNIXTIME(trans_time),10)<'2019-11-12' and sd_id in (3,117,187)
+group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
+    cursor.execute(sql)  # 执行sql语句
+    ret = cursor.fetchall()
+    listd=[]
+    listxl=[]
+    for row in ret:
+        listd.append(row[0])
+        listxl.append(row[1])
+    print(listd)
+    print(listxl)
+    cursor.close()
+    db.close()
+
+    try:
+        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
+                             passwd="MgBaIsOn20191022AbYz",
+                             db="mg_e3")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+
+    sql = """select substring(FROM_UNIXTIME(trans_time),12,2) as DT, COUNT(*) as count 
+    from order_info where left(FROM_UNIXTIME(trans_time),10)>='2020-10-11'
+    and left(FROM_UNIXTIME(trans_time),10)<'2020-10-12' and sd_id in (3,117,187)
+    group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
+    cursor.execute(sql)  # 执行sql语句
+    ret = cursor.fetchall()
+    # listd = []
+    listxl2 = []
+    for row in ret:
+        # listd.append(row[0])
+        listxl2.append(row[1])
+    print(listxl2)
+    cursor.close()
+    db.close()
+
+    c = (
+        Line()
+            .add_xaxis(listd)
+            .add_yaxis("19年", listxl, is_smooth=True)
+            .add_yaxis("20年", listxl2, is_smooth=True)
+            .set_series_opts(
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5),
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+            .set_global_opts(
+            title_opts=opts.TitleOpts(title="E3进单速率对比"),
+            xaxis_opts=opts.AxisOpts(
+                axistick_opts=opts.AxisTickOpts(is_align_with_label=True),
+                is_scale=False,
+                boundary_gap=False,
+            ),
+        )
+            # .render("line_areastyle_boundary_gap.html")
+    )
+    return c
+
 
 @auth_bp.route("/barChart")
 def get_bar_chart():
@@ -446,6 +518,11 @@ def get_bar_chart2():
 @auth_bp.route("/barChartjjj")
 def get_bar_chartjjj():
     c = bar_base5()
+    return c.dump_options_with_quotes()
+
+@auth_bp.route("/barChartjjjh")
+def get_bar_chartjjjh():
+    c = bar_basejjjh()
     return c.dump_options_with_quotes()
 
 

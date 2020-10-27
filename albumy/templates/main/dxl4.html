@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+
+{% block title %}dxl4{% endblock %}
+
+{% block content %}
+
+<img src="{{ url_for('static', filename='images/44.jpg') }}" class="rounded img-fluid">
+<!--<img src="http://gdp.alicdn.com/imgextra/i4/682114580/O1CN01liHHEH1jhgc0TqlTP_!!682114580.jpg"  alt="上海鲜花港 - 郁金香"  width="1000"/>-->
+<!--{{ret2}}-->
+<table class="table table-striped" >
+    <thead>
+    <tr>
+        <th>店铺</th>
+        <th>已进E3单数</th>
+        <th>已审核单数</th>
+        <th>已通知配货单数</th>
+        <th>已发货单数</th>
+        <th>已回写单数</th>
+        <th>已同步WMS</th>
+
+    </tr>
+    </thead>
+  {% for dxl in ret4 %}
+    <tr>
+        <td>{{ dxl[7] }}</td>
+        <td>{{ dxl[1] }}</td>
+        <td>{{ dxl[2] }}</td>
+        <td>{{ dxl[3] }}</td>
+        <td>{{ dxl[4] }}</td>
+        <td>{{ dxl[5] }}</td>
+        <td>{{ dxl[6] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<div id="barChartjjjh" style="width:1000px; height:600px;"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/echarts-liquidfill.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
+
+<script>
+$(
+            function () {
+                var chart = echarts.init(document.getElementById('barChartjjjh'), 'white', {renderer: 'canvas'});
+                $.ajax({
+                    type: "GET",
+<!--                    url: "http://10.10.19.6:5008/auth/barChartjjjh",-->
+                    url: "{{ url_for('auth.get_bar_chartjjjh') }}",
+                    dataType: 'json',
+                    success: function (result) {
+                        chart.setOption(result);
+                    }
+                });
+            }
+        )
+</script>
+{% endblock %}

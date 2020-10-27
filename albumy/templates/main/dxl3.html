@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block title %}dxl3{% endblock %}
+
+{% block content %}
+
+
+
+
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>已进E3单数</th>
+        <th>已审核单数</th>
+        <th>已通知配货单数</th>
+        <th>已发货单数</th>
+        <th>已回写单数</th>
+        <th>已同步WMS</th>
+
+    </tr>
+    </thead>
+
+    <tr>
+        <td>{{ ret2[0] }}</td>
+        <td>{{ ret2[1] }}</td>
+        <td>{{ ret2[2] }}</td>
+        <td>{{ ret2[3] }}</td>
+        <td>{{ ret2[4] }}</td>
+        <td>{{ ret2[5] }}</td>
+        <td>
+
+        </td>
+    </tr>
+
+</table>
+
+{% endblock %}

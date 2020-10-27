@@ -274,8 +274,6 @@ class Owenum(db.Model):
     receive_date = db.Column(db.String(60))
 
 
-
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)
@@ -346,6 +344,41 @@ def delete_photos(**kwargs):
         if os.path.exists(path):  # not every filename map a unique file
             os.remove(path)
 
+class Jxc_rj_202009(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+class Jxc_rj_202008(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+
+class Jxc_rj_202007(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
 
 class Jxc_rj_202006(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -357,6 +390,7 @@ class Jxc_rj_202006(db.Model):
     sl0_pf = db.Column(db.Integer)
     sl0_ls = db.Column(db.Integer)
     sl_qc = db.Column(db.Integer)
+
 
 class Jxc_rj_202005(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -380,6 +414,7 @@ class Jxc_rj_202004(db.Model):
     sl0_pf = db.Column(db.Integer)
     sl0_ls = db.Column(db.Integer)
     sl_qc = db.Column(db.Integer)
+
 
 class Jxc_rj_202003(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -429,6 +464,54 @@ class Jxc_rj_201912(db.Model):
     sl_qc = db.Column(db.Integer)
 
 
+class Jxc_rj_201911(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Jxc_rj_201910(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Jxc_rj_201909(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Jxc_rj_201908(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
 class Spjgb(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sku_id = db.Column(db.Integer)
@@ -438,7 +521,6 @@ class Spjgb(db.Model):
 class Xs(db.Model):
     date = db.Column(db.String(20), primary_key=True)
     sl = db.Column(db.Integer)
-
 
 
 class Ab_jqx_dxl(db.Model):
@@ -452,7 +534,5 @@ class Ab_jqx_dxl(db.Model):
     qm = db.Column(db.Integer)
     xs_s = db.Column(db.Integer)
     last = db.Column(db.Integer)
-    cbj = db.Column(db.Float)  # 首次使用浮点数
-    dxl = db.Column(db.Float)
+    cbj = db.Column(db.Float)
     weidu = db.Column(db.Integer)
-
