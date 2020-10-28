@@ -2780,7 +2780,7 @@ def pymysql4():
 		sum(case when `shipping_status`=3 then 1 else 0 end) as ytzphds,sum(case when `shipping_status`=7 then 1 else 0 end) as yfhds,
 		sum(case when `is_write_back`=1 then 1 else 0 end) as yhxds,sum(case when `is_sync_to_wms` =1 then 1 else 0 end) as ytbwmsds
 		FROM order_info WHERE 1 =1 AND is_combine_new=0 and is_split_new=0 AND is_shougong=0  AND is_copy=0 AND is_sh_ship=0  
-		AND FROM_UNIXTIME(add_time,'%Y-%m-%d %H:%i:%s') >= '2020-10-27 00:00:00' AND FROM_UNIXTIME(add_time,'%Y-%m-%d %H:%i:%s') <= '2020-10-28 00:00:00'
+		AND FROM_UNIXTIME(add_time,'%Y-%m-%d %H:%i:%s') >= '2020-11-01 00:00:00' AND FROM_UNIXTIME(add_time,'%Y-%m-%d %H:%i:%s') <= '2020-11-12 00:00:00'
 		group by sd_id) hh ,kehu h where h.id=hh.sd_id order by 2 desc"""
     # 执行SQL语句
     cursor.execute(sql)
@@ -2797,7 +2797,7 @@ def pymysql4():
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-08-11 00:00:00'and FROM_UNIXTIME(pay_time)<'2020-10-11 23:59:59' and order_status!='3';"""
+    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-11-11 00:00:00'and FROM_UNIXTIME(pay_time)<='2020-11-11 23:59:59' and order_status!='3';"""
     # 执行SQL语句
     cursor.execute(sql)
     # 获取多条查询数据
