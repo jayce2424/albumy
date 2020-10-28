@@ -2790,7 +2790,24 @@ def pymysql4():
     conn.close()
     # 打印下查询结果
     print(ret)
-    return render_template('main/dxl4.html', ret4=ret)
+    # 连接database
+    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
+                           passwd="MgBaIsOn20191022AbYz",
+                           db="mg_e3")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-08-11 00:00:00'and FROM_UNIXTIME(pay_time)<'2020-10-11 23:59:59' and order_status!='3';"""
+    # 执行SQL语句
+    cursor.execute(sql)
+    # 获取多条查询数据
+    ret2 = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    # 打印下查询结果
+    print(ret2)
+    print(ret2[0])
+    return render_template('main/dxl4.html', ret4=ret, ret2=ret2[0])
     # return str(ret)
 
 

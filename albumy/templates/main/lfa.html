@@ -27,6 +27,7 @@
 <div>pyechart_show:<a href="{{ url_for('auth.indexssdd3') }}">ssdd3</a></div>
 <div>Materialize主页:<a href="{{ url_for('main.lfa2') }}">lfa2</a></div>
 <div>Materialize探索:<a href="{{ url_for('main.lfa3') }}">lfa3</a></div>
+<div>双十一<a href="{{ url_for('main.pymysql4') }}">双十一</a></div>
 <div class="#ffcc80 orange lighten-3">get请求: <a class="blue-text text-darken-2" href="{{ url_for('main.export_3') }}">待定</a></div>
 <div class="#f57c00 orange darken-2">get请求: <a class="blue-text text-darken-2" href="{{ url_for('main.export_117') }}">待定</a></div>
 <div class="card-panel orange lighten-3">导出平台多链接: <a class="blue-text text-darken-2" href="{{ url_for('main.export_3') }}">导出天猫旗舰店数据</a></div>
@@ -37,7 +38,7 @@
 
 <div id="liquidfill" style="width:1000px; height:600px;"></div>
 
-<div id="barChartjjjh" style="width:1000px; height:600px;"></div>
+<!--<div id="barChartjjjh" style="width:1000px; height:600px;"></div>-->
 
 
 
@@ -104,22 +105,22 @@
         )
 
 </script>
-<script>
-$(
-            function () {
-                var chart = echarts.init(document.getElementById('barChartjjjh'), 'white', {renderer: 'canvas'});
-                $.ajax({
-                    type: "GET",
-<!--                    url: "http://10.10.19.6:5008/auth/barChartjjjh",-->
-                    url: "{{ url_for('auth.get_bar_chartjjjh') }}",
-                    dataType: 'json',
-                    success: function (result) {
-                        chart.setOption(result);
-                    }
-                });
-            }
-        )
-</script>
+<!--<script>-->
+<!--$(-->
+<!--            function () {-->
+<!--                var chart = echarts.init(document.getElementById('barChartjjjh'), 'white', {renderer: 'canvas'});-->
+<!--                $.ajax({-->
+<!--                    type: "GET",-->
+<!--&lt;!&ndash;                    url: "http://10.10.19.6:5008/auth/barChartjjjh",&ndash;&gt;-->
+<!--                    url: "{{ url_for('auth.get_bar_chartjjjh') }}",-->
+<!--                    dataType: 'json',-->
+<!--                    success: function (result) {-->
+<!--                        chart.setOption(result);-->
+<!--                    }-->
+<!--                });-->
+<!--            }-->
+<!--        )-->
+<!--</script>-->
 {% endblock %}
 
 

@@ -33,6 +33,8 @@
     </tr>
     {% endfor %}
 </table>
+<h7>目前已入E3订单销售总额为:{{ ret2 }}元</h7>
+<div id="liquidfill" style="width:1000px; height:600px;"></div>
 <div id="barChartjjjh" style="width:1000px; height:600px;"></div>
 
 {% endblock %}
@@ -43,6 +45,23 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/echarts-liquidfill.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
 
+<script>
+        $(
+            function () {
+                var chart = echarts.init(document.getElementById('liquidfill'), 'white', {renderer: 'canvas'});
+                $.ajax({
+                    type: "GET",
+<!--                    url: "http://10.10.19.6:5008/auth/barChartjjj",-->
+                    url: "{{ url_for('auth.get_bar_chartjjj') }}",
+                    dataType: 'json',
+                    success: function (result) {
+                        chart.setOption(result);
+                    }
+                });
+            }
+        )
+
+</script>
 <script>
 $(
             function () {

@@ -31,6 +31,7 @@ from pyecharts.globals import SymbolType
 from pyecharts.charts import Pie
 from pyecharts.charts import WordCloud
 from pyecharts.charts import Line
+from decimal import Decimal
 import json
 import redis
 
@@ -66,10 +67,28 @@ def bar_base3() -> Bar:
 
 
 def bar_base5() -> Bar:
+    # 连接database
+    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
+                           passwd="MgBaIsOn20191022AbYz",
+                           db="mg_e3")
+    # 得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    # 查询数据的SQL语句
+    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-11-11 00:00:00'and FROM_UNIXTIME(pay_time)<='2020-11-11 23:59:59' and order_status!='3';"""
+    # 执行SQL语句
+    cursor.execute(sql)
+    # 获取多条查询数据
+    ret = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    # 打印下查询结果
+    print(ret)
+    print(ret[0])
+    gg=ret[0]/Decimal(280000000)
     c = (
         Liquid()
-            .add("lq", [0.8, 0.2])
-            .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-基本示例"))
+            .add("lq", [gg, 0.2])
+            .set_global_opts(title_opts=opts.TitleOpts(title="已完成目标2.8亿的:"))
     )
     return c
 
@@ -467,8 +486,8 @@ group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     cursor = db.cursor()
 
     sql = """select substring(FROM_UNIXTIME(trans_time),12,2) as DT, COUNT(*) as count 
-    from order_info where left(FROM_UNIXTIME(trans_time),10)>='2020-10-11'
-    and left(FROM_UNIXTIME(trans_time),10)<'2020-10-12' and sd_id in (3,117,187)
+    from order_info where left(FROM_UNIXTIME(trans_time),10)>='2020-11-11'
+    and left(FROM_UNIXTIME(trans_time),10)<'2020-11-12' and sd_id in (3,117,187)
     group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     cursor.execute(sql)  # 执行sql语句
     ret = cursor.fetchall()
@@ -491,7 +510,7 @@ group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
             label_opts=opts.LabelOpts(is_show=False),
         )
             .set_global_opts(
-            title_opts=opts.TitleOpts(title="E3进单速率对比"),
+            title_opts=opts.TitleOpts(title="E3历年淘系进单速率对比"),
             xaxis_opts=opts.AxisOpts(
                 axistick_opts=opts.AxisTickOpts(is_align_with_label=True),
                 is_scale=False,
