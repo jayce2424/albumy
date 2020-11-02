@@ -536,3 +536,4 @@ class Ab_jqx_dxl(db.Model):
     last = db.Column(db.Integer)
     cbj = db.Column(db.Float)
     weidu = db.Column(db.Integer)
+    dxl = db.Column(db.Float)
