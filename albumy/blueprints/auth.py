@@ -84,7 +84,7 @@ def bar_base5() -> Bar:
     # 打印下查询结果
     print(ret)
     print(ret[0])
-    gg=ret[0]/Decimal(280000000)
+    gg=ret[0]/Decimal(280000000.00)
     c = (
         Liquid()
             .add("lq", [gg, 0.2])
