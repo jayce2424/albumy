@@ -463,7 +463,7 @@ def bar_basejjjh() -> Bar:
 
     sql = """select substring(FROM_UNIXTIME(trans_time),12,2) as DT, COUNT(*) as count 
 from order_info where left(FROM_UNIXTIME(trans_time),10)>='2019-11-11'
-and left(FROM_UNIXTIME(trans_time),10)<'2019-11-12' and sd_id in (3,117,187)
+and left(FROM_UNIXTIME(trans_time),10)<'2019-11-12' and sd_id in (3,117,187) and order_status!=3
 group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     cursor.execute(sql)  # 执行sql语句
     ret = cursor.fetchall()
@@ -486,8 +486,8 @@ group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     cursor = db.cursor()
 
     sql = """select substring(FROM_UNIXTIME(trans_time),12,2) as DT, COUNT(*) as count 
-    from order_info where left(FROM_UNIXTIME(trans_time),10)>='2020-11-11'
-    and left(FROM_UNIXTIME(trans_time),10)<'2020-11-12' and sd_id in (3,117,187)
+    from order_info where left(FROM_UNIXTIME(trans_time),10)>='2020-11-01'
+    and left(FROM_UNIXTIME(trans_time),10)<'2020-11-12' and sd_id in (3,117,187) and order_status!=3
     group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     cursor.execute(sql)  # 执行sql语句
     ret = cursor.fetchall()
