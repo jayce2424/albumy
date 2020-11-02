@@ -74,7 +74,7 @@ def bar_base5() -> Bar:
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
-    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-11-11 00:00:00'and FROM_UNIXTIME(pay_time)<='2020-11-11 23:59:59' and order_status!='3';"""
+    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-11-01 00:00:00'and FROM_UNIXTIME(pay_time)<='2020-11-11 23:59:59' and order_status!='3';"""
     # 执行SQL语句
     cursor.execute(sql)
     # 获取多条查询数据
@@ -84,7 +84,7 @@ def bar_base5() -> Bar:
     # 打印下查询结果
     print(ret)
     print(ret[0])
-    gg=ret[0]/Decimal(280000000.00)
+    gg=ret[0]/Decimal(280000000)
     c = (
         Liquid()
             .add("lq", [gg, 0.2])
