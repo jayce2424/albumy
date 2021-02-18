@@ -2235,11 +2235,12 @@ def insert_owe_process(sheet, filename):
 
         sku = sheet.cell(i, 0).value  # 取第i行第0列
         yao = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        qd =  sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
         print(sku)
         print(yao)
-        value = (sku, yao, yao)
+        value = (sku, yao, yao, qd)
         print(value)
-        sql = "INSERT INTO owenum(sku,yao,owe)VALUES(%s,%s,%s)"
+        sql = "INSERT INTO owenum(sku,yao,owe,qd)VALUES(%s,%s,%s,%s)"
         print(sql)
         cursor.execute(sql, value)  # 执行sql语句
         db.commit()
@@ -2259,61 +2260,63 @@ def insert_receive_process(sheet, filename):
     except:
         print("could not connect to mysql server")
     cursor = db.cursor()
-    # 先预检查
-    for i in range(1, sheet.nrows):
-        sku = sheet.cell(i, 0).value  # 取第i行第0列
-        shiji = int(sheet.cell(i, 1).value)  # 取第i行第1列，下面依次类推
-        receive_date = sheet.cell(i, 2).value  # 取第i行第1列，下面依次类推
-        # receive_date = int(receive_date)
-        print(sku)
-        print(shiji)
-        print(receive_date)
-        # exit()
-        value = sku
-        # print(value)
-        sql = "select sum(owe) as sum from owenum where sku=%s ;"
-        cursor.execute(sql, value)  # 执行sql语句
-        ret = cursor.fetchone()
-        # print(ret)  # 输出的ret是个tuple元组
-        # sum = ret[0]
-        sum = int(ret[0] or 0)
-        # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多
-        if sum < shiji:
-            message = Markup(
-                'Insert yao %s error:'
-                '欠量合计%s<本次入库%s' % (sku, sum, shiji))
-            flash(message, 'danger')
-            cursor.close()  # 关闭连接
-            db.close()  # 关闭数据
-            return 'error'
+    # 先预检查  20210218 去除
+    # for i in range(1, sheet.nrows):
+    #     sku = sheet.cell(i, 0).value  # 取第i行第0列
+    #     shiji = int(sheet.cell(i, 1).value)  # 取第i行第1列，下面依次类推
+    #     receive_date = sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
+    #     qd = sheet.cell(i, 3).value  # 取第i行第2列，下面依次类推
+    #     # receive_date = int(receive_date)
+    #     print(sku)
+    #     print(shiji)
+    #     print(receive_date)
+    #     # exit()
+    #     value = (sku, qd)
+    #     # print(value)
+    #     sql = "select sum(owe) as sum from owenum where sku=%s and qd=%s;"
+    #     cursor.execute(sql, value)  # 执行sql语句
+    #     ret = cursor.fetchone()
+    #     # print(ret)  # 输出的ret是个tuple元组
+    #     # sum = ret[0]
+    #     sum = int(ret[0] or 0)
+    #     # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多
+    #     if sum < shiji:
+    #         message = Markup(
+    #             'Insert yao %s error %s:'
+    #             '欠量合计%s<本次入库%s' % (sku, qd, sum, shiji))
+    #         flash(message, 'danger')
+    #         cursor.close()  # 关闭连接
+    #         db.close()  # 关闭数据
+    #         return 'error'
     for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
 
         sku = sheet.cell(i, 0).value  # 取第i行第0列
         shiji = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
-        receive_date = sheet.cell(i, 2).value  # 取第i行第1列，下面依次类推
+        receive_date = sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
+        qd = sheet.cell(i, 3).value  # 取第i行第3列，下面依次类推
         # receive_date = int(receive_date)
         print(sku)
         print(shiji)
         print(receive_date)
         # exit()
-        value = sku
+        value = (sku, qd)
         # print(value)
-        sql = "select sum(owe) as sum from owenum where sku=%s ;"
+        sql = "select sum(owe) as sum from owenum where sku=%s and qd=%s ;"
         cursor.execute(sql, value)  # 执行sql语句
         ret = cursor.fetchone()
         # print(ret)  # 输出的ret是个tuple元组
         sum = ret[0]
-        # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多
+        # 报错情况 555+443=998<4444  来的太多了   欠量永远比到货多  20210218modify 让这种情况的欠量变成负
         if sum < shiji:
             message = Markup(
-                'Insert yao %s error:'
-                '欠量合计%s<本次入库%s' % (sku, sum, shiji))
+                'Insert yao %s error %s:'
+                '欠量合计%s<本次入库%s' % (sku, qd, sum, shiji))
             flash(message, 'danger')
             cursor.close()  # 关闭连接
             db.close()  # 关闭数据
             return 'error'
         if sum >= shiji:
-            sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+            sql = "select owe,id  from owenum where sku=%s and owe!=0 and qd=%s order by id limit 1;"
             cursor.execute(sql, value)  # 执行sql语句
             ret = cursor.fetchone()
             # print(ret)
@@ -2324,54 +2327,54 @@ def insert_receive_process(sheet, filename):
             # exit()
             # 一次update就能搞定  555 > 444  欠量还存在 结束
             if owe >= shiji:
-                value = (owe, shiji, receive_date, shiji, sku, id)
-                sql = "update owenum set owe=%s-%s,receive_date=%s, shiji=%s where sku=%s  and id=%s "
+                value = (owe, shiji, receive_date, shiji, sku, id, qd)
+                sql = "update owenum set owe=%s-%s,receive_date=%s, shiji=%s where sku=%s  and id=%s  and qd=%s"
                 # print(sql)
                 cursor.execute(sql, value)  # 执行sql语句
                 db.commit()
                 message = Markup(
-                    'Update yao %s success:'
-                    '欠量合计%s>本次入库%s并且一次就能满足' % (sku, owe, shiji))
+                    'Update yao %s success %s:'
+                    '欠量合计%s>本次入库%s并且一次就能满足' % (sku, qd, owe, shiji))
                 flash(message, 'success')
             # 一次update不能搞定  555 > 558  最近一笔欠量满足掉 第二笔没满足
             if owe < shiji:
                 # 先满足掉第一笔  receive_date记录首次到货的时间
-                value = (receive_date, shiji, sku, id)
-                sql = "update owenum set owe=0,receive_date=%s,shiji=%s where sku=%s  and id=%s "
+                value = (receive_date, shiji, sku, id, qd)
+                sql = "update owenum set owe=0,receive_date=%s,shiji=%s where sku=%s  and id=%s and qd=%s"
                 # print(sql)
                 cursor.execute(sql, value)  # 执行sql语句
                 db.commit()
                 # 开始处理第二笔
                 left = shiji - owe  # 剩余待处理的 3 多了3
-                value = (sku)
-                sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+                value = (sku, qd)
+                sql = "select owe,id  from owenum where sku=%s and owe!=0 and qd=%s order by id limit 1;"
                 cursor.execute(sql, value)  # 执行sql语句
                 ret2 = cursor.fetchone()
                 owe2 = ret2[0]  # 443
                 id2 = ret2[1]  # 63
                 while left > owe2:
-                    value = (sku)
-                    sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+                    value = (sku, qd)
+                    sql = "select owe,id  from owenum where sku=%s and owe!=0 and qd=%s order by id limit 1;"
                     cursor.execute(sql, value)  # 执行sql语句
                     ret = cursor.fetchone()
                     owe2 = ret2[0]  # 443
                     id2 = ret2[1]  # 63
-                    value = (left, sku, id2)
-                    sql = "update owenum set owe=0,receive_date=%s where sku=%s  and id=%s "
+                    value = (left, sku, id2, qd)
+                    sql = "update owenum set owe=0,receive_date=%s where sku=%s  and id=%s and qd=%s"
                     # print(sql)
                     cursor.execute(sql, value)  # 执行sql语句
                     db.commit()
                     left = left - owe2
-                    value = (sku)
-                    sql = "select owe,id  from owenum where sku=%s and owe!=0 order by id limit 1;"
+                    value = (sku, qd)
+                    sql = "select owe,id  from owenum where sku=%s and owe!=0 and qd=%s order by id limit 1;"
                     cursor.execute(sql, value)  # 执行sql语句
                     ret2 = cursor.fetchone()
                     owe2 = ret2[0]  # 443
                     id2 = ret2[1]  # 63
                     # left= left - owe2
                 # 结束 本次到货全部覆盖到欠量  3<443
-                value = (owe2, left, left, sku, id2)
-                sql = "update owenum set owe=%s-%s,receive_date=%s  where sku=%s  and id=%s "
+                value = (owe2, left, left, sku, id2, qd)
+                sql = "update owenum set owe=%s-%s,receive_date=%s  where sku=%s  and id=%s and qd=%s"
                 # print(sql)
                 cursor.execute(sql, value)  # 执行sql语句
                 db.commit()
@@ -2465,6 +2468,7 @@ def export_owe():
     ws.write(0, 3, 'shiji')
     ws.write(0, 4, 'owe')
     ws.write(0, 5, 'receive_date')
+    ws.write(0, 6, 'qd')
     owenums = Owenum.query.all()
     print(owenums[0])
     i = 1
@@ -2475,6 +2479,7 @@ def export_owe():
         ws.write(i, 3, owenum.shiji)
         ws.write(i, 4, owenum.owe)
         ws.write(i, 5, owenum.receive_date)
+        ws.write(i, 6, owenum.qd)
         i = i + 1
 
     # 保存excel文件

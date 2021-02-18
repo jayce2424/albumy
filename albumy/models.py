@@ -272,6 +272,7 @@ class Owenum(db.Model):
     shiji = db.Column(db.Integer)
     owe = db.Column(db.Integer)
     receive_date = db.Column(db.String(60))
+    qd = db.Column(db.String(10))
 
 
 class Category(db.Model):
