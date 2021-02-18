@@ -344,6 +344,43 @@ def delete_photos(**kwargs):
         if os.path.exists(path):  # not every filename map a unique file
             os.remove(path)
 
+class Jxc_rj_202012(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+class Jxc_rj_202011(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
+
+class Jxc_rj_202010(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ck_id = db.Column(db.Integer)
+    sku = db.Column(db.String(30))
+    sku_id = db.Column(db.Integer)
+    date = db.Column(db.String(30))
+    sl_qm = db.Column(db.Integer)
+    sl0_pf = db.Column(db.Integer)
+    sl0_ls = db.Column(db.Integer)
+    sl_qc = db.Column(db.Integer)
+
+
 class Jxc_rj_202009(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ck_id = db.Column(db.Integer)

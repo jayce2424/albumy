@@ -29,7 +29,7 @@ from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_comment
     UploadOweForm, UploadReceiveForm, OweSearchForm, DxlSearchForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum, \
     Ab_jqx_dxl, Jxc_rj_202005, Jxc_rj_202004, Jxc_rj_202003, Jxc_rj_202002, Spjgb, Jxc_rj_202001, Jxc_rj_201912, \
-    Jxc_rj_202006, Jxc_rj_202007, Jxc_rj_202008, Jxc_rj_202009, Jxc_rj_201911, Jxc_rj_201910, Jxc_rj_201909, Jxc_rj_201908
+    Jxc_rj_202006, Jxc_rj_202007, Jxc_rj_202008, Jxc_rj_202009, Jxc_rj_202010, Jxc_rj_202011, Jxc_rj_202012, Jxc_rj_201911, Jxc_rj_201910, Jxc_rj_201909, Jxc_rj_201908
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
@@ -55,8 +55,8 @@ def e3():
 @main_bp.route('/calc_dxl_JD_3')
 def calc_dxl_JD_3():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202008.query.with_entities(Jxc_rj_202008.sku, Jxc_rj_202008.sku_id).distinct().filter_by(
-        ck_id=4).filter_by(date='2020-08-31').filter(Jxc_rj_202008.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter_by(
+        ck_id=4).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -64,7 +64,7 @@ def calc_dxl_JD_3():
         print(ll.sku_id)
         i = i + 1
         # return str(i)
-        bbs = Jxc_rj_202006.query.filter_by(ck_id=4).filter_by(date='2020-06-01').filter_by(
+        bbs = Jxc_rj_202010.query.filter_by(ck_id=4).filter_by(date='2020-10-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
         # print(bbs)
         if bbs:
@@ -73,7 +73,7 @@ def calc_dxl_JD_3():
             qc1 = bbs.sl_qc
         else:
             qc1 = 0
-        bbss = Jxc_rj_202008.query.filter_by(ck_id=4).filter_by(date='2020-08-31').filter_by(sku=ll.sku).first()
+        bbss = Jxc_rj_202012.query.filter_by(ck_id=4).filter_by(date='2020-12-31').filter_by(sku=ll.sku).first()
         if bbss:
             # print('44')
             # print(bbss.sl_qm)  # 错误  print(bbs['sl_qm'])
@@ -83,12 +83,12 @@ def calc_dxl_JD_3():
         # 求和  User.query.with_entities(func.sum(User.id)).all()
         # jh1 = Jxc_rj_202003.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
         #     func.sum(Jxc_rj_202003.sl0_pf)).all()
-        jh2 = Jxc_rj_202007.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_pf)).all()
-        jh3 = Jxc_rj_202008.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202008.sl0_pf)).all()
-        jh4 = Jxc_rj_202006.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_pf)).all()
+        jh2 = Jxc_rj_202010.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_pf)).all()
+        jh3 = Jxc_rj_202011.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_pf)).all()
+        jh4 = Jxc_rj_202012.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_pf)).all()
         # print(jh1[0][0])
         # print(jh2)
         # print(jh3)
@@ -135,7 +135,7 @@ def calc_dxl_JD_3():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='08', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='3',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='3',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -153,8 +153,8 @@ def calc_dxl_JD_3():
 @main_bp.route('/calc_dxl_JD_4')
 def calc_dxl_JD_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202009.query.with_entities(Jxc_rj_202009.sku, Jxc_rj_202009.sku_id).distinct().filter_by(
-        ck_id=4).filter_by(date='2020-09-30').filter(Jxc_rj_202009.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter_by(
+        ck_id=4).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -162,7 +162,7 @@ def calc_dxl_JD_4():
         print(ll.sku_id)
         i = i + 1
         # return str(i)
-        bbs = Jxc_rj_202006.query.filter_by(ck_id=4).filter_by(date='2020-06-01').filter_by(
+        bbs = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(date='2020-09-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
         # print(bbs)
         if bbs:
@@ -171,7 +171,7 @@ def calc_dxl_JD_4():
             qc1 = bbs.sl_qc
         else:
             qc1 = 0
-        bbss = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(date='2020-09-30').filter_by(sku=ll.sku).first()
+        bbss = Jxc_rj_202012.query.filter_by(ck_id=4).filter_by(date='2020-12-31').filter_by(sku=ll.sku).first()
         if bbss:
             # print('44')
             # print(bbss.sl_qm)  # 错误  print(bbs['sl_qm'])
@@ -179,14 +179,14 @@ def calc_dxl_JD_4():
         else:
             qm1 = 0
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202006.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_pf)).all()
-        jh2 = Jxc_rj_202007.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_pf)).all()
-        jh3 = Jxc_rj_202008.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202008.sl0_pf)).all()
-        jh4 = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+        jh1 = Jxc_rj_202012.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_pf)).all()
+        jh2 = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202009.sl0_pf)).all()
+        jh3 = Jxc_rj_202010.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_pf)).all()
+        jh4 = Jxc_rj_202011.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_pf)).all()
         # print(jh1[0][0])
         # print(jh2)
         # print(jh3)
@@ -233,7 +233,7 @@ def calc_dxl_JD_4():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='09', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -251,8 +251,8 @@ def calc_dxl_JD_4():
 @main_bp.route('/calc_dxl_JD_6')
 def calc_dxl_JD_6():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202009.query.with_entities(Jxc_rj_202009.sku, Jxc_rj_202009.sku_id).distinct().filter_by(
-        ck_id=4).filter_by(date='2020-09-30').filter(Jxc_rj_202009.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter_by(
+        ck_id=4).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -260,7 +260,7 @@ def calc_dxl_JD_6():
         print(ll.sku_id)
         i = i + 1
         # return str(i)
-        bbs = Jxc_rj_202004.query.filter_by(ck_id=4).filter_by(date='2020-04-01').filter_by(
+        bbs = Jxc_rj_202007.query.filter_by(ck_id=4).filter_by(date='2020-07-01').filter_by(
             sku=ll.sku).first()  # 这里虽然只有一条,但是也不能用one(),大于1或小于1丢会报错,估计一般还是用first
         # print(bbs)
         if bbs:
@@ -269,7 +269,7 @@ def calc_dxl_JD_6():
             qc1 = bbs.sl_qc
         else:
             qc1 = 0
-        bbss = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(date='2020-09-30').filter_by(sku=ll.sku).first()
+        bbss = Jxc_rj_202012.query.filter_by(ck_id=4).filter_by(date='2020-12-31').filter_by(sku=ll.sku).first()
         if bbss:
             # print('44')
             # print(bbss.sl_qm)  # 错误  print(bbs['sl_qm'])
@@ -277,18 +277,18 @@ def calc_dxl_JD_6():
         else:
             qm1 = 0
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202004.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202004.sl0_pf)).all()
-        jh2 = Jxc_rj_202005.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202005.sl0_pf)).all()
-        jh3 = Jxc_rj_202006.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_pf)).all()
-        jh4 = Jxc_rj_202007.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+        jh1 = Jxc_rj_202012.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_pf)).all()
+        jh2 = Jxc_rj_202007.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202007.sl0_pf)).all()
-        jh5 = Jxc_rj_202008.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+        jh3 = Jxc_rj_202008.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202008.sl0_pf)).all()
-        jh6 = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+        jh4 = Jxc_rj_202009.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202009.sl0_pf)).all()
+        jh5 = Jxc_rj_202010.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_pf)).all()
+        jh6 = Jxc_rj_202011.query.filter_by(ck_id=4).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_pf)).all()
         # print(jh1[0][0])
         # print(jh2)
         # print(jh3)
@@ -343,7 +343,7 @@ def calc_dxl_JD_6():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='09', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='6',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='JD', qc=qc1, qm=qm1, xs_s=xs_s, weidu='6',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -361,8 +361,8 @@ def calc_dxl_JD_6():
 @main_bp.route('/calc_dxl_TM_3')
 def calc_dxl_TM_3():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202008.query.with_entities(Jxc_rj_202008.sku, Jxc_rj_202008.sku_id).distinct().filter(
-        Jxc_rj_202008.ck_id.in_(['2', '3'])).filter_by(date='2020-08-31').filter(Jxc_rj_202008.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter(
+        Jxc_rj_202012.ck_id.in_(['2', '3'])).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -391,11 +391,11 @@ def calc_dxl_TM_3():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202006.query. \
+        bbs = Jxc_rj_202010.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-06-01'). \
-            filter(Jxc_rj_202006.ck_id.in_(['2', '3'])). \
-            with_entities(func.sum(Jxc_rj_202006.sl_qc)).all()
+            filter_by(date='2020-10-01'). \
+            filter(Jxc_rj_202010.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202010.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -405,11 +405,11 @@ def calc_dxl_TM_3():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202008.query. \
+        bbss = Jxc_rj_202012.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-08-31'). \
-            filter(Jxc_rj_202008.ck_id.in_(['2', '3'])). \
-            with_entities(func.sum(Jxc_rj_202008.sl_qm)).all()
+            filter_by(date='2020-12-31'). \
+            filter(Jxc_rj_202012.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202012.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -418,14 +418,14 @@ def calc_dxl_TM_3():
         print(qm1)
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls)).all()
+        jh1 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls)).all()
         # jh2 = Jxc_rj_202003.query.filter(Jxc_rj_202003.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
         #     func.sum(Jxc_rj_202003.sl0_ls)).all()
-        jh3 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_ls)).all()
-        jh4 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202008.sl0_ls)).all()
+        jh3 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls)).all()
+        jh4 = Jxc_rj_202012.query.filter(Jxc_rj_202012.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_ls)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -474,7 +474,7 @@ def calc_dxl_TM_3():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='08', ck_id='TM', qc=qc1, qm=qm1, xs_s=xs_s, weidu='3',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='TM', qc=qc1, qm=qm1, xs_s=xs_s, weidu='3',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -492,8 +492,8 @@ def calc_dxl_TM_3():
 @main_bp.route('/calc_dxl_TM_4')
 def calc_dxl_TM_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202009.query.with_entities(Jxc_rj_202009.sku, Jxc_rj_202009.sku_id).distinct().filter(
-        Jxc_rj_202009.ck_id.in_(['2', '3'])).filter_by(date='2020-09-30').filter(Jxc_rj_202009.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter(
+        Jxc_rj_202012.ck_id.in_(['2', '3'])).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -522,11 +522,11 @@ def calc_dxl_TM_4():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202006.query. \
+        bbs = Jxc_rj_202009.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-06-01'). \
-            filter(Jxc_rj_202006.ck_id.in_(['2', '3'])). \
-            with_entities(func.sum(Jxc_rj_202006.sl_qc)).all()
+            filter_by(date='2020-09-01'). \
+            filter(Jxc_rj_202009.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202009.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -536,11 +536,11 @@ def calc_dxl_TM_4():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202009.query. \
+        bbss = Jxc_rj_202012.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-09-30'). \
-            filter(Jxc_rj_202009.ck_id.in_(['2', '3'])). \
-            with_entities(func.sum(Jxc_rj_202009.sl_qm)).all()
+            filter_by(date='2020-12-31'). \
+            filter(Jxc_rj_202012.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202012.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -549,14 +549,14 @@ def calc_dxl_TM_4():
         print(qm1)
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls)).all()
-        jh2 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_ls)).all()
-        jh3 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202008.sl0_ls)).all()
-        jh4 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+        jh1 = Jxc_rj_202012.query.filter(Jxc_rj_202012.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_ls)).all()
+        jh2 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202009.sl0_ls)).all()
+        jh3 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls)).all()
+        jh4 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -605,7 +605,7 @@ def calc_dxl_TM_4():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='09', ck_id='TM', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='TM', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -623,8 +623,8 @@ def calc_dxl_TM_4():
 @main_bp.route('/calc_dxl_TM_6')
 def calc_dxl_TM_6():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202009.query.with_entities(Jxc_rj_202009.sku, Jxc_rj_202009.sku_id).distinct().filter(
-        Jxc_rj_202009.ck_id.in_(['2', '3'])).filter_by(date='2020-09-30').filter(Jxc_rj_202009.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter(
+        Jxc_rj_202012.ck_id.in_(['2', '3'])).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -653,11 +653,11 @@ def calc_dxl_TM_6():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202004.query. \
+        bbs = Jxc_rj_202007.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-04-01'). \
-            filter(Jxc_rj_202004.ck_id.in_(['2', '3'])). \
-            with_entities(func.sum(Jxc_rj_202004.sl_qc)).all()
+            filter_by(date='2020-07-01'). \
+            filter(Jxc_rj_202007.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202007.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -667,11 +667,11 @@ def calc_dxl_TM_6():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202009.query. \
+        bbss = Jxc_rj_202012.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-09-30'). \
-            filter(Jxc_rj_202009.ck_id.in_(['2', '3'])). \
-            with_entities(func.sum(Jxc_rj_202009.sl_qm)).all()
+            filter_by(date='2020-12-31'). \
+            filter(Jxc_rj_202012.ck_id.in_(['2', '3'])). \
+            with_entities(func.sum(Jxc_rj_202012.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -680,18 +680,18 @@ def calc_dxl_TM_6():
         print(qm1)
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202004.query.filter(Jxc_rj_202004.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202004.sl0_ls)).all()
-        jh2 = Jxc_rj_202005.query.filter(Jxc_rj_202005.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202005.sl0_ls)).all()
-        jh3 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls)).all()
-        jh4 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+        jh1 = Jxc_rj_202012.query.filter(Jxc_rj_202012.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_ls)).all()
+        jh2 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202007.sl0_ls)).all()
-        jh5 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+        jh3 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202008.sl0_ls)).all()
-        jh6 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+        jh4 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202009.sl0_ls)).all()
+        jh5 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls)).all()
+        jh6 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['2', '3'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -748,7 +748,7 @@ def calc_dxl_TM_6():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='09', ck_id='TM', qc=qc1, qm=qm1, xs_s=xs_s, weidu='6',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='TM', qc=qc1, qm=qm1, xs_s=xs_s, weidu='6',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -766,8 +766,8 @@ def calc_dxl_TM_6():
 @main_bp.route('/calc_dxl_XQD_3')
 def calc_dxl_XQD_3():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202008.query.with_entities(Jxc_rj_202008.sku, Jxc_rj_202008.sku_id).distinct().filter(
-        Jxc_rj_202008.ck_id.in_(['11', '15'])).filter_by(date='2020-08-31').filter(Jxc_rj_202008.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter(
+        Jxc_rj_202012.ck_id.in_(['11', '15'])).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -802,11 +802,11 @@ def calc_dxl_XQD_3():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202006.query. \
+        bbs = Jxc_rj_202010.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-06-01'). \
-            filter(Jxc_rj_202006.ck_id.in_(['11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202006.sl_qc)).all()
+            filter_by(date='2020-10-01'). \
+            filter(Jxc_rj_202010.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202010.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -816,11 +816,11 @@ def calc_dxl_XQD_3():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202008.query. \
+        bbss = Jxc_rj_202012.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-08-31'). \
-            filter(Jxc_rj_202008.ck_id.in_(['11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202008.sl_qm)).all()
+            filter_by(date='2020-12-31'). \
+            filter(Jxc_rj_202012.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202012.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -831,14 +831,14 @@ def calc_dxl_XQD_3():
         # exit()
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls)).all()
+        jh1 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls)).all()
         # jh2 = Jxc_rj_202003.query.filter(Jxc_rj_202003.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
         #     func.sum(Jxc_rj_202003.sl0_ls)).all()
-        jh3 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_ls)).all()
-        jh4 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202008.sl0_ls)).all()
+        jh3 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls)).all()
+        jh4 = Jxc_rj_202012.query.filter(Jxc_rj_202012.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_ls)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -887,7 +887,7 @@ def calc_dxl_XQD_3():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='08', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
                                 weidu='3',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
@@ -906,8 +906,8 @@ def calc_dxl_XQD_3():
 @main_bp.route('/calc_dxl_XQD_4')
 def calc_dxl_XQD_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202009.query.with_entities(Jxc_rj_202009.sku, Jxc_rj_202009.sku_id).distinct().filter(
-        Jxc_rj_202009.ck_id.in_(['11', '15'])).filter_by(date='2020-09-30').filter(Jxc_rj_202009.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter(
+        Jxc_rj_202012.ck_id.in_(['11', '15'])).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -942,11 +942,11 @@ def calc_dxl_XQD_4():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202006.query. \
+        bbs = Jxc_rj_202009.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-06-01'). \
-            filter(Jxc_rj_202006.ck_id.in_(['11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202006.sl_qc)).all()
+            filter_by(date='2020-09-01'). \
+            filter(Jxc_rj_202009.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202009.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -956,11 +956,11 @@ def calc_dxl_XQD_4():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202009.query. \
+        bbss = Jxc_rj_202012.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-09-30'). \
-            filter(Jxc_rj_202009.ck_id.in_(['11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202009.sl_qm)).all()
+            filter_by(date='2020-12-31'). \
+            filter(Jxc_rj_202012.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202012.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -971,14 +971,14 @@ def calc_dxl_XQD_4():
         # exit()
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls)).all()
-        jh2 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_ls)).all()
-        jh3 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202008.sl0_ls)).all()
-        jh4 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+        jh1 = Jxc_rj_202012.query.filter(Jxc_rj_202012.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_ls)).all()
+        jh2 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202009.sl0_ls)).all()
+        jh3 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls)).all()
+        jh4 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -1027,7 +1027,7 @@ def calc_dxl_XQD_4():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='09', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
                                 weidu='4',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
@@ -1046,8 +1046,8 @@ def calc_dxl_XQD_4():
 @main_bp.route('/calc_dxl_XQD_6')
 def calc_dxl_XQD_6():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202009.query.with_entities(Jxc_rj_202009.sku, Jxc_rj_202009.sku_id).distinct().filter(
-        Jxc_rj_202009.ck_id.in_(['11', '15'])).filter_by(date='2020-09-30').filter(Jxc_rj_202009.sl_qm != 0).all()
+    lls = Jxc_rj_202012.query.with_entities(Jxc_rj_202012.sku, Jxc_rj_202012.sku_id).distinct().filter(
+        Jxc_rj_202012.ck_id.in_(['11', '15'])).filter_by(date='2020-12-31').filter(Jxc_rj_202012.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -1082,11 +1082,11 @@ def calc_dxl_XQD_6():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202004.query. \
+        bbs = Jxc_rj_202007.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-04-01'). \
-            filter(Jxc_rj_202004.ck_id.in_(['11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202004.sl_qc)).all()
+            filter_by(date='2020-07-01'). \
+            filter(Jxc_rj_202007.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202007.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -1096,11 +1096,11 @@ def calc_dxl_XQD_6():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202009.query. \
+        bbss = Jxc_rj_202012.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-09-30'). \
-            filter(Jxc_rj_202009.ck_id.in_(['11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202009.sl_qm)).all()
+            filter_by(date='2020-12-31'). \
+            filter(Jxc_rj_202012.ck_id.in_(['11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202012.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -1111,18 +1111,18 @@ def calc_dxl_XQD_6():
         # exit()
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202004.query.filter(Jxc_rj_202004.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202004.sl0_ls)).all()
-        jh2 = Jxc_rj_202005.query.filter(Jxc_rj_202005.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202005.sl0_ls)).all()
-        jh3 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls)).all()
-        jh4 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+        jh1 = Jxc_rj_202012.query.filter(Jxc_rj_202012.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202012.sl0_ls)).all()
+        jh2 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202007.sl0_ls)).all()
-        jh5 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+        jh3 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202008.sl0_ls)).all()
-        jh6 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+        jh4 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202009.sl0_ls)).all()
+        jh5 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls)).all()
+        jh6 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['11', '15'])).filter_by(sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -1179,7 +1179,7 @@ def calc_dxl_XQD_6():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='09', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='12', ck_id='XQD', qc=qc1, qm=qm1, xs_s=xs_s,
                                 weidu='6',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
@@ -1312,9 +1312,9 @@ def calc_dxl_ALL_3():
 @main_bp.route('/calc_dxl_ALL_4')
 def calc_dxl_ALL_4():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202006.query.with_entities(Jxc_rj_202006.sku, Jxc_rj_202006.sku_id).distinct().filter(
-        Jxc_rj_202006.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(date='2020-06-30').filter(
-        Jxc_rj_202006.sl_qm != 0).all()
+    lls = Jxc_rj_202011.query.with_entities(Jxc_rj_202011.sku, Jxc_rj_202011.sku_id).distinct().filter(
+        Jxc_rj_202011.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(date='2020-11-30').filter(
+        Jxc_rj_202011.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -1345,11 +1345,11 @@ def calc_dxl_ALL_4():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202003.query. \
+        bbs = Jxc_rj_202008.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-03-01'). \
-            filter(Jxc_rj_202003.ck_id.in_(['2', '3', '4', '11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202003.sl_qc)).all()
+            filter_by(date='2020-08-01'). \
+            filter(Jxc_rj_202008.ck_id.in_(['2', '3', '4', '11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202008.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -1359,11 +1359,11 @@ def calc_dxl_ALL_4():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202006.query. \
+        bbss = Jxc_rj_202011.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-06-30'). \
-            filter(Jxc_rj_202006.ck_id.in_(['2', '3', '4', '11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202006.sl_qm)).all()
+            filter_by(date='2020-11-30'). \
+            filter(Jxc_rj_202011.ck_id.in_(['2', '3', '4', '11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202011.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -1372,18 +1372,18 @@ def calc_dxl_ALL_4():
         print(qm1)
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+        jh1 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202006.sl0_ls + Jxc_rj_202006.sl0_pf)).all()
-        jh2 = Jxc_rj_202003.query.filter(Jxc_rj_202003.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            func.sum(Jxc_rj_202008.sl0_ls + Jxc_rj_202008.sl0_pf)).all()
+        jh2 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202003.sl0_ls + Jxc_rj_202003.sl0_pf)).all()
-        jh3 = Jxc_rj_202004.query.filter(Jxc_rj_202004.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            func.sum(Jxc_rj_202009.sl0_ls + Jxc_rj_202009.sl0_pf)).all()
+        jh3 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202004.sl0_ls + Jxc_rj_202004.sl0_pf)).all()
-        jh4 = Jxc_rj_202005.query.filter(Jxc_rj_202005.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            func.sum(Jxc_rj_202010.sl0_ls + Jxc_rj_202010.sl0_pf)).all()
+        jh4 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202005.sl0_ls + Jxc_rj_202005.sl0_pf)).all()
+            func.sum(Jxc_rj_202011.sl0_ls + Jxc_rj_202011.sl0_pf)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -1432,7 +1432,7 @@ def calc_dxl_ALL_4():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='06', ck_id='ALL', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='11', ck_id='ALL', qc=qc1, qm=qm1, xs_s=xs_s, weidu='4',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
@@ -1450,9 +1450,9 @@ def calc_dxl_ALL_4():
 @main_bp.route('/calc_dxl_ALL_6')
 def calc_dxl_ALL_6():
     # lls = Jxc_rj_202005.query.with_entities(Jxc_rj_202005.sku).distinct().limit(30)
-    lls = Jxc_rj_202007.query.with_entities(Jxc_rj_202007.sku, Jxc_rj_202007.sku_id).distinct().filter(
-        Jxc_rj_202007.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(date='2020-07-31').filter(
-        Jxc_rj_202007.sl_qm != 0).all()
+    lls = Jxc_rj_202011.query.with_entities(Jxc_rj_202011.sku, Jxc_rj_202011.sku_id).distinct().filter(
+        Jxc_rj_202011.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(date='2020-11-30').filter(
+        Jxc_rj_202011.sl_qm != 0).all()
     # print(lls)
     i = 0
     for ll in lls:
@@ -1483,11 +1483,11 @@ def calc_dxl_ALL_6():
             qm1 = 0
         """
 
-        bbs = Jxc_rj_202002.query. \
+        bbs = Jxc_rj_202006.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-02-01'). \
-            filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202002.sl_qc)).all()
+            filter_by(date='2020-06-01'). \
+            filter(Jxc_rj_202006.ck_id.in_(['2', '3', '4', '11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202006.sl_qc)).all()
         # print(bbs)
         # print(bbs[0])
         # print(bbs[0][0])
@@ -1497,11 +1497,11 @@ def calc_dxl_ALL_6():
             qc1 = 0
         print(qc1)
 
-        bbss = Jxc_rj_202007.query. \
+        bbss = Jxc_rj_202011.query. \
             filter_by(sku=ll.sku). \
-            filter_by(date='2020-07-31'). \
-            filter(Jxc_rj_202007.ck_id.in_(['2', '3', '4', '11', '15'])). \
-            with_entities(func.sum(Jxc_rj_202007.sl_qm)).all()
+            filter_by(date='2020-11-30'). \
+            filter(Jxc_rj_202011.ck_id.in_(['2', '3', '4', '11', '15'])). \
+            with_entities(func.sum(Jxc_rj_202011.sl_qm)).all()
         print(bbss)
         if bbss[0][0]:
             qm1 = bbss[0][0]
@@ -1510,24 +1510,24 @@ def calc_dxl_ALL_6():
         print(qm1)
 
         # 求和  User.query.with_entities(func.sum(User.id)).all()
-        jh1 = Jxc_rj_202002.query.filter(Jxc_rj_202002.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
-            sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202002.sl0_ls + Jxc_rj_202002.sl0_pf)).all()
-        jh2 = Jxc_rj_202003.query.filter(Jxc_rj_202003.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
-            sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202003.sl0_ls + Jxc_rj_202003.sl0_pf)).all()
-        jh3 = Jxc_rj_202004.query.filter(Jxc_rj_202004.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
-            sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202004.sl0_ls + Jxc_rj_202004.sl0_pf)).all()
-        jh4 = Jxc_rj_202005.query.filter(Jxc_rj_202005.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
-            sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202005.sl0_ls + Jxc_rj_202005.sl0_pf)).all()
-        jh5 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
-            sku=ll.sku).with_entities(
-            func.sum(Jxc_rj_202007.sl0_ls + Jxc_rj_202007.sl0_pf)).all()
-        jh6 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+        jh1 = Jxc_rj_202006.query.filter(Jxc_rj_202006.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
             sku=ll.sku).with_entities(
             func.sum(Jxc_rj_202006.sl0_ls + Jxc_rj_202006.sl0_pf)).all()
+        jh2 = Jxc_rj_202007.query.filter(Jxc_rj_202007.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202007.sl0_ls + Jxc_rj_202007.sl0_pf)).all()
+        jh3 = Jxc_rj_202008.query.filter(Jxc_rj_202008.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202008.sl0_ls + Jxc_rj_202008.sl0_pf)).all()
+        jh4 = Jxc_rj_202009.query.filter(Jxc_rj_202009.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202009.sl0_ls + Jxc_rj_202009.sl0_pf)).all()
+        jh5 = Jxc_rj_202010.query.filter(Jxc_rj_202010.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202010.sl0_ls + Jxc_rj_202010.sl0_pf)).all()
+        jh6 = Jxc_rj_202011.query.filter(Jxc_rj_202011.ck_id.in_(['2', '3', '4', '11', '15'])).filter_by(
+            sku=ll.sku).with_entities(
+            func.sum(Jxc_rj_202011.sl0_ls + Jxc_rj_202011.sl0_pf)).all()
         # print(jh1[0][0])  #None   3
         # print(jh1[0])     #(None,) (Decimal('3'),)
         # print(jh2)
@@ -1584,7 +1584,7 @@ def calc_dxl_ALL_6():
         #                         delivery_address=delivery_address)
         # db.session.add(order_info)
         # db.session.commit()
-        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='07', ck_id='ALL', qc=qc1, qm=qm1, xs_s=xs_s, weidu='6',
+        ab_jqx_dxl = Ab_jqx_dxl(sku=ll.sku, hjyear='2020', hjmn='11', ck_id='ALL', qc=qc1, qm=qm1, xs_s=xs_s, weidu='6',
                                 last=last, sku_id=ggd.sku_id, cbj=ggd.jg1, dxl=res)
         db.session.add(ab_jqx_dxl)
         print(i)
