@@ -10,11 +10,13 @@ import os
 import random
 import time
 import uuid
-import hashlib
 
 import xlrd
 import xlwt
 import pymysql
+import json
+from hashlib import md5
+import hashlib
 
 from flask import render_template, flash, redirect, url_for, current_app, \
     send_from_directory, request, abort, Blueprint, session
@@ -29,7 +31,8 @@ from albumy.forms.main import DescriptionForm, TagForm, CommentForm, Can_comment
     UploadOweForm, UploadReceiveForm, OweSearchForm, DxlSearchForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification, Post, Category, Order_info, Owenum, \
     Ab_jqx_dxl, Jxc_rj_202005, Jxc_rj_202004, Jxc_rj_202003, Jxc_rj_202002, Spjgb, Jxc_rj_202001, Jxc_rj_201912, \
-    Jxc_rj_202006, Jxc_rj_202007, Jxc_rj_202008, Jxc_rj_202009, Jxc_rj_202010, Jxc_rj_202011, Jxc_rj_202012, Jxc_rj_201911, Jxc_rj_201910, Jxc_rj_201909, Jxc_rj_201908
+    Jxc_rj_202006, Jxc_rj_202007, Jxc_rj_202008, Jxc_rj_202009, Jxc_rj_202010, Jxc_rj_202011, Jxc_rj_202012, \
+    Jxc_rj_201911, Jxc_rj_201910, Jxc_rj_201909, Jxc_rj_201908
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, allowed_file
 from flask_ckeditor import upload_success, upload_fail
@@ -1208,7 +1211,6 @@ def calc_dxl_ALL_3():
         print(ll.sku_id)
         i = i + 1
 
-
         bbs = Jxc_rj_202006.query. \
             filter_by(sku=ll.sku). \
             filter_by(date='2020-06-01'). \
@@ -1990,6 +1992,61 @@ def explore3():
     return response.text
 
 
+@main_bp.route('/explore33')
+def explore33():
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    data = [{'start_time':"2021-01-11 00:00:00",'end_time':"2021-01-12 00:00:00",'status_type':"3"}]
+
+    payload=json.dumps(data)
+    print('payload'+payload)
+    t = time.time()
+    timestamp = int(t) - 1325347200
+    # timestamp = '288360088'
+    param = {
+        "key": "shcgkj3-ot",
+        "method": "wms.stockout.Sales.queryWithDetail",
+        "salt": "1528971896838896",
+        "sid": "shcgkj3",
+        "timestamp": str(timestamp),
+        "v": "1.0",
+        "calc_total": "20",
+        "page_no": "0",
+        "page_size": "100",
+        "body": payload
+    }
+    print(param)
+    param=sorted(param.items(),key=lambda x:x[0])
+
+    print(param)
+    param=dict(param)
+    print(param)
+    # exit()
+    sign = ''
+    for key, value in param.items():
+        sign = sign + key + value
+    sign_r = '09713ad28c5bf6bcc64b9005ed0a233d' + sign + '09713ad28c5bf6bcc64b9005ed0a233d'
+    print(sign_r)
+    def md5value(key):
+        input_name = hashlib.md5()
+        input_name.update(key.encode("utf-8"))
+        return input_name.hexdigest().lower()
+        # print("大写的32位" + (input_name.hexdigest()).upper())
+        # print("大写的16位" + (input_name.hexdigest())[8:-8].upper())
+        # print("小写的32位" + (input_name.hexdigest()).lower())
+        # print("小写的16位" + (input_name.hexdigest())[8:-8].lower())
+
+    md5_sign = md5value(sign_r)
+
+    print(timestamp)
+    print(md5_sign)
+    url = "http://wdt.wangdian.cn/openapi?key=shcgkj3-ot&method=wms.stockout.Sales.queryWithDetail&salt=1528971896838896&sid=shcgkj3&timestamp=%s&v=1.0&sign=%s&calc_total=20&page_no=0&page_size=100" %(timestamp,md5_sign)
+    print(url)
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return response.text
+
+
 @main_bp.route('/')
 def lfa():
     return render_template('main/lfa.html')
@@ -2235,7 +2292,7 @@ def insert_owe_process(sheet, filename):
 
         sku = sheet.cell(i, 0).value  # 取第i行第0列
         yao = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
-        qd =  sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
+        qd = sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
         print(sku)
         print(yao)
         value = (sku, yao, yao, qd)
@@ -2693,14 +2750,13 @@ ORDER BY
     return render_template('main/export_3.html')
 
 
-#pymysql获得单条数据
+# pymysql获得单条数据
 @main_bp.route('/pymysql1', methods=['GET', 'POST'])
 def pymysql1():
-
     # 连接database
     conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                             passwd="MgBaIsOn20191022AbYz",
-                             db="mg_e3")
+                           passwd="MgBaIsOn20191022AbYz",
+                           db="mg_e3")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -2717,14 +2773,13 @@ def pymysql1():
     return render_template('main/dxl2.html', ret2=ret[1])
 
 
-#pymysql获得单条数据
+# pymysql获得单条数据
 @main_bp.route('/pymysql3', methods=['GET', 'POST'])
 def pymysql3():
-
     # 连接database
     conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                             passwd="MgBaIsOn20191022AbYz",
-                             db="mg_e3")
+                           passwd="MgBaIsOn20191022AbYz",
+                           db="mg_e3")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -2745,7 +2800,7 @@ def pymysql3():
     return render_template('main/dxl3.html', ret2=ret)
 
 
-#pymysql获得多条数据
+# pymysql获得多条数据
 @main_bp.route('/pymysql2', methods=['GET', 'POST'])
 def pymysql2():
     # 导入pymysql模块
@@ -2769,7 +2824,8 @@ def pymysql2():
     return render_template('main/dxl2.html', ret2=ret)
     # return str(ret)
 
-#pymysql获得多条数据
+
+# pymysql获得多条数据
 @main_bp.route('/pymysql4', methods=['GET', 'POST'])
 def pymysql4():
     # 导入pymysql模块
@@ -2814,7 +2870,6 @@ def pymysql4():
     print(ret2[0])
     return render_template('main/dxl4.html', ret4=ret, ret2=ret2[0])
     # return str(ret)
-
 
 
 @main_bp.route('/export_dxl', methods=['GET', 'POST'])
