@@ -1997,10 +1997,10 @@ def explore33():
     headers = {
         'Content-Type': 'application/json'
     }
-    data = [{'start_time':"2021-01-11 00:00:00",'end_time':"2021-01-12 00:00:00",'status_type':"3"}]
+    data = [{'start_time': "2021-01-11 00:00:00", 'end_time': "2021-01-12 00:00:00", 'status_type': "3"}]
 
-    payload=json.dumps(data)
-    print('payload'+payload)
+    payload = json.dumps(data)
+    print('payload' + payload)
     t = time.time()
     timestamp = int(t) - 1325347200
     # timestamp = '288360088'
@@ -2017,10 +2017,10 @@ def explore33():
         "body": payload
     }
     print(param)
-    param=sorted(param.items(),key=lambda x:x[0])
+    param = sorted(param.items(), key=lambda x: x[0])
 
     print(param)
-    param=dict(param)
+    param = dict(param)
     print(param)
     # exit()
     sign = ''
@@ -2028,6 +2028,7 @@ def explore33():
         sign = sign + key + value
     sign_r = '09713ad28c5bf6bcc64b9005ed0a233d' + sign + '09713ad28c5bf6bcc64b9005ed0a233d'
     print(sign_r)
+
     def md5value(key):
         input_name = hashlib.md5()
         input_name.update(key.encode("utf-8"))
@@ -2041,7 +2042,8 @@ def explore33():
 
     print(timestamp)
     print(md5_sign)
-    url = "http://wdt.wangdian.cn/openapi?key=shcgkj3-ot&method=wms.stockout.Sales.queryWithDetail&salt=1528971896838896&sid=shcgkj3&timestamp=%s&v=1.0&sign=%s&calc_total=20&page_no=0&page_size=100" %(timestamp,md5_sign)
+    url = "http://wdt.wangdian.cn/openapi?key=shcgkj3-ot&method=wms.stockout.Sales.queryWithDetail&salt=1528971896838896&sid=shcgkj3&timestamp=%s&v=1.0&sign=%s&calc_total=20&page_no=0&page_size=100" % (
+    timestamp, md5_sign)
     print(url)
     response = requests.request("POST", url, headers=headers, data=payload)
     return response.text
@@ -2516,6 +2518,68 @@ def export_owe():
     wb = xlwt.Workbook()
     # 添加一个表
     ws = wb.add_sheet('Sheet1')
+    ws.write(0, 0, 'sku')
+    ws.write(0, 1, 'tmqd')
+    ws.write(0, 2, 'tmyao')
+    ws.write(0, 3, 'tmshiji')
+    ws.write(0, 4, 'tmowe')
+    ws.write(0, 5, 'tmreceive_date')
+    ws.write(0, 6, 'xqdqd')
+    ws.write(0, 7, 'xqdyao')
+    ws.write(0, 8, 'xqdshiji')
+    ws.write(0, 9, 'xqdowe')
+    ws.write(0, 10, 'xqdreceive_date')
+    ws.write(0, 11, 'jdqd')
+    ws.write(0, 12, 'jdyao')
+    ws.write(0, 13, 'jdshiji')
+    ws.write(0, 14, 'jdowe')
+    ws.write(0, 15, 'jdreceive_date')
+
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+    sql = "select a.sku,a.qd tmqd,a.yao tmyao,a.shiji tmshiji,a.owe tmowe,a.receive_date tmreceive_date,b.qd xqdqd,b.yao xqdyao,b.shiji xqdshiji,b.owe xqdowe,b.receive_date xqdreceive_date,c.qd jdqd,c.yao jdyao,c.shiji jdshiji,c.owe jdowe,c.receive_date jdreceive_date from owenum a left join owenum b on b.sku=a.sku left join owenum c on c.sku=a.sku where a.qd='tm' and b.qd='xqd' and c.qd='jd' order by a.sku;"
+    cursor.execute(sql)  # 执行sql语句
+    ret = cursor.fetchall()
+    i = 1
+    for owenum in ret:
+        # print(owenum[0])
+        ws.write(i, 0, owenum[0])
+        ws.write(i, 1, owenum[1])
+        ws.write(i, 2, owenum[2])
+        ws.write(i, 3, owenum[3])
+        ws.write(i, 4, owenum[4])
+        ws.write(i, 5, owenum[5])
+        ws.write(i, 6, owenum[6])
+        ws.write(i, 7, owenum[7])
+        ws.write(i, 8, owenum[8])
+        ws.write(i, 9, owenum[9])
+        ws.write(i, 10, owenum[10])
+        ws.write(i, 11, owenum[11])
+        ws.write(i, 12, owenum[12])
+        ws.write(i, 13, owenum[13])
+        ws.write(i, 14, owenum[14])
+        ws.write(i, 15, owenum[15])
+        i = i + 1
+    print(ret)
+    # 保存excel文件
+    wb.save('./uploads/export.xls')
+
+    cursor.close()  # 关闭连接
+    db.close()  # 关闭数据
+
+    return render_template('main/export_excel.html')
+
+
+@main_bp.route('/export_owe1', methods=['GET', 'POST'])
+def export_owe1():
+    wb = xlwt.Workbook()
+    # 添加一个表
+    ws = wb.add_sheet('Sheet1')
 
     # 3个参数分别为行号，列号，和内容
     # 需要注意的是行号和列号都是从0开始的
@@ -2527,7 +2591,10 @@ def export_owe():
     ws.write(0, 5, 'receive_date')
     ws.write(0, 6, 'qd')
     owenums = Owenum.query.all()
+    # [ < Owenum 16639 >, < Owenum 16640 >]
+    print(owenums)
     print(owenums[0])
+
     i = 1
     for owenum in owenums:
         ws.write(i, 0, owenum.id)
