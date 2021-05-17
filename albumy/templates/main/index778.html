@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% from 'macros.html' import photo_card with context %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="span6">{% if list2 %}
+        <div class="card mb-6">
+            <div class="card-header">wdt库存 {{ list2[0].spec_no }}</div>
+            <ul class="list-group list-group-flush">
+                {% for lis in list2 %}
+                <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
+                    <a>
+                        {{lis.warehouse_name}} {{ lis.stock_num }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    <div class="span6">{% if rows %}
+        <div class="card mb-6">
+            <div class="card-header">WMS 库存</div>
+            <ul class="list-group list-group-flush">
+                {% for liss in rows %}
+                <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
+                    <a>
+                        {{ liss[1] }} {{ liss[2] }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

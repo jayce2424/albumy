@@ -11,8 +11,8 @@ import click
 from flask import Flask, render_template
 from flask_login import current_user
 from flask_wtf.csrf import CSRFError
-from celery import Celery
-from celeryconfig import BROKER_URL
+# from celery import Celery
+# from celeryconfig import BROKER_URL
 
 from albumy.blueprints.admin import admin_bp
 from albumy.blueprints.ajax import ajax_bp
@@ -24,8 +24,8 @@ from albumy.extensions import bootstrap, db, login_manager, mail, dropzone, mome
 from albumy.models import Role, User, Photo, Tag, Follow, Notification, Comment, Collect, Permission, Category
 from albumy.settings import config
 
-celery = Celery(__name__)
-celery.config_from_object('celeryconfig')
+# celery = Celery(__name__)
+# celery.config_from_object('celeryconfig')
 
 
 def create_app(config_name=None):
@@ -46,7 +46,7 @@ def create_app(config_name=None):
     register_errorhandlers(app)
     register_shell_context(app)
     register_template_context(app)
-    register_celery(app)
+    # register_celery(app)
 
     return app
 
@@ -73,15 +73,15 @@ def register_blueprints(app):
     app.register_blueprint(ajax_bp, url_prefix='/ajax')
 
 
-def register_celery(app):
-    celery.config_from_object('albumy.celeryconfig')
-
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-
-    celery.Task = ContextTask
+# def register_celery(app):
+#     celery.config_from_object('albumy.celeryconfig')
+#
+#     class ContextTask(celery.Task):
+#         def __call__(self, *args, **kwargs):
+#             with app.app_context():
+#                 return self.run(*args, **kwargs)
+#
+#     celery.Task = ContextTask
 
 
 def register_shell_context(app):

@@ -17,6 +17,8 @@ import pymysql
 import json
 from hashlib import md5
 import hashlib
+import cx_Oracle
+import operator
 
 from flask import render_template, flash, redirect, url_for, current_app, \
     send_from_directory, request, abort, Blueprint, session
@@ -41,6 +43,7 @@ import json
 from threading import Thread
 from decimal import getcontext, Decimal
 from jinja2 import Markup, Environment, FileSystemLoader
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -2047,6 +2050,400 @@ def explore33():
     print(url)
     response = requests.request("POST", url, headers=headers, data=payload)
     return response.text
+
+# 查询库存接口spkcb
+@main_bp.route('/explore34/<tid>')
+def explore34(tid):
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    data = [{'spec_nos': [tid]}]
+
+    payload = json.dumps(data)
+    # print('payload' + payload)
+    t = time.time()
+    timestamp = int(t) - 1325347200
+    # timestamp = '288360088'
+    param = {
+        "key": "shcgkj3-ot",
+        "method": "wms.StockSpec.search",
+        "salt": "1528971896838896",
+        "sid": "shcgkj3",
+        "timestamp": str(timestamp),
+        "v": "1.0",
+        "calc_total": "20",
+        "page_no": "0",
+        "page_size": "100",
+        "body": payload
+    }
+    # print(param)
+    param = sorted(param.items(), key=lambda x: x[0])
+
+    # print(param)
+    param = dict(param)
+    # print(param)
+    # exit()
+    sign = ''
+    for key, value in param.items():
+        sign = sign + key + value
+    sign_r = '09713ad28c5bf6bcc64b9005ed0a233d' + sign + '09713ad28c5bf6bcc64b9005ed0a233d'
+    # print(sign_r)
+
+    def md5value(key):
+        input_name = hashlib.md5()
+        input_name.update(key.encode("utf-8"))
+        return input_name.hexdigest().lower()
+        # print("大写的32位" + (input_name.hexdigest()).upper())
+        # print("大写的16位" + (input_name.hexdigest())[8:-8].upper())
+        # print("小写的32位" + (input_name.hexdigest()).lower())
+        # print("小写的16位" + (input_name.hexdigest())[8:-8].lower())
+
+    md5_sign = md5value(sign_r)
+
+    # print(timestamp)
+    # print(md5_sign)
+    url = "http://wdt.wangdian.cn/openapi?key=shcgkj3-ot&method=wms.StockSpec.search&salt=1528971896838896&sid=shcgkj3&timestamp=%s&v=1.0&sign=%s&calc_total=20&page_no=0&page_size=100" % (
+    timestamp, md5_sign)
+    # print(url)
+    response = requests.request("POST", url, headers=headers, data=payload)
+    gg = json.loads(response.text)
+    # return response.text
+    # print(gg['data'][1])
+    list2 = []
+    for i in range(len(gg['data'])):
+        if gg['data'][i]['stock_num']==0:
+            continue
+        list2.append(dict(spec_no=gg['data'][i]['spec_no'], stock_num=int(gg['data'][i]['stock_num']), warehouse_name=gg['data'][i]['warehouse_name']))
+    # [{'spec_no': 'K35B', 'stock_num': 1492, 'warehouse_name': '新渠道零拣仓'},
+    #  {'spec_no': 'K35B', 'stock_num': 140, 'warehouse_name': '残次品区'},
+    #  {'spec_no': 'K35B', 'stock_num': 3496, 'warehouse_name': '天猫零拣区'}]
+    # https: // www.cnblogs.com / weisunblog / p / 12421882.html  python 使用sorted方法对二维列表排序
+    list2 = sorted(list2, key=operator.itemgetter('warehouse_name'))
+
+    # print(list2)
+
+
+
+    user = "DW"
+    passwd = "DW"
+    listener = '192.168.10.173:1521/wmsdb'
+    conn = cx_Oracle.connect(user, passwd, listener)
+    # 使用cursor()方法获取操作游标
+    cursor = conn.cursor()
+    # 使用execute方法执行SQL语句
+    # row = cursor.fetchall("select * from WMS_USER.DOC_ADJ_details where adjno='0000000109'")
+    sql="""SELECT
+	jj.fmsku,
+	jj.configlist02,
+	SUM (jj.fmqty) sl
+FROM
+	(
+		SELECT
+			ROW_NUMBER () OVER (
+
+				ORDER BY
+					INV_LOT_LOC_ID.LotNum,
+					INV_LOT_LOC_ID.LocationID,
+					INV_LOT_LOC_ID.TraceID
+			) AS PKEY,
+			VIEW_MultiWarehouse.WAREHOUSEID,
+			INV_LOT_LOC_ID.CustomerID AS FMCUSTOMERID,
+			INV_LOT_LOC_ID.SKU AS FMSKU,
+			INV_LOT_LOC_ID.LotNum AS FMLOTNUM,
+			INV_LOT_LOC_ID.LocationID AS FMLOCATION,
+			INV_LOT_LOC_ID.TraceID AS FMID,
+			INV_LOT_LOC_ID.LPN,
+			CAST (
+				INV_LOT_LOC_ID.Qty / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+			) AS FMQTY,
+			INV_LOT_LOC_ID.Qty AS FMQTY_EACH,
+			CAST (
+				NVL (
+					FLOOR (
+						INV_LOT_LOC_ID.Qty / NULLIF (BAS_Package.QTY5, 0)
+					),
+					0
+				) AS NUMERIC (18, 8)
+			) AS OT,
+			CAST (
+				NVL (
+					FLOOR (
+						MOD (
+							INV_LOT_LOC_ID.Qty,
+							NULLIF (
+								COALESCE (
+									NULLIF (BAS_Package.qty5, 0),
+									INV_LOT_LOC_ID.Qty + 1
+								),
+								0
+							)
+						) / NULLIF (BAS_Package.QTY4, 0)
+					),
+					0
+				) AS NUMERIC (18, 8)
+			) AS PL,
+			CAST (
+				NVL (
+					FLOOR (
+						MOD (
+							INV_LOT_LOC_ID.Qty,
+							NULLIF (
+								COALESCE (
+									NULLIF (BAS_Package.qty4, 0),
+									NULLIF (BAS_Package.qty5, 0),
+									INV_LOT_LOC_ID.Qty + 1
+								),
+								0
+							)
+						) / NULLIF (BAS_Package.QTY3, 0)
+					),
+					0
+				) AS NUMERIC (18, 8)
+			) AS CS,
+			CAST (
+				NVL (
+					FLOOR (
+						MOD (
+							INV_LOT_LOC_ID.Qty,
+							NULLIF (
+								COALESCE (
+									NULLIF (BAS_Package.qty3, 0),
+									NULLIF (BAS_Package.qty4, 0),
+									NULLIF (BAS_Package.qty5, 0),
+									INV_LOT_LOC_ID.Qty + 1
+								),
+								0
+							)
+						) / NULLIF (BAS_Package.QTY2, 0)
+					),
+					0
+				) AS NUMERIC (18, 8)
+			) AS IP,
+			CAST (
+				NVL (
+					FLOOR (
+						MOD (
+							INV_LOT_LOC_ID.Qty,
+							NULLIF (
+								COALESCE (
+									NULLIF (BAS_Package.qty2, 0),
+									NULLIF (BAS_Package.qty3, 0),
+									NULLIF (BAS_Package.qty4, 0),
+									NULLIF (BAS_Package.qty5, 0),
+									INV_LOT_LOC_ID.Qty + 1
+								),
+								0
+							)
+						) / NULLIF (BAS_Package.QTY1, 0)
+					),
+					0
+				) AS NUMERIC (18, 8)
+			) AS EA,
+			CAST (
+				INV_LOT_LOC_ID.QtyAllocated / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+			) AS QTYALLOCATED,
+			INV_LOT_LOC_ID.QtyAllocated AS QTYALLOCATED_EACH,
+			CAST (
+				INV_LOT_LOC_ID.QtyOnHold / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+			) AS QTYHOLDED,
+			INV_LOT_LOC_ID.QtyOnHold AS QTYONHOLD_EACH,
+			CAST (
+				INV_LOT_LOC_ID.QtyRPIn / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+			) AS QTYRPIN,
+			CAST (
+				INV_LOT_LOC_ID.QtyPA / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+			) AS I_PA,
+			CAST (
+				INV_LOT_LOC_ID.QtyRPOut / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+			) AS QTYRPOUT,
+			bas_sku.Descr_C AS SKUDESCRC,
+			bas_sku.Descr_E AS SKUDESCRE,
+			bas_sku.IMAGEADDRESS,
+			INV_LOT_LOC_ID.Cubic AS TOTALCUBIC,
+			INV_LOT_LOC_ID.GrossWeight AS TOTALGROSSWEIGHT,
+			INV_LOT_LOC_ID.NetWeight,
+			INV_LOT_LOC_ID.Price,
+			CASE
+		WHEN INV_LOT_LOC_ID.Cubic < 0 THEN
+			0
+		ELSE
+			INV_LOT_LOC_ID.Cubic
+		END AS TOTALCUBIC2,
+		CASE
+	WHEN INV_LOT_LOC_ID.GrossWeight < 0 THEN
+		0
+	ELSE
+		INV_LOT_LOC_ID.GrossWeight
+	END AS TOTALGROSSWEIGHT2,
+	CASE
+WHEN INV_LOT_LOC_ID.NetWeight < 0 THEN
+	0
+ELSE
+	INV_LOT_LOC_ID.NetWeight
+END AS TOTALNETWEIGHT2,
+ CASE
+WHEN INV_LOT_LOC_ID.Price < 0 THEN
+	0
+ELSE
+	INV_LOT_LOC_ID.Price
+END AS TOTALPRICE2,
+ bas_sku.SOFTALLOCATIONRULE,
+ bas_sku.ALLOCATIONRULE,
+ bas_sku.ROTATIONID,
+ bas_sku.Alternate_SKU1 AS ALTERNATESKU1,
+ bas_sku.Alternate_SKU2 AS ALTERNATESKU2,
+ bas_sku.Alternate_SKU3 AS ALTERNATESKU3,
+ bas_sku.Alternate_SKU4 AS ALTERNATESKU4,
+ bas_sku.Alternate_SKU5 AS ALTERNATESKU5,
+ bas_sku.ReservedField01,
+ bas_sku.ReservedField02,
+ bas_sku.ReservedField03,
+ bas_sku.ReservedField04,
+ bas_sku.ReservedField05,
+ bas_sku.SKU_Group1 AS SKUGROUP1,
+ bas_sku.SKU_Group2 AS SKUGROUP2,
+ bas_sku.SKU_Group3 AS SKUGROUP3,
+ bas_sku.SKU_Group4 AS SKUGROUP4,
+ bas_sku.SKU_Group5 AS SKUGROUP5,
+ view_uom.DESCR AS FMUOM_NAME,
+ view_uom.UOM,
+ INV_LOT_ATT.LotAtt01,
+ INV_LOT_ATT.LotAtt02,
+ INV_LOT_ATT.LotAtt03,
+ INV_LOT_ATT.LotAtt04,
+ INV_LOT_ATT.LotAtt05,
+ INV_LOT_ATT.LotAtt06,
+ INV_LOT_ATT.LotAtt07,
+ INV_LOT_ATT.LotAtt08,
+ INV_LOT_ATT.LotAtt09,
+ INV_LOT_ATT.LotAtt10,
+ INV_LOT_ATT.LotAtt11,
+ INV_LOT_ATT.LotAtt12,
+ INV_LOT_ATT.LotAtt01 AS LOTATT01TEXT,
+ INV_LOT_ATT.LotAtt02 AS LOTATT02TEXT,
+ INV_LOT_ATT.LotAtt03 AS LOTATT03TEXT,
+ INV_LOT_ATT.LotAtt04 AS LOTATT04TEXT,
+ INV_LOT_ATT.LotAtt05 AS LOTATT05TEXT,
+ INV_LOT_ATT.LotAtt06 AS LOTATT06TEXT,
+ INV_LOT_ATT.LotAtt07 AS LOTATT07TEXT,
+ INV_LOT_ATT.LotAtt08 AS LOTATT08TEXT,
+ INV_LOT_ATT.LotAtt09 AS LOTATT09TEXT,
+ INV_LOT_ATT.LotAtt10 AS LOTATT10TEXT,
+ INV_LOT_ATT.LotAtt11 AS LOTATT11TEXT,
+ INV_LOT_ATT.LotAtt12 AS LOTATT12TEXT,
+ CAST (
+	INV_LOT_LOC_ID.QtyMVIN / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) AS I_MV,
+ CAST (
+	INV_LOT_LOC_ID.QtyMVOut / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) AS O_MV,
+ (
+	SELECT
+		CAST (
+			SUM (
+				NVL (DOC_ADJ_Details.ToQty, 0) - NVL (DOC_ADJ_Details.Qty, 0)
+			) AS NUMERIC (18, 8)
+		)
+	FROM
+		WMS_USER.DOC_ADJ_Details DOC_ADJ_Details
+	WHERE
+		DOC_ADJ_Details.LineStatus < '10'
+	AND DOC_ADJ_Details.locationid = INV_LOT_LOC_ID.locationid
+	AND DOC_ADJ_Details.LOTNUM = INV_LOT_LOC_ID.LOTNUM
+	AND DOC_ADJ_Details.TRACEID = INV_LOT_LOC_ID.TRACEID
+) AS TOADJQTY,
+ CAST (
+	INV_LOT_LOC_ID.Qty / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QtyAllocated / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QtyOnHold / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QTYRPOUT / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QtyMVOut / NVL (view_uom.Qty, 1) AS NUMERIC (18, 8)
+) AS QTYAVAILED,
+ CAST (
+	INV_LOT_LOC_ID.Qty AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QtyAllocated AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QtyOnHold AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QTYRPOUT AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QtyMVOut AS NUMERIC (18, 8)
+) AS QTYAVAILED_EACH,
+ BAS_SKU.SKU_GROUP1 AS FROMUDF1,
+ BAS_SKU.RESERVEDFIELD01 AS FROMUDF2,
+ bas_sku.alternate_sku4 AS CONFIGLIST01,
+ bas_codes.codename_c AS CONFIGLIST02,
+ CAST (
+	INV_LOT_LOC_ID.QTY AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QTYALLOCATED AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QTYONHOLD AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QTYRPOUT AS NUMERIC (18, 8)
+) - CAST (
+	INV_LOT_LOC_ID.QTYMVOUT AS NUMERIC (18, 8)
+) AS CONFIGLIST03,
+ PPT.DESCR AS CONFIGLIST04,
+ TTP.DESCR AS CONFIGLIST05,
+ bas_package.qty3 AS CONFIGLIST06
+FROM
+	WMS_USER.INV_LOT_LOC_ID INV_LOT_LOC_ID
+LEFT OUTER JOIN WMS_USER.BAS_Location BAS_Location ON BAS_Location.LocationID = INV_LOT_LOC_ID.LocationID
+LEFT OUTER JOIN WMS_USER.BAS_SKU bas_sku ON bas_sku.CustomerID = INV_LOT_LOC_ID.CustomerID
+AND bas_sku.SKU = INV_LOT_LOC_ID.SKU
+LEFT OUTER JOIN WMS_USER.BAS_Customer BAS_Customer ON BAS_Customer.CustomerID = INV_LOT_LOC_ID.CustomerID
+AND BAS_Customer.Customer_Type = 'OW'
+LEFT OUTER JOIN WMS_USER.INV_LOT_ATT INV_LOT_ATT ON INV_LOT_ATT.LotNum = INV_LOT_LOC_ID.LotNum
+LEFT OUTER JOIN WMS_USER.INV_LOT_ATT_Extend ON INV_LOT_ATT.LotAtt11 = INV_LOT_ATT_Extend.ExLotNum
+LEFT JOIN WMS_USER.BAS_Package BAS_Package ON BAS_Package.PACKID = bas_sku.PackID
+LEFT JOIN WMS_USER.VIEW_MultiWarehouse VIEW_MultiWarehouse ON INV_LOT_LOC_ID.locationid = VIEW_MultiWarehouse.locationid
+LEFT JOIN WMS_USER.BAS_SKU_MultiWarehouse bsm ON bas_sku.CustomerID = bsm.CustomerID
+AND WMS_USER.bas_sku.SKU = bsm.SKU
+AND WMS_USER.VIEW_MultiWarehouse.WarehouseID = bsm.WarehouseID
+LEFT OUTER JOIN WMS_USER.view_uom view_uom ON view_uom.UOM = NVL (
+	bsm.ReportUOM,
+	bas_sku.ReportUOM
+)
+AND view_uom.PACKID = NVL (bsm.PackID, bas_sku.PackID)
+LEFT JOIN WMS_USER.bas_zone bas_zone ON BAS_Location.pickZone = bas_zone. ZONE
+LEFT JOIN WMS_USER.BAS_CODES bas_codes ON INV_LOT_ATT.Lotatt05 = bas_codes.code
+AND bas_codes.codeid = 'INV_STS'
+LEFT JOIN WMS_USER.VIEW_MULTIWAREHOUSE PTP ON PTP.LOCATIONID = INV_LOT_LOC_ID.LOCATIONID
+LEFT JOIN WMS_USER.BAS_ZONE PPT ON PTP. ZONE = PPT. ZONE
+LEFT JOIN WMS_USER.BAS_ZONEGROUP TTP ON PTP.ZONEGROUP = TTP.ZONEGROUP
+LEFT JOIN WMS_USER.BAS_Package BAS_Package ON BAS_Package.PACKID = bas_sku.PackID
+WHERE
+	(
+		INV_LOT_LOC_ID.Qty > 0
+		OR INV_LOT_LOC_ID.QtyRPIN > 0
+		OR INV_LOT_LOC_ID.QtyMVIN > 0
+		OR INV_LOT_LOC_ID.QtyPa > 0
+	)
+AND VIEW_MultiWarehouse.WareHouseId = 'WH01'
+AND INV_LOT_LOC_ID.CustomerID IN ('CGJK')
+AND INV_LOT_LOC_ID.sku = '%s'
+	) jj
+GROUP BY
+	jj.fmsku,
+	jj.configlist02 order by 2"""   %tid
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    # list3 = []
+    # for i in range(len(rows)):
+    #     list3.append(dict(spec_no=row[1], stock_num=row[2],
+    #                       warehouse_name=gg['data'][i]['warehouse_name']))
+    # for row in rows:
+    #     print(row)
+    print(rows)
+    conn.close()
+    # return 'gg'
+    return render_template('main/index778.html', list2=list2, rows=rows)
 
 
 @main_bp.route('/')
