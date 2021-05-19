@@ -2110,10 +2110,12 @@ def explore34(tid):
     # return response.text
     # print(gg['data'][1])
     list2 = []
+    ss=0
     for i in range(len(gg['data'])):
         if gg['data'][i]['stock_num']==0:
             continue
         list2.append(dict(spec_no=gg['data'][i]['spec_no'], stock_num=int(gg['data'][i]['stock_num']), warehouse_name=gg['data'][i]['warehouse_name']))
+        ss=ss+int(gg['data'][i]['stock_num'])
     # [{'spec_no': 'K35B', 'stock_num': 1492, 'warehouse_name': '新渠道零拣仓'},
     #  {'spec_no': 'K35B', 'stock_num': 140, 'warehouse_name': '残次品区'},
     #  {'spec_no': 'K35B', 'stock_num': 3496, 'warehouse_name': '天猫零拣区'}]
@@ -2442,8 +2444,12 @@ GROUP BY
     #     print(row)
     print(rows)
     conn.close()
+    ss2 = 0
+    for i in range(len(rows)):
+        ss2 = ss2 + rows[i][2]
+
     # return 'gg'
-    return render_template('main/index778.html', list2=list2, rows=rows)
+    return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2)
 
 
 @main_bp.route('/')
