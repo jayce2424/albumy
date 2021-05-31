@@ -56,10 +56,11 @@ def e3():
     add_m = datetime.datetime.now().strftime('%M')
     print(add_hour)
     print(add_m)
-    if(add_m==2):
+    if(add_m=='08'):
         order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
         db.session.add(order_info)
         db.session.commit()
+        print('终于执行啦')
     return 'e3'
 
 
