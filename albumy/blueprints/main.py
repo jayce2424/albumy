@@ -48,13 +48,18 @@ from jinja2 import Markup, Environment, FileSystemLoader
 main_bp = Blueprint('main', __name__)
 
 
-# 通过e3的计划任务变相实现albumy的计划任务
+# 通过e3的计划任务变相实现albumy的计划任务  http://192.168.10.234/e3/webopm/web/  python自动跑  app_act=gegejia/aikucun/python
 # 输出目前的时间
 @main_bp.route('/e3')
 def e3():
-    order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    db.session.add(order_info)
-    db.session.commit()
+    add_hour = datetime.datetime.now().strftime('%H')
+    add_m = datetime.datetime.now().strftime('%M')
+    print(add_hour)
+    print(add_m)
+    if(add_m==2):
+        order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+        db.session.add(order_info)
+        db.session.commit()
     return 'e3'
 
 
