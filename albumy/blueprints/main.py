@@ -2743,7 +2743,7 @@ def insert_owe_process_ora(sheet, filename):
         print(goods_no)
         value = (num_count, goods_no, drp_code)
         print(value)
-        sql = "INSERT INTO WDT_MAIN_DATA_TEMP_V2(num_count,goods_no,drp_code)VALUES(%s,%s,%s)"
+        sql = "INSERT INTO WDT_MAIN_DATA_TEMP_V2(num_count,goods_no,drp_code)VALUES(:s,:s,:s)"
         print(sql)
         cur.execute(sql, value)  # 执行sql语句
     con.commit()
