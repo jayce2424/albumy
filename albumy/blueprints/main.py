@@ -2649,11 +2649,12 @@ def random_filename(filename):
 
 
 def open_excel(filename):
+    print('2652 '+filename)
     try:
         LUJIN = os.getenv('LUJIN')
         name = r"albumy\uploads\%s" % filename
         name = LUJIN + name
-        print(name)
+        print('2657 '+name)
         book = xlrd.open_workbook(name)  # 文件名，把文件与py文件放在同一目录下
     except:
         print("open excel file failed!")
@@ -2714,6 +2715,40 @@ def insert_owe_process(sheet, filename):
         db.commit()
     cursor.close()  # 关闭连接
     db.close()  # 关闭数据
+    message = Markup(
+        'Insert yao success:'
+        '%s' % filename)
+    flash(message, 'info')
+
+
+def insert_owe_process_ora(sheet, filename):
+    # try:
+    #     user = "JIQIANXIANG"
+    #     passwd = "JIQIANXIANG"
+    #     listener = '192.168.0.72:1521/pdm'
+    #     con = cx_Oracle.connect(user, passwd, listener)
+    # except:
+    #     print("could not connect to mysql server")
+    user = "JIQIANXIANG"
+    passwd = "JIQIANXIANG"
+    listener = '192.168.0.72:1521/pdm'
+    con = cx_Oracle.connect(user, passwd, listener)
+    cur = con.cursor()
+    for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
+
+        num_count = sheet.cell(i, 0).value  # 取第i行第0列
+        goods_no = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        drp_code = sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
+        print(num_count)
+        print(goods_no)
+        value = (num_count, goods_no, drp_code)
+        print(value)
+        sql = "INSERT INTO WDT_MAIN_DATA_TEMP_V2(num_count,goods_no,drp_code)VALUES(%s,%s,%s)"
+        print(sql)
+        cur.execute(sql, value)  # 执行sql语句
+    con.commit()
+    cur.close()
+    con.close()
     message = Markup(
         'Insert yao success:'
         '%s' % filename)
@@ -2914,10 +2949,11 @@ def upload_owe():
             f = form.excel.data
             filename = random_filename(f.filename)  # 先定义 再使用 放前面
             f.save(os.path.join(current_app.config['BLUELOG_UPLOAD_PATH'], filename))
-
+            print(filename)
             sheet = open_excel(filename)
             print(sheet)
-            insert_owe_process(sheet, filename)
+            # insert_owe_process(sheet, filename)
+            insert_owe_process_ora(sheet, filename)
 
     return render_template('main/upload_owe.html', form=form)
 
