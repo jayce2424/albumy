@@ -2737,6 +2737,7 @@ def insert_owe_process_ora(sheet, filename):
 
     sql2 = "delete from WDT_MAIN_DATA_TEMP_V2"
     cur.execute(sql2)
+    con.commit()#一定要加 不然ora数据库死锁
 
     for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
 
