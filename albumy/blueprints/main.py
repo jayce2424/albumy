@@ -2734,23 +2734,57 @@ def insert_owe_process_ora(sheet, filename):
     listener = '192.168.0.72:1521/pdm'
     con = cx_Oracle.connect(user, passwd, listener)
     cur = con.cursor()
+
+    sql2 = "delete from WDT_MAIN_DATA_TEMP_V2"
+    cur.execute(sql2)
+
     for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
 
-        num_count = sheet.cell(i, 0).value  # 取第i行第0列
-        goods_no = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
-        drp_code = sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
-        print(num_count)
-        print(goods_no)
-        value = (num_count, goods_no, drp_code)
+        NUM_COUNT = sheet.cell(i, 0).value  # 取第i行第0列
+        GOODS_NO = sheet.cell(i, 1).value  # 取第i行第1列，下面依次类推
+        DRP_CODE = sheet.cell(i, 2).value  # 取第i行第2列，下面依次类推
+        SKU_CODE = sheet.cell(i, 3).value
+        CMDY_NAME = sheet.cell(i, 4).value
+        COLOR = sheet.cell(i, 5).value
+        IS_ONLINE = sheet.cell(i, 6).value
+        MAIN_CATEG = sheet.cell(i, 7).value
+        MIDDLE_CATEG = sheet.cell(i, 8).value
+        STATS_CATEG = sheet.cell(i, 9).value
+        MIXTURE_RATIO = sheet.cell(i, 10).value
+        CMDY_ATTRIBUTE = sheet.cell(i, 11).value
+        COLOR_SEPARATION = sheet.cell(i, 12).value
+        BRAND_NAME = sheet.cell(i, 13).value
+        PACKAGE_CODE = sheet.cell(i, 14).value
+        BAR_CODE = sheet.cell(i, 15).value
+        PACKAGE_UNIT = sheet.cell(i, 16).value
+        PACKAGE_SPECIFICATION = sheet.cell(i, 17).value
+        PURCHASE_PRICE = sheet.cell(i, 18).value
+        RETAIL_PRICE = sheet.cell(i, 19).value
+        MARKET_PRICE = sheet.cell(i, 20).value
+        MATERIAL_CODE = sheet.cell(i, 21).value
+        PACKAGE_SPECIFICATION2 = sheet.cell(i, 22).value
+        WARRANTY_PERIOD = sheet.cell(i, 23).value
+        CREATE_DATE = sheet.cell(i, 24).value
+        REMARK = sheet.cell(i, 25).value
+        REMARK2 = sheet.cell(i, 26).value
+        TTSP = sheet.cell(i, 27).value
+        DA = sheet.cell(i, 28).value
+        ZHONG = sheet.cell(i, 29).value
+        XIAO = sheet.cell(i, 30).value
+        ZBZLTZ = sheet.cell(i, 31).value
+        ZBDJ = sheet.cell(i, 32).value
+        print(NUM_COUNT)
+        print(GOODS_NO)
+        value = (NUM_COUNT,GOODS_NO,DRP_CODE,SKU_CODE,CMDY_NAME,COLOR,IS_ONLINE,MAIN_CATEG,MIDDLE_CATEG,STATS_CATEG,MIXTURE_RATIO,CMDY_ATTRIBUTE,COLOR_SEPARATION,BRAND_NAME,PACKAGE_CODE,BAR_CODE,PACKAGE_UNIT,PACKAGE_SPECIFICATION,PURCHASE_PRICE,RETAIL_PRICE,MARKET_PRICE,MATERIAL_CODE,PACKAGE_SPECIFICATION2,WARRANTY_PERIOD,CREATE_DATE,REMARK,REMARK2,TTSP,DA,ZHONG,XIAO,ZBZLTZ,ZBDJ)
         print(value)
-        sql = "INSERT INTO WDT_MAIN_DATA_TEMP_V2(num_count,goods_no,drp_code)VALUES(:s,:s,:s)"
+        sql = "INSERT INTO WDT_MAIN_DATA_TEMP_V2(NUM_COUNT,GOODS_NO,DRP_CODE,SKU_CODE,CMDY_NAME,COLOR,IS_ONLINE,MAIN_CATEG,MIDDLE_CATEG,STATS_CATEG,MIXTURE_RATIO,CMDY_ATTRIBUTE,COLOR_SEPARATION,BRAND_NAME,PACKAGE_CODE,BAR_CODE,PACKAGE_UNIT,PACKAGE_SPECIFICATION,PURCHASE_PRICE,RETAIL_PRICE,MARKET_PRICE,MATERIAL_CODE,PACKAGE_SPECIFICATION2,WARRANTY_PERIOD,CREATE_DATE,REMARK,REMARK2,TTSP,DA,ZHONG,XIAO,ZBZLTZ,ZBDJ)VALUES(:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s)"
         print(sql)
         cur.execute(sql, value)  # 执行sql语句
     con.commit()
     cur.close()
     con.close()
     message = Markup(
-        'Insert yao success:'
+        'Insert zhushuju success:'
         '%s' % filename)
     flash(message, 'info')
 
@@ -2952,6 +2986,7 @@ def upload_owe():
             print(filename)
             sheet = open_excel(filename)
             print(sheet)
+            # 插入欠量 现在已经不用了
             # insert_owe_process(sheet, filename)
             insert_owe_process_ora(sheet, filename)
 
