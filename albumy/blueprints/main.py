@@ -2117,16 +2117,42 @@ def explore34(tid):
     # print(gg['data'][1])
     list2 = []
     ss=0
+
+    try:
+        db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
+                             passwd="qwer1234.",
+                             db="flask_albumy2")
+    except:
+        print("could not connect to mysql server")
+    cursor = db.cursor()
+
     for i in range(len(gg['data'])):
         if gg['data'][i]['stock_num']==0:
             continue
-        list2.append(dict(spec_no=gg['data'][i]['spec_no'], stock_num=int(gg['data'][i]['stock_num']), warehouse_name=gg['data'][i]['warehouse_name']))
-        ss=ss+int(gg['data'][i]['stock_num'])
+
+        value = (gg['data'][i]['spec_no'], gg['data'][i]['warehouse_name'])
+        #从  flask_albumy2 上取到 spkcb_sd_wdt 锁定的数据
+        sql = "select cangku,sku,sdsl from spkcb_sd_wdt where sku=%s and cangku=%s ;"
+        cursor.execute(sql, value)  # 执行sql语句
+        ret = cursor.fetchone()
+        print('元祖')
+        print(ret)
+        if ret is None:
+            sdsl=0
+        else:
+            sdsl = ret[2]
+            print('锁拉')
+        list2.append(dict(spec_no=gg['data'][i]['spec_no'], stock_num=int(gg['data'][i]['stock_num']), warehouse_name=gg['data'][i]['warehouse_name'], sdsl=sdsl) )
+        print(list2)
+        ss=ss+int(gg['data'][i]['stock_num'])-sdsl
+
     # [{'spec_no': 'K35B', 'stock_num': 1492, 'warehouse_name': '新渠道零拣仓'},
     #  {'spec_no': 'K35B', 'stock_num': 140, 'warehouse_name': '残次品区'},
-    #  {'spec_no': 'K35B', 'stock_num': 3496, 'warehouse_name': '天猫零拣区'}]
+    #  {'spec_no': 'K35B', 'stock_num': 3496, 'warehouse_name': '天猫零拣区'}] 京东自营仓
     # https: // www.cnblogs.com / weisunblog / p / 12421882.html  python 使用sorted方法对二维列表排序
     list2 = sorted(list2, key=operator.itemgetter('warehouse_name'))
+    cursor.close()  # 关闭连接
+    db.close()  # 关闭数据
 
     # print(list2)
 
