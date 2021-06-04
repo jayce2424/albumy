@@ -1782,23 +1782,25 @@ def index():
     # gg = json.loads(response.text)
     # jayuu = gg[1]['title']
     # print(type(photos))
-    URL_IP = 'https://www.v2ex.com/api/topics/hot.json'
-    response = requests.get(URL_IP)
-    gg = json.loads(response.text)
-    # 把请求到的东西放在一个list里传给前端
-    list1 = []
-    for i in range(len(gg)):
-        list1.append(dict(title=gg[i]['title'], url=gg[i]['url']))
+    # URL_IP = 'https://www.v2ex.com/api/topics/hot.json'
+    # response = requests.get(URL_IP)
+    # gg = json.loads(response.text)
+    # # 把请求到的东西放在一个list里传给前端
+    # list1 = []
+    # for i in range(len(gg)):
+    #     list1.append(dict(title=gg[i]['title'], url=gg[i]['url']))
+    #
+    # URL_IP = 'https://www.v2ex.com/api/topics/latest.json'
+    # response = requests.get(URL_IP)
+    # gg = json.loads(response.text)
+    # # 把请求到的东西放在一个list里传给前端
+    # list2 = []
+    # for i in range(len(gg)):
+    #     list2.append(dict(title=gg[i]['title'], url=gg[i]['url']))
+    # return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect,
+    #                        list1=list1, list2=list2)
 
-    URL_IP = 'https://www.v2ex.com/api/topics/latest.json'
-    response = requests.get(URL_IP)
-    gg = json.loads(response.text)
-    # 把请求到的东西放在一个list里传给前端
-    list2 = []
-    for i in range(len(gg)):
-        list2.append(dict(title=gg[i]['title'], url=gg[i]['url']))
-    return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect,
-                           list1=list1, list2=list2)
+    return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect)
 
 
 @main_bp.route('/explore')
