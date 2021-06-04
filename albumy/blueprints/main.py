@@ -2483,7 +2483,25 @@ GROUP BY
         ss2 = ss2 + rows[i][2]
 
     # return 'gg'
-    return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2)
+    # return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2)
+    photo_id=31
+    photo = Photo.query.get_or_404(photo_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_COMMENT_PER_PAGE']
+    pagination = Comment.query.with_parent(photo).order_by(Comment.timestamp.asc()).paginate(page, per_page)
+    comments = pagination.items
+
+    comment_form = CommentForm()
+    description_form = DescriptionForm()
+    tag_form = TagForm()
+    can_comment_form = Can_commentForm()
+
+    description_form.description.data = photo.description
+    can_comment_form.can_comment.data = photo.can_comment
+    return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2,
+                           photo=photo, comment_form=comment_form,
+                           description_form=description_form, tag_form=tag_form, can_comment_form=can_comment_form,
+                           pagination=pagination, comments=comments)
 
 
 @main_bp.route('/')
