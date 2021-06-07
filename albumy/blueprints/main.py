@@ -2498,10 +2498,25 @@ GROUP BY
 
     description_form.description.data = photo.description
     can_comment_form.can_comment.data = photo.can_comment
+
+    # https: // www.juhe.cn / docs / api / id / 21
+    gp_url='http://web.juhe.cn:8080/finance/stock/hs'
+    response = requests.get(gp_url, params={'gid': 'sh603899', 'key': '8c23585a3c0b736e6751186bc191eaaa'})
+    gp= json.loads(response.text)
+    increPer=gp['result'][0]['data']['increPer']
+    nowPri=gp['result'][0]['data']['nowPri']
+    todayMax=gp['result'][0]['data']['todayMax']
+    todayMin=gp['result'][0]['data']['todayMin']
+    dayurl=gp['result'][0]['gopicture']['dayurl']
+    minurl=gp['result'][0]['gopicture']['minurl']
+    traAmount=gp['result'][0]['dapandata']['traAmount']
+
+
     return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2,
                            photo=photo, comment_form=comment_form,
                            description_form=description_form, tag_form=tag_form, can_comment_form=can_comment_form,
-                           pagination=pagination, comments=comments)
+                           pagination=pagination, comments=comments,
+                           increPer=increPer, nowPri=nowPri, todayMax=todayMax, todayMin=todayMin, dayurl=dayurl, minurl=minurl, traAmount=traAmount)
 
 
 @main_bp.route('/')

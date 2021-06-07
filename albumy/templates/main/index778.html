@@ -8,73 +8,83 @@
 {% block content %}
 
 
- <div class="row">
-        <div class="col-md-8">
-           <div class="row">
-    <div class="span6">{% if list2 %}
-        <div class="card mb-6">
-            <div class="card-header">wdt {{ list2[0].spec_no }} 求和{{ss}}  相差<span class="oi oi-bolt"></span>{{ss-ss2}}</div>
-            <ul class="list-group list-group-flush">
-                {% for lis in list2 %}
-                <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
-                    <a>
-                        {{lis.warehouse_name}} {{ lis.stock_num }}   {% if lis.sdsl==0 %} {% else %} <span class="oi oi-lock-unlocked"></span> 数量：{{lis.sdsl}} {% endif %}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    </div>
-    <div class="span6">{% if rows %}
-        <div class="card mb-6">
-            <div class="card-header">WMS  求和{{ss2}} </div>
-            <ul class="list-group list-group-flush">
-                {% for liss in rows %}
-                <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
-                    <a>
-                        {{ liss[1] }} {{ liss[2] }}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-        </div>
-        <div class="col-md-4">
-            {% include 'main/_photo_sidebar.html' %}
-        </div>
-    </div>
-
-
-<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">Delete Confirm</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+<div class="row">
+    <div class="col-md-8">
+        <div class="row">
+            <div class="span6">{% if list2 %}
+                <div class="card mb-6">
+                    <div class="card-header">wdt {{ list2[0].spec_no }} 求和{{ss}} 相差<span class="oi oi-bolt"></span>{{ss-ss2}}
                     </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete this item?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form class="delete-form" action="" method="post">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button class="btn btn-danger btn-confirm" type="submit">Delete</button>
-                        </form>
-                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for lis in list2 %}
+                        <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
+                            <a>
+                                {{lis.warehouse_name}} {{ lis.stock_num }} {% if lis.sdsl==0 %} {% else %} <span
+                                    class="oi oi-lock-unlocked"></span> 数量：{{lis.sdsl}} {% endif %}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
+                {% endif %}
+            </div>
+            <div class="span6">{% if rows %}
+                <div class="card mb-6">
+                    <div class="card-header">WMS 求和{{ss2}}</div>
+                    <ul class="list-group list-group-flush">
+                        {% for liss in rows %}
+                        <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
+                            <a>
+                                {{ liss[1] }} {{ liss[2] }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
         </div>
 
+    </div>
+    <div class="col-md-4">
+        {% include 'main/_photo_sidebar.html' %}
+    </div>
+</div>
+
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Delete Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this item?</p>
+            </div>
+            <div class="modal-footer">
+                <form class="delete-form" action="" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger btn-confirm" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
+	<span class="badge badge-success">{{increPer}}</span>
+	<span class="badge badge-warning">{{nowPri}}</span>
+<span class="badge badge-info">{{traAmount}}</span>
+	<span class="badge badge-inverse">{{todayMax}}</span>
+<span class="badge badge-important">{{todayMin}}</span>
+
+<!--<img src="{{minurl}}"  alt="上海鲜花港 - 郁金香" />-->
+<!--<span class="label label-info">{{dayurl}}</span>-->
+<!--<span class="label label-inverse">{{minurl}}</span>-->
 
 {% endblock %}
