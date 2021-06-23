@@ -3181,9 +3181,9 @@ def export_117():
     #     ws.write(i, 5, owenum.receive_date)
     #     i = i + 1
     try:
-        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                             passwd="MgBaIsOn20191022AbYz",
-                             db="mg_e3")
+        db = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     except:
         print("could not connect to mysql server")
     cursor = db.cursor()
@@ -3284,9 +3284,9 @@ def export_3():
     #     ws.write(i, 5, owenum.receive_date)
     #     i = i + 1
     try:
-        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                             passwd="MgBaIsOn20191022AbYz",
-                             db="mg_e3")
+        db = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     except:
         print("could not connect to mysql server")
     cursor = db.cursor()
@@ -3363,9 +3363,9 @@ ORDER BY
 @main_bp.route('/pymysql1', methods=['GET', 'POST'])
 def pymysql1():
     # 连接database
-    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                           passwd="MgBaIsOn20191022AbYz",
-                           db="mg_e3")
+    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3386,9 +3386,9 @@ def pymysql1():
 @main_bp.route('/pymysql3', methods=['GET', 'POST'])
 def pymysql3():
     # 连接database
-    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                           passwd="MgBaIsOn20191022AbYz",
-                           db="mg_e3")
+    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3415,9 +3415,9 @@ def pymysql2():
     # 导入pymysql模块
     import pymysql
     # 连接database
-    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                           passwd="MgBaIsOn20191022AbYz",
-                           db="mg_e3")
+    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3440,9 +3440,9 @@ def pymysql4():
     # 导入pymysql模块
     import pymysql
     # 连接database
-    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                           passwd="MgBaIsOn20191022AbYz",
-                           db="mg_e3")
+    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3461,9 +3461,9 @@ def pymysql4():
     # 打印下查询结果
     print(ret)
     # 连接database
-    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                           passwd="MgBaIsOn20191022AbYz",
-                           db="mg_e3")
+    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -4039,3 +4039,208 @@ def delete_tag(photo_id, tag_id):
 
     flash('Tag deleted.', 'info')
     return redirect(url_for('.show_photo', photo_id=photo_id))
+
+
+@main_bp.route('/kucunbidui')
+def kucunbidui():
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+
+    sql = "select * from kucunduibi where cangku='天猫零拣区' and date='2021/6/16'  ;"
+    cursor.execute(sql)  # 执行sql语句
+    results = cursor.fetchall()
+    print(results)
+    for row in results:
+        print(row[0])
+        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='天猫零拣选区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        cursor_ora.execute(sql_ora)
+        row_ora = cursor_ora.fetchone()
+        print(row_ora)
+        # print(row_ora[0])
+        if row_ora is None:
+            sql = """update kucunduibi  set wms_sl=0 where cangku='天猫零拣区' and sku='%s'""" %row[0]
+            cursor.execute(sql)
+            db.commit()
+        else:
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='天猫零拣区' and sku='%s'"""  %(row_ora[0],row[0])
+            cursor.execute(sql)
+            db.commit()
+        # print(row[1])
+        # print(row[2])
+        # break
+    # cursor_ora.close()
+    cursor.close()
+    db.close()
+    conn.close()
+
+    # cursor.close()
+    return 'ss'
+
+@main_bp.route('/kucunbiduix')
+def kucunbiduix():
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+
+    sql = "select * from kucunduibi where cangku='新渠道零拣仓' and date='2021/6/16'  ;"
+    cursor.execute(sql)  # 执行sql语句
+    results = cursor.fetchall()
+    print(results)
+    for row in results:
+        print(row[0])
+        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='新渠道零拣区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        cursor_ora.execute(sql_ora)
+        row_ora = cursor_ora.fetchone()
+        print(row_ora)
+        # print(row_ora[0])
+        if row_ora is None:
+            sql = """update kucunduibi  set wms_sl=0 where cangku='新渠道零拣仓' and sku='%s'""" %row[0]
+            cursor.execute(sql)
+            db.commit()
+        else:
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='新渠道零拣仓' and sku='%s'"""  %(row_ora[0],row[0])
+            cursor.execute(sql)
+            db.commit()
+        # print(row[1])
+        # print(row[2])
+        # break
+    # cursor_ora.close()
+    cursor.close()
+    db.close()
+    conn.close()
+
+    # cursor.close()
+    return 'ss'
+
+@main_bp.route('/kucunbiduijd')
+def kucunbiduijd():
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+
+    sql = "select * from kucunduibi where cangku='京东自营仓' and date='2021/6/16'  ;"
+    cursor.execute(sql)  # 执行sql语句
+    results = cursor.fetchall()
+    print(results)
+    for row in results:
+        print(row[0])
+        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='京东零拣区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        cursor_ora.execute(sql_ora)
+        row_ora = cursor_ora.fetchone()
+        print(row_ora)
+        # print(row_ora[0])
+        if row_ora is None:
+            sql = """update kucunduibi  set wms_sl=0 where cangku='京东自营仓' and sku='%s'""" %row[0]
+            cursor.execute(sql)
+            db.commit()
+        else:
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='京东自营仓' and sku='%s'"""  %(row_ora[0],row[0])
+            cursor.execute(sql)
+            db.commit()
+        # print(row[1])
+        # print(row[2])
+        # break
+    # cursor_ora.close()
+    cursor.close()
+    db.close()
+    conn.close()
+
+    # cursor.close()
+    return 'ss'
+
+@main_bp.route('/kucunbiduicc')
+def kucunbiduicc():
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+
+    sql = "select * from kucunduibi where cangku='残次品区' and date='2021/6/16'  ;"
+    cursor.execute(sql)  # 执行sql语句
+    results = cursor.fetchall()
+    print(results)
+    for row in results:
+        print(row[0])
+        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='残次品区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        cursor_ora.execute(sql_ora)
+        row_ora = cursor_ora.fetchone()
+        print(row_ora)
+        # print(row_ora[0])
+        if row_ora is None:
+            sql = """update kucunduibi  set wms_sl=0 where cangku='残次品区' and sku='%s'""" %row[0]
+            cursor.execute(sql)
+            db.commit()
+        else:
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='残次品区' and sku='%s'"""  %(row_ora[0],row[0])
+            cursor.execute(sql)
+            db.commit()
+        # print(row[1])
+        # print(row[2])
+        # break
+    # cursor_ora.close()
+    cursor.close()
+    db.close()
+    conn.close()
+
+    # cursor.close()
+    return 'ss'
