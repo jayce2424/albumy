@@ -68,9 +68,9 @@ def bar_base3() -> Bar:
 
 def bar_base5() -> Bar:
     # 连接database
-    conn = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                           passwd="MgBaIsOn20191022AbYz",
-                           db="mg_e3")
+    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -454,9 +454,9 @@ def bar_basejjjh() -> Bar:
     # ff=Faker.choose()
     # print(ff)
     try:
-        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                             passwd="MgBaIsOn20191022AbYz",
-                             db="mg_e3")
+        db = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     except:
         print("could not connect to mysql server")
     cursor = db.cursor()
@@ -478,9 +478,9 @@ group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     db.close()
 
     try:
-        db = pymysql.connect(host="192.168.10.22", port=9966, user="jusrrjd76hud",
-                             passwd="MgBaIsOn20191022AbYz",
-                             db="mg_e3")
+        db = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+                             passwd="baison8888",
+                             db="e3_20192020")
     except:
         print("could not connect to mysql server")
     cursor = db.cursor()
