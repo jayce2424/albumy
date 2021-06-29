@@ -2503,13 +2503,25 @@ GROUP BY
     gp_url='http://web.juhe.cn:8080/finance/stock/hs'
     response = requests.get(gp_url, params={'gid': 'sh603899', 'key': '8c23585a3c0b736e6751186bc191eaaa'})
     gp= json.loads(response.text)
-    increPer=gp['result'][0]['data']['increPer']
-    nowPri=gp['result'][0]['data']['nowPri']
-    todayMax=gp['result'][0]['data']['todayMax']
-    todayMin=gp['result'][0]['data']['todayMin']
-    dayurl=gp['result'][0]['gopicture']['dayurl']
-    minurl=gp['result'][0]['gopicture']['minurl']
-    traAmount=gp['result'][0]['dapandata']['traAmount']
+    print(gp) #{'resultcode': '112', 'reason': 'request exceeds the limit!', 'result': [], 'error_code': 10012}
+    print(gp['resultcode'])
+    if gp['reason']=='request exceeds the limit!':
+        increPer=0
+        nowPri=0
+        todayMax=0
+        todayMin=0
+        dayurl=0
+        minurl=0
+        traAmount=0
+    else:
+        increPer = gp['result'][0]['data']['increPer']
+        nowPri = gp['result'][0]['data']['nowPri']
+        todayMax = gp['result'][0]['data']['todayMax']
+        todayMin = gp['result'][0]['data']['todayMin']
+        dayurl = gp['result'][0]['gopicture']['dayurl']
+        minurl = gp['result'][0]['gopicture']['minurl']
+        traAmount = gp['result'][0]['dapandata']['traAmount']
+
 
 
     return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2,
