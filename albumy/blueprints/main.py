@@ -44,7 +44,6 @@ from threading import Thread
 from decimal import getcontext, Decimal
 from jinja2 import Markup, Environment, FileSystemLoader
 
-
 main_bp = Blueprint('main', __name__)
 
 
@@ -56,7 +55,7 @@ def e3():
     add_m = datetime.datetime.now().strftime('%M')
     print(add_hour)
     print(add_m)
-    if(add_m=='08'):
+    if (add_m == '08'):
         order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
         db.session.add(order_info)
         db.session.commit()
@@ -2054,10 +2053,11 @@ def explore33():
     print(timestamp)
     print(md5_sign)
     url = "http://wdt.wangdian.cn/openapi?key=shcgkj3-ot&method=wms.stockout.Sales.queryWithDetail&salt=1528971896838896&sid=shcgkj3&timestamp=%s&v=1.0&sign=%s&calc_total=20&page_no=0&page_size=100" % (
-    timestamp, md5_sign)
+        timestamp, md5_sign)
     print(url)
     response = requests.request("POST", url, headers=headers, data=payload)
     return response.text
+
 
 # 查询库存接口spkcb
 @main_bp.route('/explore34/<tid>')
@@ -2095,6 +2095,7 @@ def explore34(tid):
     for key, value in param.items():
         sign = sign + key + value
     sign_r = '09713ad28c5bf6bcc64b9005ed0a233d' + sign + '09713ad28c5bf6bcc64b9005ed0a233d'
+
     # print(sign_r)
 
     def md5value(key):
@@ -2111,14 +2112,14 @@ def explore34(tid):
     # print(timestamp)
     # print(md5_sign)
     url = "http://wdt.wangdian.cn/openapi?key=shcgkj3-ot&method=wms.StockSpec.search&salt=1528971896838896&sid=shcgkj3&timestamp=%s&v=1.0&sign=%s&calc_total=20&page_no=0&page_size=100" % (
-    timestamp, md5_sign)
+        timestamp, md5_sign)
     # print(url)
     response = requests.request("POST", url, headers=headers, data=payload)
     gg = json.loads(response.text)
     # return response.text
     # print(gg['data'][1])
     list2 = []
-    ss=0
+    ss = 0
 
     try:
         db = pymysql.connect(host="10.10.19.6", port=5000, user="root",
@@ -2129,24 +2130,25 @@ def explore34(tid):
     cursor = db.cursor()
 
     for i in range(len(gg['data'])):
-        if gg['data'][i]['stock_num']==0:
+        if gg['data'][i]['stock_num'] == 0:
             continue
 
         value = (gg['data'][i]['spec_no'], gg['data'][i]['warehouse_name'])
-        #从  flask_albumy2 上取到 spkcb_sd_wdt 锁定的数据
+        # 从  flask_albumy2 上取到 spkcb_sd_wdt 锁定的数据
         sql = "select cangku,sku,sdsl from spkcb_sd_wdt where sku=%s and cangku=%s ;"
         cursor.execute(sql, value)  # 执行sql语句
         ret = cursor.fetchone()
         print('元祖')
         print(ret)
         if ret is None:
-            sdsl=0
+            sdsl = 0
         else:
             sdsl = ret[2]
             print('锁拉')
-        list2.append(dict(spec_no=gg['data'][i]['spec_no'], stock_num=int(gg['data'][i]['stock_num']), warehouse_name=gg['data'][i]['warehouse_name'], sdsl=sdsl) )
+        list2.append(dict(spec_no=gg['data'][i]['spec_no'], stock_num=int(gg['data'][i]['stock_num']),
+                          warehouse_name=gg['data'][i]['warehouse_name'], sdsl=sdsl))
         print(list2)
-        ss=ss+int(gg['data'][i]['stock_num'])-sdsl
+        ss = ss + int(gg['data'][i]['stock_num']) - sdsl
 
     # [{'spec_no': 'K35B', 'stock_num': 1492, 'warehouse_name': '新渠道零拣仓'},
     #  {'spec_no': 'K35B', 'stock_num': 140, 'warehouse_name': '残次品区'},
@@ -2158,8 +2160,6 @@ def explore34(tid):
 
     # print(list2)
 
-
-
     user = "DW"
     passwd = "DW"
     listener = '192.168.10.173:1521/wmsdb'
@@ -2168,7 +2168,7 @@ def explore34(tid):
     cursor = conn.cursor()
     # 使用execute方法执行SQL语句
     # row = cursor.fetchall("select * from WMS_USER.DOC_ADJ_details where adjno='0000000109'")
-    sql="""SELECT
+    sql = """SELECT
 	jj.fmsku,
 	jj.configlist02,
 	SUM (jj.fmqty) sl
@@ -2467,7 +2467,7 @@ AND INV_LOT_LOC_ID.sku = '%s'
 	) jj
 GROUP BY
 	jj.fmsku,
-	jj.configlist02 order by 2"""   %tid
+	jj.configlist02 order by 2""" % tid
     cursor.execute(sql)
     rows = cursor.fetchall()
     # list3 = []
@@ -2484,7 +2484,7 @@ GROUP BY
 
     # return 'gg'
     # return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2)
-    photo_id=31
+    photo_id = 31
     photo = Photo.query.get_or_404(photo_id)
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config['ALBUMY_COMMENT_PER_PAGE']
@@ -2500,19 +2500,19 @@ GROUP BY
     can_comment_form.can_comment.data = photo.can_comment
 
     # https: // www.juhe.cn / docs / api / id / 21
-    gp_url='http://web.juhe.cn:8080/finance/stock/hs'
+    gp_url = 'http://web.juhe.cn:8080/finance/stock/hs'
     response = requests.get(gp_url, params={'gid': 'sh603899', 'key': '8c23585a3c0b736e6751186bc191eaaa'})
-    gp= json.loads(response.text)
-    print(gp) #{'resultcode': '112', 'reason': 'request exceeds the limit!', 'result': [], 'error_code': 10012}
+    gp = json.loads(response.text)
+    print(gp)  # {'resultcode': '112', 'reason': 'request exceeds the limit!', 'result': [], 'error_code': 10012}
     print(gp['resultcode'])
-    if gp['reason']=='request exceeds the limit!':
-        increPer=0
-        nowPri=0
-        todayMax=0
-        todayMin=0
-        dayurl=0
-        minurl=0
-        traAmount=0
+    if gp['reason'] == 'request exceeds the limit!':
+        increPer = 0
+        nowPri = 0
+        todayMax = 0
+        todayMin = 0
+        dayurl = 0
+        minurl = 0
+        traAmount = 0
     else:
         increPer = gp['result'][0]['data']['increPer']
         nowPri = gp['result'][0]['data']['nowPri']
@@ -2522,13 +2522,12 @@ GROUP BY
         minurl = gp['result'][0]['gopicture']['minurl']
         traAmount = gp['result'][0]['dapandata']['traAmount']
 
-
-
-    return render_template('main/index778.html', list2=list2, rows=rows,ss=ss,ss2=ss2,
+    return render_template('main/index778.html', list2=list2, rows=rows, ss=ss, ss2=ss2,
                            photo=photo, comment_form=comment_form,
                            description_form=description_form, tag_form=tag_form, can_comment_form=can_comment_form,
                            pagination=pagination, comments=comments,
-                           increPer=increPer, nowPri=nowPri, todayMax=todayMax, todayMin=todayMin, dayurl=dayurl, minurl=minurl, traAmount=traAmount)
+                           increPer=increPer, nowPri=nowPri, todayMax=todayMax, todayMin=todayMin, dayurl=dayurl,
+                           minurl=minurl, traAmount=traAmount)
 
 
 @main_bp.route('/')
@@ -2722,12 +2721,12 @@ def random_filename(filename):
 
 
 def open_excel(filename):
-    print('2652 '+filename)
+    print('2652 ' + filename)
     try:
         LUJIN = os.getenv('LUJIN')
         name = r"albumy\uploads\%s" % filename
         name = LUJIN + name
-        print('2657 '+name)
+        print('2657 ' + name)
         book = xlrd.open_workbook(name)  # 文件名，把文件与py文件放在同一目录下
     except:
         print("open excel file failed!")
@@ -2810,7 +2809,7 @@ def insert_owe_process_ora(sheet, filename):
 
     sql2 = "delete from WDT_MAIN_DATA_TEMP_V2"
     cur.execute(sql2)
-    con.commit()#一定要加 不然ora数据库死锁
+    con.commit()  # 一定要加 不然ora数据库死锁
 
     for i in range(1, sheet.nrows):  # 第一行是标题名，对应表中的字段名所以应该从第二行开始，计算机以0开始计数，所以值是1
 
@@ -2849,7 +2848,11 @@ def insert_owe_process_ora(sheet, filename):
         ZBDJ = sheet.cell(i, 32).value
         print(NUM_COUNT)
         print(GOODS_NO)
-        value = (NUM_COUNT,GOODS_NO,DRP_CODE,SKU_CODE,CMDY_NAME,COLOR,IS_ONLINE,MAIN_CATEG,MIDDLE_CATEG,STATS_CATEG,MIXTURE_RATIO,CMDY_ATTRIBUTE,COLOR_SEPARATION,BRAND_NAME,PACKAGE_CODE,BAR_CODE,PACKAGE_UNIT,PACKAGE_SPECIFICATION,PURCHASE_PRICE,RETAIL_PRICE,MARKET_PRICE,MATERIAL_CODE,PACKAGE_SPECIFICATION2,WARRANTY_PERIOD,CREATE_DATE,REMARK,REMARK2,TTSP,DA,ZHONG,XIAO,ZBZLTZ,ZBDJ)
+        value = (
+            NUM_COUNT, GOODS_NO, DRP_CODE, SKU_CODE, CMDY_NAME, COLOR, IS_ONLINE, MAIN_CATEG, MIDDLE_CATEG, STATS_CATEG,
+            MIXTURE_RATIO, CMDY_ATTRIBUTE, COLOR_SEPARATION, BRAND_NAME, PACKAGE_CODE, BAR_CODE, PACKAGE_UNIT,
+            PACKAGE_SPECIFICATION, PURCHASE_PRICE, RETAIL_PRICE, MARKET_PRICE, MATERIAL_CODE, PACKAGE_SPECIFICATION2,
+            WARRANTY_PERIOD, CREATE_DATE, REMARK, REMARK2, TTSP, DA, ZHONG, XIAO, ZBZLTZ, ZBDJ)
         print(value)
         sql = "INSERT INTO WDT_MAIN_DATA_TEMP_V2(NUM_COUNT,GOODS_NO,DRP_CODE,SKU_CODE,CMDY_NAME,COLOR,IS_ONLINE,MAIN_CATEG,MIDDLE_CATEG,STATS_CATEG,MIXTURE_RATIO,CMDY_ATTRIBUTE,COLOR_SEPARATION,BRAND_NAME,PACKAGE_CODE,BAR_CODE,PACKAGE_UNIT,PACKAGE_SPECIFICATION,PURCHASE_PRICE,RETAIL_PRICE,MARKET_PRICE,MATERIAL_CODE,PACKAGE_SPECIFICATION2,WARRANTY_PERIOD,CREATE_DATE,REMARK,REMARK2,TTSP,DA,ZHONG,XIAO,ZBZLTZ,ZBDJ)VALUES(:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s,:s)"
         print(sql)
@@ -3376,8 +3379,8 @@ ORDER BY
 def pymysql1():
     # 连接database
     conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
-                             passwd="baison8888",
-                             db="e3_20192020")
+                           passwd="baison8888",
+                           db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3399,8 +3402,8 @@ def pymysql1():
 def pymysql3():
     # 连接database
     conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
-                             passwd="baison8888",
-                             db="e3_20192020")
+                           passwd="baison8888",
+                           db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3428,8 +3431,8 @@ def pymysql2():
     import pymysql
     # 连接database
     conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
-                             passwd="baison8888",
-                             db="e3_20192020")
+                           passwd="baison8888",
+                           db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3453,8 +3456,8 @@ def pymysql4():
     import pymysql
     # 连接database
     conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
-                             passwd="baison8888",
-                             db="e3_20192020")
+                           passwd="baison8888",
+                           db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -3474,8 +3477,8 @@ def pymysql4():
     print(ret)
     # 连接database
     conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
-                             passwd="baison8888",
-                             db="e3_20192020")
+                           passwd="baison8888",
+                           db="e3_20192020")
     # 得到一个可以执行SQL语句的光标对象
     cursor = conn.cursor()
     # 查询数据的SQL语句
@@ -4053,8 +4056,8 @@ def delete_tag(photo_id, tag_id):
     return redirect(url_for('.show_photo', photo_id=photo_id))
 
 
-@main_bp.route('/kucunbidui')
-def kucunbidui():
+@main_bp.route('/kucunbiduix/<date>')  # 时间统一以wms的为准，就是取当天的时间 要求时间维护的和wms的时间一致
+def kucunbiduix(date):
     try:
         db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
                              passwd="app123",
@@ -4073,26 +4076,28 @@ def kucunbidui():
     except:
         print("could not connect to ora server")
 
-
-    sql = "select * from kucunduibi where cangku='天猫零拣区' and date='2021/6/16'  ;"
+    sql = "select * from kucunduibi where cangku='天猫零拣区' and date='%s' and  wdt_sl!=0 ;" % date
     cursor.execute(sql)  # 执行sql语句
     results = cursor.fetchall()
     print(results)
     for row in results:
         print(row[0])
-        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='天猫零拣选区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        sql_ora = """select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='天猫零拣选区' and c_date='%s' and fmsku='%s' """ % (
+            date, row[0])
         cursor_ora.execute(sql_ora)
         row_ora = cursor_ora.fetchone()
         print(row_ora)
         # print(row_ora[0])
         if row_ora is None:
-            sql = """update kucunduibi  set wms_sl=0 where cangku='天猫零拣区' and sku='%s'""" %row[0]
+            sql = """update kucunduibi  set wms_sl=0 where cangku='天猫零拣区' and date='%s' and sku='%s'""" % (date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
         else:
-            sql = """update kucunduibi  set wms_sl='%s' where cangku='天猫零拣区' and sku='%s'"""  %(row_ora[0],row[0])
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='天猫零拣区' and date='%s' and sku='%s'""" % (
+                row_ora[0], date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
+        db.commit()
         # print(row[1])
         # print(row[2])
         # break
@@ -4102,10 +4107,7 @@ def kucunbidui():
     conn.close()
 
     # cursor.close()
-    return 'ss'
 
-@main_bp.route('/kucunbiduix')
-def kucunbiduix():
     try:
         db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
                              passwd="app123",
@@ -4124,26 +4126,29 @@ def kucunbiduix():
     except:
         print("could not connect to ora server")
 
-
-    sql = "select * from kucunduibi where cangku='新渠道零拣仓' and date='2021/6/16'  ;"
+    sql = "select * from kucunduibi where cangku='新渠道零拣仓' and date='%s' and  wdt_sl!=0 ;" % date
     cursor.execute(sql)  # 执行sql语句
     results = cursor.fetchall()
     print(results)
     for row in results:
         print(row[0])
-        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='新渠道零拣区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        sql_ora = """select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='新渠道零拣区' and c_date='%s' and fmsku='%s' """ % (
+            date, row[0])
         cursor_ora.execute(sql_ora)
         row_ora = cursor_ora.fetchone()
         print(row_ora)
         # print(row_ora[0])
         if row_ora is None:
-            sql = """update kucunduibi  set wms_sl=0 where cangku='新渠道零拣仓' and sku='%s'""" %row[0]
+            sql = """update kucunduibi  set wms_sl=0 where cangku='新渠道零拣仓' and date='%s' and sku='%s'""" % (
+                date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
         else:
-            sql = """update kucunduibi  set wms_sl='%s' where cangku='新渠道零拣仓' and sku='%s'"""  %(row_ora[0],row[0])
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='新渠道零拣仓' and date='%s' and sku='%s'""" % (
+                row_ora[0], date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
+        db.commit()
         # print(row[1])
         # print(row[2])
         # break
@@ -4153,10 +4158,6 @@ def kucunbiduix():
     conn.close()
 
     # cursor.close()
-    return 'ss'
-
-@main_bp.route('/kucunbiduijd')
-def kucunbiduijd():
     try:
         db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
                              passwd="app123",
@@ -4175,26 +4176,28 @@ def kucunbiduijd():
     except:
         print("could not connect to ora server")
 
-
-    sql = "select * from kucunduibi where cangku='京东自营仓' and date='2021/6/16'  ;"
+    sql = "select * from kucunduibi where cangku='京东自营仓' and date='%s' and  wdt_sl!=0 ;" % date
     cursor.execute(sql)  # 执行sql语句
     results = cursor.fetchall()
     print(results)
     for row in results:
         print(row[0])
-        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='京东零拣区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        sql_ora = """select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='京东零拣区' and c_date='%s' and fmsku='%s' """ % (
+            date, row[0])
         cursor_ora.execute(sql_ora)
         row_ora = cursor_ora.fetchone()
         print(row_ora)
         # print(row_ora[0])
         if row_ora is None:
-            sql = """update kucunduibi  set wms_sl=0 where cangku='京东自营仓' and sku='%s'""" %row[0]
+            sql = """update kucunduibi  set wms_sl=0 where cangku='京东自营仓' and date='%s' and sku='%s'""" % (date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
         else:
-            sql = """update kucunduibi  set wms_sl='%s' where cangku='京东自营仓' and sku='%s'"""  %(row_ora[0],row[0])
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='京东自营仓' and date='%s' and sku='%s'""" % (
+                row_ora[0], date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
+        db.commit()
         # print(row[1])
         # print(row[2])
         # break
@@ -4204,10 +4207,7 @@ def kucunbiduijd():
     conn.close()
 
     # cursor.close()
-    return 'ss'
 
-@main_bp.route('/kucunbiduicc')
-def kucunbiduicc():
     try:
         db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
                              passwd="app123",
@@ -4226,26 +4226,28 @@ def kucunbiduicc():
     except:
         print("could not connect to ora server")
 
-
-    sql = "select * from kucunduibi where cangku='残次品区' and date='2021/6/16'  ;"
+    sql = "select * from kucunduibi where cangku='残次品区' and date='%s' and  wdt_sl!=0 ;" % date
     cursor.execute(sql)  # 执行sql语句
     results = cursor.fetchall()
     print(results)
     for row in results:
         print(row[0])
-        sql_ora="""select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='残次品区' and c_date='2021-06-16' and fmsku='%s' """  %row[0]
+        sql_ora = """select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='残次品区' and c_date='%s' and fmsku='%s' """ % (
+            date, row[0])
         cursor_ora.execute(sql_ora)
         row_ora = cursor_ora.fetchone()
         print(row_ora)
         # print(row_ora[0])
         if row_ora is None:
-            sql = """update kucunduibi  set wms_sl=0 where cangku='残次品区' and sku='%s'""" %row[0]
+            sql = """update kucunduibi  set wms_sl=0 where cangku='残次品区' and date='%s' and sku='%s'""" % (date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
         else:
-            sql = """update kucunduibi  set wms_sl='%s' where cangku='残次品区' and sku='%s'"""  %(row_ora[0],row[0])
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='残次品区' and date='%s' and sku='%s'""" % (
+                row_ora[0], date, row[0])
             cursor.execute(sql)
-            db.commit()
+            # db.commit()
+        db.commit()
         # print(row[1])
         # print(row[2])
         # break
@@ -4255,4 +4257,415 @@ def kucunbiduicc():
     conn.close()
 
     # cursor.close()
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+    sql = "select * from kucunduibi where cangku='B2B退货仓' and date='%s' and  wdt_sl!=0 ;" % date
+    cursor.execute(sql)  # 执行sql语句
+    results = cursor.fetchall()
+    print(results)
+    for row in results:
+        print(row[0])
+        sql_ora = """select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='B2B退货库区' and c_date='%s' and fmsku='%s' """ % (
+            date, row[0])
+        cursor_ora.execute(sql_ora)
+        row_ora = cursor_ora.fetchone()
+        print(row_ora)
+        # print(row_ora[0])
+        if row_ora is None:
+            sql = """update kucunduibi  set wms_sl=0 where cangku='B2B退货仓' and date='%s' and sku='%s'""" % (
+                date, row[0])
+            cursor.execute(sql)
+            # db.commit()
+        else:
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='B2B退货仓' and date='%s' and sku='%s'""" % (
+                row_ora[0], date, row[0])
+            cursor.execute(sql)
+            # db.commit()
+        db.commit()
+        # print(row[1])
+        # print(row[2])
+        # break
+    # cursor_ora.close()
+    cursor.close()
+    db.close()
+    conn.close()
+
+    # cursor.close()
+
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+    sql = "select * from kucunduibi where cangku='B2C退货仓' and date='%s' and  wdt_sl!=0 ;" % date
+    cursor.execute(sql)  # 执行sql语句
+    results = cursor.fetchall()
+    print(results)
+    for row in results:
+        print(row[0])
+        sql_ora = """select qty from WMS_USER.udf_tab_sku_inventory where pick_zone='B2C退货库区' and c_date='%s' and fmsku='%s' """ % (
+            date, row[0])
+        cursor_ora.execute(sql_ora)
+        row_ora = cursor_ora.fetchone()
+        print(row_ora)
+        # print(row_ora[0])
+        if row_ora is None:
+            sql = """update kucunduibi  set wms_sl=0 where cangku='B2C退货仓' and date='%s' and sku='%s'""" % (
+                date, row[0])
+            cursor.execute(sql)
+            # db.commit()
+        else:
+            sql = """update kucunduibi  set wms_sl='%s' where cangku='B2C退货仓' and date='%s' and sku='%s'""" % (
+                row_ora[0], date, row[0])
+            cursor.execute(sql)
+            # db.commit()
+        db.commit()
+        # print(row[1])
+        # print(row[2])
+        # break
+    # cursor_ora.close()
+
+    # 最后一步 ：整体更新差异
+    sql = """update kucunduibi  set chayi=wdt_sl-wms_sl  and date='%s' """ % date
+    cursor.execute(sql)
+    db.commit()
+
+    cursor.close()
+    db.close()
+    conn.close()
+
+    # cursor.close()
     return 'ss'
+
+
+# http://127.0.0.1:5031/kucunbidui/2021-07-06
+@main_bp.route('/kucunbidui/<date>')  # 时间统一以wms的为准，就是取当天的时间 要求时间维护的和wms的时间一致
+def kucunbidui(date):
+    try:
+        db = pymysql.connect(host="192.168.0.106", port=3306, user="app",
+                             passwd="app123",
+                             db="wdtprod")
+        cursor = db.cursor()
+    except:
+        print("could not connect to mysql server")
+
+    # 数仓
+    try:
+        user = "JIQIANXIANG"
+        passwd = "JIQIANXIANG"
+        listener = '192.168.0.72:1521/pdm'
+        conn = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora = conn.cursor()
+    except:
+        print("could not connect to ora server")
+
+    # WMS
+    try:
+        user = "DW"
+        passwd = "DW"
+        listener = '192.168.10.173:1521/wmsdb'
+        conn_wms = cx_Oracle.connect(user, passwd, listener)
+        # 使用cursor()方法获取操作游标
+        cursor_ora_wms = conn_wms.cursor()
+    except:
+        print("could not connect to ora_wms server")
+
+    # 数仓
+    sql_ora = """select merch_coding SKU,inv_quantity,stk_name from T08_WDT_CMDY_COMPANY_INFO  """
+    cursor_ora.execute(sql_ora)
+    row_ora = cursor_ora.fetchall()
+    # print(row_ora)
+    for row in row_ora:
+        # print(row[0]) SKU
+        # print(row[1]) inv_quantity
+        # print(row[2]) stk_name
+        if row[2] == '天猫零拣区':
+            sql_ora_wms = """select * from WMS_USER.udf_tab_sku_inventory where c_date='%s' and  pick_zone='天猫零拣选区' and fmsku='%s'  """ % (
+            date, row[0])
+            cursor_ora_wms.execute(sql_ora_wms)
+            row_ora_wms = cursor_ora_wms.fetchone()
+            print(row_ora_wms)
+            # 【python】元组的插入
+            # >> > temp = (1, 2, 3, 4, 5)
+            # >> > temp = temp[:2] + (8,) + temp[2:]
+            # >> > temp
+            # (1, 2, 8, 3, 4, 5)
+            if row_ora_wms == None:
+                row = row + (0,)
+            else:
+                row = row + (row_ora_wms[2],)  # 拼成的row 插入kucunbidui  ('HAPY0391', '920.0000', '天猫零拣区', 920)
+            # 插入锁定的数量
+            sql = "select sdsl from spkcb_sd_wdt where cangku='天猫零拣区' and sku='%s' ;" % row[0]
+            cursor.execute(sql)  # 执行sql语句
+            results = cursor.fetchone()
+            if results == None:
+                row = row + (0,)
+            else:
+                row = row + (results[0],)
+
+            print('========')
+            print(row)
+            # print(int(row[1]))
+            # print(int(float(row[1])))
+            # SQL 插入语句
+            sql = "INSERT INTO kucunduibi(sku, wdt_sl, cangku, date, wms_sl,chayi,sdsl) VALUES ('%s', %s,  '%s',  '%s',  %s,  %s, %s)" % (
+            row[0], int(float(row[1])), row[2], date, row[3], int(float(row[1])) - int(row[3]) - int(row[4]),
+            int(row[4]))
+            print(sql)
+            try:
+                cursor.execute(sql)  # 执行sql语句
+                print(sql)
+                db.commit()
+            except:
+                db.rollback()  # 发生错误时回滚
+
+    #########################xqd###############################
+    # 数仓
+    sql_ora = """select merch_coding SKU,inv_quantity,stk_name from T08_WDT_CMDY_COMPANY_INFO  """
+    cursor_ora.execute(sql_ora)
+    row_ora = cursor_ora.fetchall()
+    # print(row_ora)
+    for row in row_ora:
+        # print(row[0]) SKU
+        # print(row[1]) inv_quantity
+        # print(row[2]) stk_name
+        if row[2] == '新渠道零拣仓':
+            sql_ora_wms = """select * from WMS_USER.udf_tab_sku_inventory where c_date='%s' and  pick_zone='新渠道零拣区' and fmsku='%s'  """ % (
+            date, row[0])
+            cursor_ora_wms.execute(sql_ora_wms)
+            row_ora_wms = cursor_ora_wms.fetchone()
+            print(row_ora_wms)
+            # 【python】元组的插入
+            # >> > temp = (1, 2, 3, 4, 5)
+            # >> > temp = temp[:2] + (8,) + temp[2:]
+            # >> > temp
+            # (1, 2, 8, 3, 4, 5)
+            if row_ora_wms == None:
+                row = row + (0,)
+            else:
+                row = row + (row_ora_wms[2],)  # 拼成的row 插入kucunbidui  ('HAPY0391', '920.0000', '天猫零拣区', 920)
+            # 插入锁定的数量
+            sql = "select sdsl from spkcb_sd_wdt where cangku='新渠道零拣仓' and sku='%s' ;" % row[0]
+            cursor.execute(sql)  # 执行sql语句
+            results = cursor.fetchone()
+            if results == None:
+                row = row + (0,)
+            else:
+                row = row + (results[0],)
+
+            print('========')
+            print(row)
+            # print(int(row[1]))
+            # print(int(float(row[1])))
+            # SQL 插入语句
+            sql = "INSERT INTO kucunduibi(sku, wdt_sl, cangku, date, wms_sl,chayi,sdsl) VALUES ('%s', %s,  '%s',  '%s',  %s,  %s, %s)" % (
+            row[0], int(float(row[1])), row[2], date, row[3], int(float(row[1])) - int(row[3]) - int(row[4]),
+            int(row[4]))
+            print(sql)
+            try:
+                cursor.execute(sql)  # 执行sql语句
+                print(sql)
+                db.commit()
+            except:
+                db.rollback()  # 发生错误时回滚
+
+    ########################jd################################
+    # 数仓
+    sql_ora = """select merch_coding SKU,inv_quantity,stk_name from T08_WDT_CMDY_COMPANY_INFO  """
+    cursor_ora.execute(sql_ora)
+    row_ora = cursor_ora.fetchall()
+    # print(row_ora)
+    for row in row_ora:
+        # print(row[0]) SKU
+        # print(row[1]) inv_quantity
+        # print(row[2]) stk_name
+        if row[2] == '京东自营仓':
+            sql_ora_wms = """select * from WMS_USER.udf_tab_sku_inventory where c_date='%s' and  pick_zone='京东零拣区' and fmsku='%s'  """ % (
+                date, row[0])
+            cursor_ora_wms.execute(sql_ora_wms)
+            row_ora_wms = cursor_ora_wms.fetchone()
+            print(row_ora_wms)
+            # 【python】元组的插入
+            # >> > temp = (1, 2, 3, 4, 5)
+            # >> > temp = temp[:2] + (8,) + temp[2:]
+            # >> > temp
+            # (1, 2, 8, 3, 4, 5)
+            if row_ora_wms == None:
+                row = row + (0,)
+            else:
+                row = row + (row_ora_wms[2],)  # 拼成的row 插入kucunbidui  ('HAPY0391', '920.0000', '天猫零拣区', 920)
+            # 插入锁定的数量
+            sql = "select sdsl from spkcb_sd_wdt where cangku='京东自营仓' and sku='%s' ;" % row[0]
+            cursor.execute(sql)  # 执行sql语句
+            results = cursor.fetchone()
+            if results == None:
+                row = row + (0,)
+            else:
+                row = row + (results[0],)
+
+            print('========')
+            print(row)
+            # print(int(row[1]))
+            # print(int(float(row[1])))
+            # SQL 插入语句
+            sql = "INSERT INTO kucunduibi(sku, wdt_sl, cangku, date, wms_sl,chayi,sdsl) VALUES ('%s', %s,  '%s',  '%s',  %s,  %s, %s)" % (
+                row[0], int(float(row[1])), row[2], date, row[3],
+                int(float(row[1])) - int(row[3]) - int(row[4]), int(row[4]))
+            print(sql)
+            try:
+                cursor.execute(sql)  # 执行sql语句
+                print(sql)
+                db.commit()
+            except:
+                db.rollback()  # 发生错误时回滚
+    ########################B2C################################
+    # 数仓
+    sql_ora = """select merch_coding SKU,inv_quantity,stk_name from T08_WDT_CMDY_COMPANY_INFO  """
+    cursor_ora.execute(sql_ora)
+    row_ora = cursor_ora.fetchall()
+    # print(row_ora)
+    for row in row_ora:
+        # print(row[0]) SKU
+        # print(row[1]) inv_quantity
+        # print(row[2]) stk_name
+        if row[2] == 'B2C退货仓':
+            sql_ora_wms = """select * from WMS_USER.udf_tab_sku_inventory where c_date='%s' and  pick_zone='B2C退货仓' and fmsku='%s'  """ % (
+                date, row[0])
+            cursor_ora_wms.execute(sql_ora_wms)
+            row_ora_wms = cursor_ora_wms.fetchone()
+            print(row_ora_wms)
+            # 【python】元组的插入
+            # >> > temp = (1, 2, 3, 4, 5)
+            # >> > temp = temp[:2] + (8,) + temp[2:]
+            # >> > temp
+            # (1, 2, 8, 3, 4, 5)
+            if row_ora_wms == None:
+                row = row + (0,)
+            else:
+                row = row + (row_ora_wms[2],)  # 拼成的row 插入kucunbidui  ('HAPY0391', '920.0000', '天猫零拣区', 920)
+            # 插入锁定的数量
+            sql = "select sdsl from spkcb_sd_wdt where cangku='B2C退货仓' and sku='%s' ;" % row[0]
+            cursor.execute(sql)  # 执行sql语句
+            results = cursor.fetchone()
+            if results == None:
+                row = row + (0,)
+            else:
+                row = row + (results[0],)
+
+            print('========')
+            print(row)
+            # print(int(row[1]))
+            # print(int(float(row[1])))
+            # SQL 插入语句
+            sql = "INSERT INTO kucunduibi(sku, wdt_sl, cangku, date, wms_sl,chayi,sdsl) VALUES ('%s', %s,  '%s',  '%s',  %s,  %s, %s)" % (
+                row[0], int(float(row[1])), row[2], date, row[3],
+                int(float(row[1])) - int(row[3]) - int(row[4]), int(row[4]))
+            print(sql)
+            try:
+                cursor.execute(sql)  # 执行sql语句
+                print(sql)
+                db.commit()
+            except:
+                db.rollback()  # 发生错误时回滚
+
+    ########################B2B################################
+    # 数仓
+    sql_ora = """select merch_coding SKU,inv_quantity,stk_name from T08_WDT_CMDY_COMPANY_INFO  """
+    cursor_ora.execute(sql_ora)
+    row_ora = cursor_ora.fetchall()
+    # print(row_ora)
+    for row in row_ora:
+        # print(row[0]) SKU
+        # print(row[1]) inv_quantity
+        # print(row[2]) stk_name
+        if row[2] == 'B2B退货仓':
+            sql_ora_wms = """select * from WMS_USER.udf_tab_sku_inventory where c_date='%s' and  pick_zone='B2B退货仓' and fmsku='%s'  """ % (
+                date, row[0])
+            cursor_ora_wms.execute(sql_ora_wms)
+            row_ora_wms = cursor_ora_wms.fetchone()
+            print(row_ora_wms)
+            # 【python】元组的插入
+            # >> > temp = (1, 2, 3, 4, 5)
+            # >> > temp = temp[:2] + (8,) + temp[2:]
+            # >> > temp
+            # (1, 2, 8, 3, 4, 5)
+            if row_ora_wms == None:
+                row = row + (0,)
+            else:
+                row = row + (row_ora_wms[2],)  # 拼成的row 插入kucunbidui  ('HAPY0391', '920.0000', '天猫零拣区', 920)
+            # 插入锁定的数量
+            sql = "select sdsl from spkcb_sd_wdt where cangku='B2B退货仓' and sku='%s' ;" % row[0]
+            cursor.execute(sql)  # 执行sql语句
+            results = cursor.fetchone()
+            if results == None:
+                row = row + (0,)
+            else:
+                row = row + (results[0],)
+
+            print('========')
+            print(row)
+            # print(int(row[1]))
+            # print(int(float(row[1])))
+            # SQL 插入语句
+            sql = "INSERT INTO kucunduibi(sku, wdt_sl, cangku, date, wms_sl,chayi,sdsl) VALUES ('%s', %s,  '%s',  '%s',  %s,  %s, %s)" % (
+                row[0], int(float(row[1])), row[2], date, row[3],
+                int(float(row[1])) - int(row[3]) - int(row[4]), int(row[4]))
+            print(sql)
+            try:
+                cursor.execute(sql)  # 执行sql语句
+                print(sql)
+                db.commit()
+            except:
+                db.rollback()  # 发生错误时回滚
+
+
+
+    # print('=============')
+
+    # WMS
+    # sql_ora_wms = """select * from WMS_USER.udf_tab_sku_inventory where c_date='%s'  """ % date
+    # cursor_ora_wms.execute(sql_ora_wms)
+    # row_ora_wms = cursor_ora_wms.fetchall()
+
+    # print(row_ora_wms)
+
+    cursor_ora.close()
+    conn.close()
+
+    cursor_ora_wms.close()
+    conn_wms.close()
+
+    cursor.close()
+    db.close()
+
+    return 'hh'
