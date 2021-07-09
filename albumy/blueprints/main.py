@@ -51,15 +51,20 @@ main_bp = Blueprint('main', __name__)
 # 输出目前的时间
 @main_bp.route('/e3')
 def e3():
-    add_hour = datetime.datetime.now().strftime('%H')
-    add_m = datetime.datetime.now().strftime('%M')
-    print(add_hour)
-    print(add_m)
-    if (add_m == '08'):
-        order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-        db.session.add(order_info)
-        db.session.commit()
-        print('终于执行啦')
+    # add_hour = datetime.datetime.now().strftime('%H')
+    # add_m = datetime.datetime.now().strftime('%M')
+    # print(add_hour)
+    # print(add_m)
+    # if (add_m == '08'):
+    #     order_info = Order_info(tid=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    #     db.session.add(order_info)
+    #     db.session.commit()
+    #     print('终于执行啦')
+    now_time = datetime.datetime.now() #2021-07-09 17:05:34.149509
+    r_time=datetime.datetime.now().strftime('%Y-%m-%d')
+    print(now_time)
+    print(r_time)
+    kucunbidui(r_time)
     return 'e3'
 
 
