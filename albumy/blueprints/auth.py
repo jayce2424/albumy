@@ -54,6 +54,103 @@ def bar_base() -> Bar:
     return c
 
 
+#Bar - Mixed_bar_and_line
+def bar_base88() -> Bar:
+    x_data = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+
+    c = (
+        # Bar()
+        # Bar({"theme": ThemeType.MACARONS})  # 更换主题
+        Bar(init_opts=opts.InitOpts(width="1600px", height="800px"))
+            .add_xaxis(xaxis_data=x_data)
+            .add_yaxis(
+            series_name="蒸发量",
+            # 由于版本更新的问题，方法的相关使用一直在变化，对y轴进行赋值最新版本不能用yaxis_data，要用y_axis
+            y_axis=[
+                2.0,
+                4.9,
+                7.0,
+                23.2,
+                25.6,
+                76.7,
+                135.6,
+                162.2,
+                32.6,
+                20.0,
+                6.4,
+                3.3,
+            ],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+            .add_yaxis(
+            series_name="降水量",
+            # 由于版本更新的问题，方法的相关使用一直在变化，对y轴进行赋值最新版本不能用yaxis_data，要用y_axis
+            y_axis=[
+                2.6,
+                5.9,
+                9.0,
+                26.4,
+                28.7,
+                70.7,
+                175.6,
+                182.2,
+                48.7,
+                18.8,
+                6.0,
+                2.3,
+            ],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+            .extend_axis(
+            yaxis=opts.AxisOpts(
+                name="温度",
+                type_="value",
+                min_=0,
+                max_=25,
+                interval=5,
+                axislabel_opts=opts.LabelOpts(formatter="{value} °C"),
+            )
+        )
+            .set_global_opts(
+            tooltip_opts=opts.TooltipOpts(
+                is_show=True, trigger="axis", axis_pointer_type="cross"
+            ),
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
+            ),
+            yaxis_opts=opts.AxisOpts(
+                name="水量",
+                type_="value",
+                min_=0,
+                max_=250,
+                interval=50,
+                axislabel_opts=opts.LabelOpts(formatter="{value} ml"),
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+            ),
+        )
+    )
+
+    line = (
+        Line()
+            .add_xaxis(xaxis_data=x_data)
+            .add_yaxis(
+            series_name="平均温度",
+            yaxis_index=1,
+            y_axis=[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2],
+            # label_opts=opts.LabelOpts(is_show=False),
+        )
+    )
+    # .render("bar_waterfall_plot.html")
+    # bar.overlap(line).render("mixed_bar_and_line.html")
+    c.overlap(line)  #关键：柱状图叠加到线行图
+    return c
+
+
+
+
+
 def bar_base3() -> Bar:
     c = (
         Bar()
@@ -67,24 +164,25 @@ def bar_base3() -> Bar:
 
 
 def bar_base5() -> Bar:
-    # 连接database
-    conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
-                             passwd="baison8888",
-                             db="e3_20192020")
-    # 得到一个可以执行SQL语句的光标对象
-    cursor = conn.cursor()
-    # 查询数据的SQL语句
-    sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-11-01 00:00:00'and FROM_UNIXTIME(pay_time)<='2020-11-13 23:59:59' and order_status!='3';"""
-    # 执行SQL语句
-    cursor.execute(sql)
-    # 获取多条查询数据
-    ret = cursor.fetchone()
-    cursor.close()
-    conn.close()
+    # # 连接database
+    # conn = pymysql.connect(host="192.168.10.206", port=3306, user="root",
+    #                          passwd="baison8888",
+    #                          db="e3_20192020")
+    # # 得到一个可以执行SQL语句的光标对象
+    # cursor = conn.cursor()
+    # # 查询数据的SQL语句
+    # sql = """select sum(payment) dt from order_info where FROM_UNIXTIME(pay_time)>='2020-11-01 00:00:00'and FROM_UNIXTIME(pay_time)<='2020-11-13 23:59:59' and order_status!='3';"""
+    # # 执行SQL语句
+    # cursor.execute(sql)
+    # # 获取多条查询数据
+    # ret = cursor.fetchone()
+    # cursor.close()
+    # conn.close()
     # 打印下查询结果
-    print(ret)
-    print(ret[0])
-    gg=ret[0]/Decimal(280000000)
+    # print(ret)
+    # print(ret[0])
+    ll8 = 19288624.14
+    gg = Decimal(ll8) / Decimal(280000000)
     c = (
         Liquid()
             .add("lq", [gg, 0.2])
@@ -373,7 +471,7 @@ def indexssdd2():
     return Markup(c.render_embed())
 
 
-# 下面的两个是前后端分离的做法 写了两个链接 其中一个是空的
+# 下面的两个是前后端分离的做法 写了两个链接 其中一个是空的 牛逼
 @auth_bp.route("/ssddjj")
 def indexssddjj():
     return render_template("auth/ssddjj.html")
@@ -391,8 +489,8 @@ def bar_basejjs_old() -> Bar:
     sql = "select * from xs order by 1 limit 1000;"
     cursor.execute(sql)  # 执行sql语句
     ret = cursor.fetchall()
-    listd=[]
-    listxl=[]
+    listd = []
+    listxl = []
     for row in ret:
         listd.append(row[0])
         listxl.append(row[1])
@@ -410,11 +508,11 @@ def bar_basejjs_old() -> Bar:
 
 
 def bar_basejjs() -> Bar:
-    xss=Xs.query.order_by(Xs.date).all()
+    xss = Xs.query.order_by(Xs.date).all()
     # print(xs)
     # exit()
-    listd=[]
-    listxl=[]
+    listd = []
+    listxl = []
     for xs in xss:
         listd.append(xs.date)
         listxl.append(xs.sl)
@@ -426,7 +524,8 @@ def bar_basejjs() -> Bar:
             # .add_yaxis("商家A", [1,2,3,4,5,6,7,8,9,10])
             .add_yaxis("E3单日发货量", listxl, label_opts=opts.LabelOpts(is_show=False))
             # .add_yaxis("商家B", [randrange(0, 100) for _ in range(6)])
-            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"),datazoom_opts=[opts.DataZoomOpts(), opts.DataZoomOpts(type_="inside")],)
+            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"),
+                             datazoom_opts=[opts.DataZoomOpts(), opts.DataZoomOpts(type_="inside")], )
     )
     return c
 
@@ -450,6 +549,7 @@ def bar_basejjj() -> Bar:
     )
     return c
 
+
 def bar_basejjjh() -> Bar:
     # ff=Faker.choose()
     # print(ff)
@@ -467,8 +567,8 @@ and left(FROM_UNIXTIME(trans_time),10)<'2019-11-12' and sd_id in (3,117,187) and
 group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
     cursor.execute(sql)  # 执行sql语句
     ret = cursor.fetchall()
-    listd=[]
-    listxl=[]
+    listd = []
+    listxl = []
     for row in ret:
         listd.append(row[0])
         listxl.append(row[1])
@@ -517,7 +617,7 @@ group by substring(FROM_UNIXTIME(trans_time),12,2) order by DT ;"""
                 boundary_gap=False,
             ),
         )
-            # .render("line_areastyle_boundary_gap.html")
+        # .render("line_areastyle_boundary_gap.html")
     )
     return c
 
@@ -539,6 +639,7 @@ def get_bar_chartjjj():
     c = bar_base5()
     return c.dump_options_with_quotes()
 
+
 @auth_bp.route("/barChartjjjh")
 def get_bar_chartjjjh():
     c = bar_basejjjh()
@@ -555,8 +656,9 @@ def indexssdd3():
     c5 = bar_base5()
     c6 = bar_base6()
     c7 = bar_base7()
+    c8 = bar_base88()
     return Markup(
-        c.render_embed() + c2.render_embed() + c3.render_embed() + c4.render_embed() + c5.render_embed() + c6.render_embed() + c7.render_embed())
+        c.render_embed() + c2.render_embed() + c3.render_embed() + c4.render_embed() + c5.render_embed() + c6.render_embed() + c7.render_embed() + c8.render_embed())
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -726,3 +828,5 @@ def redis_set():
     print(r.getrange("en_name", 0, -1))  # 取所有的字节 junxi 切片操作
 
     return 'seting'
+
+
