@@ -54,7 +54,34 @@ def bar_base() -> Bar:
     return c
 
 
-#Bar - Mixed_bar_and_line
+def bar_base10() -> Bar:
+    c = (
+        Pie()
+            # .add("", [list(z) for z in zip(Faker.choose(), Faker.values())])
+            # .add("", [('小米', 88), ('三星', 38), ('华为', 57), ('苹果', 102), ('魅族', 77), ('VIVO', 53),('OPPO', 105)])
+            .add("", [('天猫', 88), ('京东', 80), ('新渠道', 16.8), ('分销', 355),])
+            .set_colors(["blue", "green", "yellow", "red", "pink", "orange", "purple"])
+            .set_global_opts(title_opts=opts.TitleOpts(title="Pie-设置颜色"))
+            .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+        # .render("pie_set_color.html")
+    )
+    # print(c)  # 是个对象 看不出啥
+    return c
+
+
+@auth_bp.route("/ss")
+def ss():
+    for z in zip(Faker.choose(), Faker.values()):
+        print(z)
+        print(z[0])#列表 元组都能通过这种方式取数据
+    a = [1, 2, 3]
+    b = [4, 5, 6]
+    zipped = zip(a, b) #[(1, 4), (2, 5), (3, 6)]
+    print(zipped)
+    return 'hh'
+
+
+# Bar - Mixed_bar_and_line
 def bar_base88() -> Bar:
     x_data = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
 
@@ -144,11 +171,109 @@ def bar_base88() -> Bar:
     )
     # .render("bar_waterfall_plot.html")
     # bar.overlap(line).render("mixed_bar_and_line.html")
-    c.overlap(line)  #关键：柱状图叠加到线行图
+    c.overlap(line)  # 关键：柱状图叠加到线行图
     return c
 
 
+# Bar - Mixed_bar_and_line
+def bar_base89() -> Bar:
+    x_data = ["天猫生活馆", "天猫旗舰店", "天猫小计", "办公", "非办公", "京东小计", "京东前台", "POP", "拼多多", "抖音", "批发", "新渠道小计", "直营小计", "分销小计",
+              "总计"]
 
+    c = (
+        # Bar()
+        # Bar({"theme": ThemeType.MACARONS})  # 更换主题
+        Bar(init_opts=opts.InitOpts(width="1600px", height="800px"))
+            .add_xaxis(xaxis_data=x_data)
+            .add_yaxis(
+            series_name="当日目标",
+            # 由于版本更新的问题，方法的相关使用一直在变化，对y轴进行赋值最新版本不能用yaxis_data，要用y_axis
+            y_axis=[
+                7,
+                82,
+                89,
+                0,
+                0,
+                0,
+                400,
+                1,
+                3,
+                16,
+                1,
+                17,
+                110,
+                355,
+                465,
+            ],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+            .add_yaxis(
+            series_name="当日销售",
+            # 由于版本更新的问题，方法的相关使用一直在变化，对y轴进行赋值最新版本不能用yaxis_data，要用y_axis
+            y_axis=[
+                7.25,
+                81.34,
+                88.59,
+                54.88,
+                25.45,
+                80.34,
+                323.95,
+                1.25,
+                0.62,
+                16.78,
+                0.02,
+                16.80,
+                187.6,
+                423.44,
+                611.03
+            ],
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+            .extend_axis(
+            yaxis=opts.AxisOpts(
+                name="温度",
+                type_="value",
+                min_=0,
+                max_=180,
+                interval=5,
+                axislabel_opts=opts.LabelOpts(formatter="{value} %"),
+            )
+        )
+            .set_global_opts(
+            tooltip_opts=opts.TooltipOpts(
+                is_show=True, trigger="axis", axis_pointer_type="cross"
+            ),
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                axispointer_opts=opts.AxisPointerOpts(is_show=True, type_="shadow"),
+            ),
+            yaxis_opts=opts.AxisOpts(
+                name="销售金额",
+                type_="value",
+                min_=0,
+                max_=700,
+                interval=50,
+                axislabel_opts=opts.LabelOpts(formatter="{value} 万"),
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+            ),
+        )
+    )
+
+    line = (
+        Line()
+            .add_xaxis(xaxis_data=x_data)
+            .add_yaxis(
+            series_name="日完成率",
+            yaxis_index=1,
+            y_axis=[112, 99, 100, 100, 100, 100, 81, 86, 18, 105, 2, 99, 170, 119, 131],
+            # label_opts=opts.LabelOpts(is_show=False),
+        )
+    )
+    # .render("bar_waterfall_plot.html")
+    # bar.overlap(line).render("mixed_bar_and_line.html")
+    c.overlap(line)  # 关键：柱状图叠加到线行图
+    return c
 
 
 def bar_base3() -> Bar:
@@ -159,6 +284,26 @@ def bar_base3() -> Bar:
             .add_yaxis("商家B", Faker.values(), stack="stack1")
             .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
             .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
+    )
+    return c
+
+def bar_base11() -> Bar:
+    # 这部分为我们的各个品牌的标签(名字随意弄的，不要见怪)
+    label = ['孙悟空模型', '猪八戒模型', '沙和尚模型', '鲤鱼精模型', '花仙子模型', '土地公公模型', '车迟国王模型', '黑熊精模型']
+    # 因为一个品牌标签对应有多个数值分析,所以每个数值给出一组数据列表
+    mean_kh = [457.77, 258, 269, 147.5, 440.71, 302.8, 129, 313.63]
+    max_kh = [1286, 258, 313, 156, 490, 345, 129, 339]
+    min_kh = [259, 258, 225, 139, 429, 278, 129, 310]
+    c = (
+
+        Bar()
+        .add_xaxis(label)
+        .add_yaxis('平均价位', mean_kh)
+        .add_yaxis('最高价位', max_kh)
+        .add_yaxis('最低价位', min_kh)
+        .reversal_axis()
+        .set_series_opts(label_opts=opts.LabelOpts(position="right"))
+        # .set_global_opts(title_opts=opts.TitleOpts(title="西游记娃娃价位对比"))
     )
     return c
 
@@ -649,6 +794,8 @@ def get_bar_chartjjjh():
 # 两个合并在一块 http://127.0.0.1:5010/auth/ssdd3
 @auth_bp.route("/ssdd3")
 def indexssdd3():
+    c11 = bar_base11()
+    c10 = bar_base10()
     c = bar_base()
     c2 = bar_base2()
     c3 = bar_base3()
@@ -657,8 +804,9 @@ def indexssdd3():
     c6 = bar_base6()
     c7 = bar_base7()
     c8 = bar_base88()
+    c9 = bar_base89()
     return Markup(
-        c.render_embed() + c2.render_embed() + c3.render_embed() + c4.render_embed() + c5.render_embed() + c6.render_embed() + c7.render_embed() + c8.render_embed())
+        c11.render_embed()+c10.render_embed() + c8.render_embed() + c9.render_embed() + c.render_embed() + c2.render_embed() + c3.render_embed() + c4.render_embed() + c5.render_embed() + c6.render_embed() + c7.render_embed())
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -828,5 +976,3 @@ def redis_set():
     print(r.getrange("en_name", 0, -1))  # 取所有的字节 junxi 切片操作
 
     return 'seting'
-
-
