@@ -282,10 +282,26 @@ def bar_base3() -> Bar:
             .add_xaxis(Faker.choose())
             .add_yaxis("商家A", Faker.values(), stack="stack1")
             .add_yaxis("商家B", Faker.values(), stack="stack1")
+            .add_yaxis("商家C", Faker.values(), stack="stack1")
+            .add_yaxis("商家D", Faker.values(), stack="stack1")
+            .add_yaxis("商家E", [106, -93, 121, 126, -76, 124, -140], stack="stack1")
             .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
             .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
     )
     return c
+
+# 就是很奇怪 有时间报错 Python OSError: [Errno 22] Invalid argument:
+@auth_bp.route('/ssddhg')
+def ssddhg():
+    # c = Faker.values()
+    g = Faker.choose()
+    # print(c[0])
+    print(type(g))
+    # print(c)
+    # print(g)
+    return 'gg'
+
+
 
 def bar_base11() -> Bar:
     # 这部分为我们的各个品牌的标签(名字随意弄的，不要见怪)
