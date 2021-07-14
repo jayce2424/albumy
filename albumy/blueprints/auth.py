@@ -277,17 +277,40 @@ def bar_base89() -> Bar:
 
 
 def bar_base3() -> Bar:
+    x_data=['a','a2','a3','a4','a5','a6','a7']
     c = (
         Bar()
-            .add_xaxis(Faker.choose())
+            # .add_xaxis(Faker.choose())
+            .add_xaxis(x_data)
             .add_yaxis("商家A", Faker.values(), stack="stack1")
             .add_yaxis("商家B", Faker.values(), stack="stack1")
             .add_yaxis("商家C", Faker.values(), stack="stack1")
             .add_yaxis("商家D", Faker.values(), stack="stack1")
-            .add_yaxis("商家E", [106, -93, 121, 126, -76, 124, -140], stack="stack1")
+            # .add_yaxis("商家E", [106, -93, 121, 126, -76, 124, -140], stack="stack1")
+            .extend_axis(
+            yaxis=opts.AxisOpts(
+                name="增长率",
+                type_="value",
+                min_=0,
+                max_=180,
+                interval=5,
+                axislabel_opts=opts.LabelOpts(formatter="{value} %"),
+            )
+        )
             .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
             .set_global_opts(title_opts=opts.TitleOpts(title="Bar-堆叠数据（全部）"))
     )
+    line = (
+        Line()
+            .add_xaxis(xaxis_data=x_data)
+            .add_yaxis(
+            series_name="日完成率",
+            yaxis_index=1,
+            y_axis=[112, 99, 100, 100, 100, 100, 88],
+            # label_opts=opts.LabelOpts(is_show=False),
+        )
+    )
+    c.overlap(line)
     return c
 
 # 就是很奇怪 有时间报错 Python OSError: [Errno 22] Invalid argument:
@@ -302,7 +325,7 @@ def ssddhg():
     return 'gg'
 
 
-
+# Bar - Bar_reversal_axis
 def bar_base11() -> Bar:
     # 这部分为我们的各个品牌的标签(名字随意弄的，不要见怪)
     label = ['孙悟空模型', '猪八戒模型', '沙和尚模型', '鲤鱼精模型', '花仙子模型', '土地公公模型', '车迟国王模型', '黑熊精模型']
